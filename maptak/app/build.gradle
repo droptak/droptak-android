@@ -18,7 +18,7 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('../../../../keys/android_debug/debug.keystore')
+            storeFile file('../../keys/android_debug/debug.keystore')
         }
     }
 }
