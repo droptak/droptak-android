@@ -17,12 +17,14 @@ import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.fragments.AddTakFragment;
 import edu.purdue.maptak.admin.fragments.CreateMapFragment;
+import edu.purdue.maptak.admin.fragments.LoginFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
 import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 import edu.purdue.maptak.admin.test.DummyData;
+
 
 public class MainActivity extends Activity implements OnMapSelectedListener {
 
@@ -46,8 +48,9 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
 
         // Create a new map fragment for the screen
         mapFragment = new TakMapFragment();
+        LoginFragment lf = new LoginFragment();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.activity_map_mapview, mapFragment);
+        ft.replace(R.id.activity_map_mapview, lf);
         ft.commit();
 
         /* TODO: Adding some sample Maps to the database for testing purposes */

@@ -21,8 +21,6 @@ import edu.purdue.maptak.admin.data.TakID;
 import edu.purdue.maptak.admin.data.TakObject;
 
 public class AddTakFragment extends Fragment {
-
-
     /** Inflates the view for this fragment. */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_addtak, container, false);
