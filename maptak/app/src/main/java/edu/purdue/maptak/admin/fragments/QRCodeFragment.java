@@ -25,12 +25,8 @@ import edu.purdue.maptak.admin.R;
  */
 public class QRCodeFragment extends Fragment {
 
-    IntentIntegrator intentIntegrator;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        intentIntegrator = new IntentIntegrator(getActivity());
-        intentIntegrator.initiateScan(); // figure out how to make it just accept QR codes
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_qrcode, container, false);
     }
@@ -43,6 +39,7 @@ public class QRCodeFragment extends Fragment {
             Log.d("qrcode", "Scan Result, all bad ");
         }
     }
+
 
 
 }
