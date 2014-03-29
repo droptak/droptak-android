@@ -13,4 +13,9 @@
         android:title="@string/menu_settings_label"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/CreateQRCode"
+        android:title="QR Code"
+        android:showAsAction="never" />
+
 </menu>

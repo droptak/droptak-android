@@ -18,6 +18,7 @@ import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.fragments.AddTakFragment;
 import edu.purdue.maptak.admin.fragments.CreateMapFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
+import edu.purdue.maptak.admin.fragments.QRCodeFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
@@ -169,6 +170,18 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
                 break;
 
             case R.id.menu_settings:
+
+                break;
+
+            case R.id.CreateQRCode:
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.activity_map_mapview, new QRCodeFragment())
+                        .commit();
+
+                menu.clear();
+
+                setUpEnabled(true);
 
                 break;
         }
