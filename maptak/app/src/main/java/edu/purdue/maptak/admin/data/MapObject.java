@@ -34,6 +34,8 @@ public class MapObject {
         this(label, new MapID(""), taks);
     }
 
+
+
     /** Returns the label for the map */
     public String getLabel() {
         return this.label;
