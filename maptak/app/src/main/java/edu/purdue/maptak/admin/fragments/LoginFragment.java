@@ -2,6 +2,8 @@ package edu.purdue.maptak.admin.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,15 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.Tasks.LoginTask;
+import edu.purdue.maptak.admin.tasks.LoginTask;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
-import com.google.android.gms.auth.*;
+
 import android.content.IntentSender.*;
-import java.io.IOException;
 import android.content.Intent;
 import android.widget.Toast;
 
@@ -143,12 +144,17 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
     public void getStoreToken(){
-        LoginTask loginTask = new LoginTask(this.getActivity().getBaseContext(),mGoogleApiClient);
+        LoginTask loginTask = new LoginTask(this.getActivity(),mGoogleApiClient, getFragmentManager());
         try {
             loginTask.execute();
         } catch (Exception e){
 
         }
+
+        //TakMapFragment mapFragment = new TakMapFragment();
+       // FragmentTransaction ft = getFragmentManager().beginTransaction();
+       // ft.replace(R.id.activity_map_mapview,mapFragment);
+       // ft.commit();
 
     }
 

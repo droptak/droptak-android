@@ -1,5 +1,8 @@
-package edu.purdue.maptak.admin.Tasks;
+package edu.purdue.maptak.admin.tasks;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -12,14 +15,15 @@ import com.google.android.gms.plus.model.people.Person;
 import com.loopj.android.http.*;
 import android.content.*;
 import android.app.Activity;
-import android.app.Fragment;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.fragments.TakMapFragment;
 
 
 public class LoginTask extends AsyncTask<Void,Void,String> {
@@ -27,11 +31,21 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
     Context context;
     GoogleApiClient mGoogleApiClient;
     SharedPreferences settings;
+    ProgressDialog progressDialog;
+    FragmentManager fragMan;
 
-    public LoginTask(Context context, GoogleApiClient mGoogleApiClient){
+    public LoginTask(Context context, GoogleApiClient mGoogleApiClient, FragmentManager fragMan){
         this.context = context;
         this.mGoogleApiClient = mGoogleApiClient;
+        this.fragMan = fragMan;
         settings = context.getSharedPreferences("settings",0);
+        progressDialog = new ProgressDialog(context);
+
+    }
+
+    public void onPreExecute(){
+        this.progressDialog.setMessage("Processing...");
+        this.progressDialog.show();
     }
 
 
@@ -79,6 +93,9 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
             email = Plus.AccountApi.getAccountName(mGoogleApiClient);
             id = currentPerson.getId();
         }
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("name",personName);
+        editor.commit();
         AsyncHttpClient client = new AsyncHttpClient();
         personName = personName.replace(" ", "%20");
         client.post("http://mapitapps.appspot.com/api/login?storeToken="+code+"&name="+personName+"&email="+email+"&id="+id, new AsyncHttpResponseHandler() {
@@ -111,6 +128,12 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
     @Override
     protected void onPostExecute(String token) {
         Log.i("Token", "Access token retrieved:" + token);
+        progressDialog.dismiss();
+
+        TakMapFragment mapFragment = new TakMapFragment();
+         FragmentTransaction ft = fragMan.beginTransaction();
+         ft.replace(R.id.activity_map_mapview,mapFragment);
+         ft.commit();
     }
 
 
