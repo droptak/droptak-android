@@ -13,14 +13,14 @@ public class TakID {
 
     /** Equals method */
     public boolean equals(TakID t1) {
-        if (takID.equals(t1.getIDStr())) {
+        if (takID.equals(t1.toString())) {
             return true;
         }
         return false;
     }
 
-    /** Returns the takid in a string format */
-    public String getIDStr() {
+    /** Returns a string representation of the takID */
+    public String toString() {
         return this.takID;
     }
 

@@ -31,7 +31,7 @@ public class MapObject {
 
     /** Map created from the app/user. mapID is generated randomly until a sync with the server. */
     public MapObject(String label, List<TakObject> taks) {
-        this(label, new MapID(UUID.randomUUID().toString().substring(0,12)), taks);
+        this(label, new MapID(""), taks);
     }
 
     /** Returns the label for the map */

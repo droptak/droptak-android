@@ -14,16 +14,15 @@ public class MapID {
 
     /** Checks for equivelence between two IDs */
     public boolean equals(MapID m2) {
-        if (mapID.equals(m2.getIDStr())) {
+        if (mapID.equals(m2.toString())) {
             return true;
         }
         return false;
     }
 
-
-    /** Gets a string representation of the ID */
-    public String getIDStr() {
-        return this.mapID;
+    /** Returns a string representation of the mapID */
+    public String toString() {
+        return mapID;
     }
 
 }
