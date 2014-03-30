@@ -48,6 +48,8 @@ public class MapObject {
         this(label, new MapID(UUID.randomUUID().toString().substring(0,12)), taks);
     }
 
+
+
     /** Returns the label for the map */
     public String getLabel() {
         return this.label;

@@ -13,11 +13,15 @@ import android.widget.EditText;
 
 import com.google.android.gms.maps.MapFragment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
@@ -40,12 +44,6 @@ public class CreateMapFragment extends Fragment {
 
                 /** Create empty linked list for taks */
                 List<TakObject> taks = new LinkedList<TakObject>();
-
-                /** Create a new map with label entered by user */
-                MapObject newMap = new MapObject(mapNameText.getText().toString(), taks);
-
-                /** Add map to the DB */
-                newDB.addMap(newMap);
                 AddMapTask addMapTask = new AddMapTask(mapNameText.getText().toString(),context);
                 String jsonString = null;
                 try {
@@ -56,6 +54,22 @@ public class CreateMapFragment extends Fragment {
                     e.printStackTrace();
                 }
                 Log.d("debug","jsonString="+jsonString);
+                JSONObject jsonObject = null;
+                String id = null;
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    id = jsonObject.getString("mapId");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                MapID mID = new MapID(id);
+                MapObject map = new MapObject(mapNameText.getText().toString(),mID,taks);
+                newDB.addMap(map);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.activity_map_mapview,new MapListFragment());
                 ft.commit();
