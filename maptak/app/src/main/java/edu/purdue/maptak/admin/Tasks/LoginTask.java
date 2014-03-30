@@ -14,6 +14,11 @@ import android.content.*;
 import android.app.Activity;
 import android.app.Fragment;
 import android.util.Log;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 
@@ -21,10 +26,12 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
 
     Context context;
     GoogleApiClient mGoogleApiClient;
+    SharedPreferences settings;
 
     public LoginTask(Context context, GoogleApiClient mGoogleApiClient){
         this.context = context;
         this.mGoogleApiClient = mGoogleApiClient;
+        settings = context.getSharedPreferences("settings",0);
     }
 
 
@@ -77,10 +84,25 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
         client.post("http://mapitapps.appspot.com/api/login?storeToken="+code+"&name="+personName+"&email="+email+"&id="+id, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-                /* This will be a json string, with a key "uuid":id
-                    This should be stored into the shared_prefs
-                 */
-                System.out.println("response is "+ response);
+
+                JSONObject jObject = null;
+                try {
+                     jObject = new JSONObject(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                String id = null;
+                try {
+                     id = jObject.getString("uuid");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("debug","Got id="+id);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("id",id);
+                editor.commit();
             }
         });
         return code;
