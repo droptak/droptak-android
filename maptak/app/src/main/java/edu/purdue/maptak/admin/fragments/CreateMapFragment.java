@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gms.maps.MapFragment;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

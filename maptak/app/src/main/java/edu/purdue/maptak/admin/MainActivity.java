@@ -29,7 +29,7 @@ import edu.purdue.maptak.admin.test.DummyData;
 public class MainActivity extends Activity implements OnMapSelectedListener {
 
     /** Log tag for debugging logcat output */
-    public static final String LOG_TAG = "maptak";
+    public static final String LOG_TAG = "maptak_log_tag";
 
     /** Save the menu object so it can be changed dynamically later */
     private Menu menu;

@@ -5,11 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
+import edu.purdue.maptak.admin.MainActivity;
 
 public class MapTakDB extends SQLiteOpenHelper {
 
@@ -43,6 +46,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         // Strings which create tables
+        Log.d(MainActivity.LOG_TAG, "Creating new database.");
 
         String create_table_maps = "CREATE TABLE " + TABLE_MAPS + " (" +
                 MAP_ID + " TEXT, " +
@@ -64,11 +68,12 @@ public class MapTakDB extends SQLiteOpenHelper {
 
     /** Called when the database is upgraded from one DB_VERSION to the next */
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
-
+        Log.d(MainActivity.LOG_TAG, "Upgrading database from " + i + " to " + i2);
     }
 
     /** Destroys the local database and creates a new one. */
     public void destroy() {
+        Log.d(MainActivity.LOG_TAG, "Dropping all tables in database.");
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
             db.execSQL("DROP TABLE " + TABLE_MAPS);
@@ -77,15 +82,13 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
     }
 
-    /** Refreshes the database with information from the server */
-    public void refresh() {
-        // Implement in sprint 2
-    }
-
     /** Adds a map and all of its taks to the database.
      *  Does no sanity checking for if the map already exists. */
     public void addMap(MapObject map) {
         // Add the map to the local database
+        Log.d(MainActivity.LOG_TAG, "Adding map to database.");
+        Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getLabel());
+
         ContentValues values = new ContentValues();
         values.put(MAP_ID, map.getID().toString());
         values.put(MAP_LABEL, map.getLabel());
@@ -102,6 +105,8 @@ public class MapTakDB extends SQLiteOpenHelper {
      *  pertains to even exists. */
     public void addTak(TakObject tak, MapID map) {
         // Add the tak to the database
+        Log.d(MainActivity.LOG_TAG, "Adding tak to database with ID: " + tak.getID());
+
         ContentValues values = new ContentValues();
         values.put(TAK_ID, tak.getID().toString());
         values.put(TAK_MAP_ID, map.toString());
@@ -114,6 +119,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     /** Deletes a map associated with a given map ID from the local database.
      *  Returns true if successful, otherwise false */
     public boolean deleteMap(MapID map) {
+        Log.d(MainActivity.LOG_TAG, "Deleting map from database with ID: " + map);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + map.toString() + "\";");
@@ -124,6 +130,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     /** Removes a tak associated with a given ID from the local database.
      *  Returns true if successful, otherwise false. */
     public boolean deleteTak(TakID tak) {
+        Log.d(MainActivity.LOG_TAG, "Deleting tak from database with ID: " + tak);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "=\"" + tak.toString() + "\";");
