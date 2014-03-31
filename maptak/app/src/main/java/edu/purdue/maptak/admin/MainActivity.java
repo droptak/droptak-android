@@ -15,6 +15,9 @@ import android.widget.Toast;
 
 import java.util.Random;
 
+import edu.purdue.maptak.admin.QRCode.IntentIntegrator;
+import edu.purdue.maptak.admin.QRCode.IntentResult;
+import edu.purdue.maptak.admin.QRCode.QRCodeScanner;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
@@ -22,6 +25,7 @@ import edu.purdue.maptak.admin.fragments.AddTakFragment;
 import edu.purdue.maptak.admin.fragments.CreateMapFragment;
 import edu.purdue.maptak.admin.fragments.LoginFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
+import edu.purdue.maptak.admin.fragments.QRCodeFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
@@ -146,6 +150,12 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
                 break;
 
             case R.id.menu_settings:
+
+                break;
+
+            case R.id.CreateQRCode:
+
+                QRCodeScanner qrCodeScanner = new QRCodeScanner(this);
 
                 break;
         }
