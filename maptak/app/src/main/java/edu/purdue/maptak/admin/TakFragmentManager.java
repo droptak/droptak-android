@@ -18,9 +18,15 @@ public abstract class TakFragmentManager {
 
     /** Switches the main fragment view to the map given a specific map object */
     public static void switchToMap(Activity activity, MapObject mo) {
+        TakMapFragment fragment = null;
+        if (mo == null) {
+            fragment = new TakMapFragment();
+        } else {
+            fragment = TakMapFragment.newInstanceOf(mo);
+        }
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, TakMapFragment.newInstanceOf(mo))
+                .replace(R.id.activity_map_mapview, fragment)
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAP;
         activity.invalidateOptionsMenu();

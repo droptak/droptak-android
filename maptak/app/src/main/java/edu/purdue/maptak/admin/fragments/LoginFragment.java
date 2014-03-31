@@ -144,17 +144,12 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
     public void getStoreToken(){
-        LoginTask loginTask = new LoginTask(this.getActivity(),mGoogleApiClient, getFragmentManager());
+        LoginTask loginTask = new LoginTask(this.getActivity(),mGoogleApiClient);
         try {
             loginTask.execute();
         } catch (Exception e){
 
         }
-
-        //TakMapFragment mapFragment = new TakMapFragment();
-       // FragmentTransaction ft = getFragmentManager().beginTransaction();
-       // ft.replace(R.id.activity_map_mapview,mapFragment);
-       // ft.commit();
 
     }
 

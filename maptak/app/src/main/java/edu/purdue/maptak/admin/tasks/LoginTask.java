@@ -23,23 +23,23 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.TakFragmentManager;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 
 
 public class LoginTask extends AsyncTask<Void,Void,String> {
 
-    Context context;
+    Activity callingActivity;
     GoogleApiClient mGoogleApiClient;
     SharedPreferences settings;
     ProgressDialog progressDialog;
     FragmentManager fragMan;
 
-    public LoginTask(Context context, GoogleApiClient mGoogleApiClient, FragmentManager fragMan){
-        this.context = context;
+    public LoginTask(Activity activity, GoogleApiClient mGoogleApiClient) {
+        this.callingActivity = activity;
         this.mGoogleApiClient = mGoogleApiClient;
-        this.fragMan = fragMan;
-        settings = context.getSharedPreferences("settings",0);
-        progressDialog = new ProgressDialog(context);
+        settings = activity.getSharedPreferences("settings",0);
+        progressDialog = new ProgressDialog(activity);
 
     }
 
@@ -47,7 +47,6 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
         this.progressDialog.setMessage("Processing...");
         this.progressDialog.show();
     }
-
 
     @Override
     protected String doInBackground(Void... voids) {
@@ -59,10 +58,10 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
         String code = null;
         try {
             code = GoogleAuthUtil.getToken(
-                    context,                                              // Context context
-                    Plus.AccountApi.getAccountName(mGoogleApiClient),  // String accountName
-                    scopes,                                            // String scope
-                    appActivities                                      // Bundle bundle
+                    callingActivity,                                            // Context context
+                    Plus.AccountApi.getAccountName(mGoogleApiClient),           // String accountName
+                    scopes,                                                     // String scope
+                    appActivities                                               // Bundle bundle
             );
 
         } catch (IOException transientEx) {
@@ -75,7 +74,7 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
             // because the user must consent to offline access to their data.  After
             // consent is granted control is returned to your activity in onActivityResult
             // and the second call to GoogleAuthUtil.getToken will succeed.
-            ((Activity)context).startActivityForResult(e.getIntent(),0);
+            callingActivity.startActivityForResult(e.getIntent(), 0);
         } catch (GoogleAuthException authEx) {
             // Failure. The call is not expected to ever succeed so it should not be
             // retried.
@@ -129,11 +128,7 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
     protected void onPostExecute(String token) {
         Log.i("Token", "Access token retrieved:" + token);
         progressDialog.dismiss();
-
-        TakMapFragment mapFragment = new TakMapFragment();
-         FragmentTransaction ft = fragMan.beginTransaction();
-         ft.replace(R.id.activity_map_mapview,mapFragment);
-         ft.commit();
+        TakFragmentManager.switchToMap(callingActivity, null);
     }
 
 
