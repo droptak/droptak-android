@@ -24,13 +24,25 @@ import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
 
+/** To create instances of this class, you can do a standard "new" thing but
+ *  it won't have any points on it. To get points on it, create the class with
+ *  a call to "newInstanceOf()" and pass in the MapObject you want to display. */
 public class TakMapFragment extends MapFragment {
 
     /** Listener for when the gmap has been fully loaded to the screen */
     private OnGMapLoadedListener loadedListener;
 
-    /** Bundle key for boolean which says whether the gmap has a map on it currently */
-    private MapObject loadedMap = null;
+    /** Call this method to create instances of this fragment */
+    public static TakMapFragment newInstanceOf(MapObject objectToDisplay) {
+        final MapObject object = objectToDisplay;
+        final TakMapFragment fragment = new TakMapFragment();
+        fragment.setOnGMapLoadedListener(new OnGMapLoadedListener() {
+            public void onGMapLoaded() {
+                fragment.addTaksToGMap(object);
+            }
+        });
+        return fragment;
+    }
 
     /** First method that is called, before View or Activity is created */
     public void onCreate(Bundle savedInstanceState) {
@@ -80,8 +92,8 @@ public class TakMapFragment extends MapFragment {
      *  given MapObject, then zooms the camera to encompass all of these points. This is done
      *  without any database transactions. */
     public void addTaksToGMap(MapObject map) {
+
         // Get the gmap on which we will draw the points
-        loadedMap = map;
         GoogleMap gmap = getMap();
         gmap.clear();
 

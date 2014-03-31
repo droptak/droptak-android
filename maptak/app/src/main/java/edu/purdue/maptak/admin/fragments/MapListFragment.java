@@ -34,6 +34,13 @@ public class MapListFragment extends Fragment implements AdapterView.OnItemClick
     /** Holds the listener which will be called when a map is selected */
     OnMapSelectedListener mapSelectedListener;
 
+    /** Creates a new instance of a MapListFragment */
+    public static MapListFragment newInstanceOf(OnMapSelectedListener listener) {
+        MapListFragment f = new MapListFragment();
+        f.setOnMapSelectedListener(listener);
+        return f;
+    }
+
     /** Inflates the view for this fragment. */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 

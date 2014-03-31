@@ -2,6 +2,8 @@ package edu.purdue.maptak.admin;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 import java.util.Random;
 
 import edu.purdue.maptak.admin.data.MapID;
+import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.fragments.AddTakFragment;
 import edu.purdue.maptak.admin.fragments.CreateMapFragment;
@@ -34,9 +37,6 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
     /** Save the menu object so it can be changed dynamically later */
     private Menu menu;
 
-    /** MapFragment currently inflated to the screen */
-    private TakMapFragment mapFragment = null;
-
     /** Store the current map the user has displayed as a static variable.
      *  This way, fragments can access it as necessary when adding new taks to the current map. */
     public static MapID currentSelectedMap = null;
@@ -46,15 +46,10 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         Log.i(LOG_TAG, "MapActivity.onCreate() called.");
         setContentView(R.layout.activity_main);
 
-        // Create a new map fragment for the screen
-        mapFragment = new TakMapFragment();
-        LoginFragment lf = new LoginFragment();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.activity_map_mapview, lf);
-        ft.commit();
+        // Inflate the login fragment to the screen
+        TakFragmentManager.switchToLogin(getFragmentManager());
 
         /* TODO: Adding some sample Maps to the database for testing purposes */
-
         MapTakDB db = new MapTakDB(this);
 
         // 50% of the time, clear out the database completely
@@ -65,7 +60,6 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         }
 
         db.addMap(DummyData.createDummyMapObject());
-
         /* TODO: End testing code */
     }
 
@@ -80,11 +74,9 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         switch (item.getItemId()) {
             case android.R.id.home:
 
-                // Re-inflate the map
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.activity_map_mapview, mapFragment)
-                        .commit();
+                // Re-inflate the map that was already on the screen
+                MapTakDB db = new MapTakDB(this);
+                TakFragmentManager.switchToMap(getFragmentManager(), db.getMap(currentSelectedMap));
 
                 // Change the menu bar back to normal
                 menu.clear();
@@ -97,22 +89,12 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
                 // Disable the back button
                 setUpEnabled(false);
 
-                // Set the keyboard collapsed
-                InputMethodManager imm = (InputMethodManager)getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
                 break;
 
             case R.id.menu_maplist:
 
                 // Set the main_normal view to a map list fragment
-                MapListFragment mlFrag = new MapListFragment();
-                mlFrag.setOnMapSelectedListener(this);
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.activity_map_mapview, mlFrag)
-                        .commit();
+                TakFragmentManager.switchToMapList(getFragmentManager(), this);
 
                 // Change the menu bar
                 menu.clear();
@@ -126,10 +108,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
             case R.id.menu_createmap:
 
                 // Set the main view to the create map fragment
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.activity_map_mapview, new CreateMapFragment())
-                        .commit();
+                TakFragmentManager.switchToCreateMap(getFragmentManager());
 
                 // Change the menu bar
                 menu.clear();
@@ -142,10 +121,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
             case R.id.menu_addtak:
 
                 // Set the main view to the create map fragment
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.activity_map_mapview, new AddTakFragment())
-                        .commit();
+                TakFragmentManager.switchToAddTak(getFragmentManager(), currentSelectedMap);
 
                 // Clear the menu bar
                 menu.clear();
@@ -158,10 +134,8 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
             case R.id.menu_taklist:
 
                 // Set the main view to create the map fragment.
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.activity_map_mapview, new TakListFragment())
-                        .commit();
+                // TODO: Make a takselectedlistener here
+                TakFragmentManager.switchToTakList(getFragmentManager(), currentSelectedMap, null);
 
                 // Clear the menu
                 menu.clear();
@@ -204,17 +178,9 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         currentSelectedMap = selectedMapID;
 
         // Re-inflate the main view
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.activity_map_mapview, mapFragment)
-                .commit();
-        mapFragment.setOnGMapLoadedListener(new OnGMapLoadedListener() {
-            public void onGMapLoaded() {
-                // Get the map the user selected and display the taks
-                MapTakDB db = new MapTakDB(MainActivity.this);
-                mapFragment.addTaksToGMap(db.getMap(currentSelectedMap));
-            }
-        });
+        MapTakDB db = new MapTakDB(this);
+        MapObject mo = db.getMap(selectedMapID);
+        TakFragmentManager.switchToMap(getFragmentManager(), mo);
 
     }
 
