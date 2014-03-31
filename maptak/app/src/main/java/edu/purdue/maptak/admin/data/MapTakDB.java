@@ -88,9 +88,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         // Add the map to the local database
         // The Map is given a temporary random UUID as an ID
         // This will be changed later when a server sync is completed.
-        String tmpMapID = UUID.randomUUID().toString();
+        //String tmpMapID = UUID.randomUUID().toString();
         ContentValues values = new ContentValues();
-        values.put(MAP_ID, tmpMapID);
+        values.put(MAP_ID, map.getID().getIDStr());
         values.put(MAP_LABEL, map.getLabel());
         getWritableDatabase().insert(TABLE_MAPS, null, values);
 
@@ -99,7 +99,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             // We create a new MapID here instead of using the one given because, chances are,
             // the one given is NULL. Its only important that it matches what we added for
             // the map above.
-            addTak(t, new MapID(tmpMapID));
+            addTak(t, map.getID());
 
             // Push each tak to the server
 
