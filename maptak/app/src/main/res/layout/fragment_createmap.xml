@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:layout_width="match_parent"
+    android:padding="20dp" >
 
     <EditText
-        android:layout_width="310dp"
+        android:id="@+id/addmap_et_mapname"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="Map Name"
-        android:ems="10"
-        android:id="@+id/mapNameText"
-        android:layout_weight="0.21" />
+        android:layout_alignParentTop="true"
+        android:hint="Map Name" />
 
     <Button
-        android:layout_width="309dp"
-        android:layout_height="201dp"
-        android:text="Submit"
-        android:id="@+id/button1" />
-</LinearLayout>
+        android:id="@+id/addmap_bu_addmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addmap_et_mapname"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:text="Add Map"/>
+
+</RelativeLayout>

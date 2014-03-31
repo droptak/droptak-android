@@ -1,18 +1,12 @@
 package edu.purdue.maptak.admin.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.location.LocationManager;
 import android.widget.EditText;
 import android.widget.Toast;
 //import android.accounts.AccountManager;
@@ -28,9 +22,7 @@ import edu.purdue.maptak.admin.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.data.TakID;
 import edu.purdue.maptak.admin.data.TakObject;
-import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
 
 public class AddTakFragment extends Fragment implements
         View.OnClickListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
@@ -59,10 +51,10 @@ public class AddTakFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_addtak, container, false);
 
         // Get widgets from the screen
-        etName = (EditText) view.findViewById(R.id.addmap_et_takname);
-        etDescription = (EditText) view.findViewById(R.id.addmap_et_description);
-        Button buFromCurrent = (Button) view.findViewById(R.id.addmap_bu_fromcurrent);
-        Button buSelectLoc = (Button) view.findViewById(R.id.addmap_bu_selectedlocation);
+        etName = (EditText) view.findViewById(R.id.addtak_et_takname);
+        etDescription = (EditText) view.findViewById(R.id.addtak_et_description);
+        Button buFromCurrent = (Button) view.findViewById(R.id.addtak_bu_fromcurrent);
+        Button buSelectLoc = (Button) view.findViewById(R.id.addtak_bu_selectedlocation);
 
         // Set on click listeners
         buFromCurrent.setOnClickListener(this);
@@ -85,7 +77,7 @@ public class AddTakFragment extends Fragment implements
     public void onClick(View view) {
 
         switch (view.getId()) {
-            case R.id.addmap_bu_fromcurrent:
+            case R.id.addtak_bu_fromcurrent:
 
                 // Get the user's current location
                 if (isLocationAvailable) {
@@ -105,7 +97,7 @@ public class AddTakFragment extends Fragment implements
 
                 break;
 
-            case R.id.addmap_bu_selectedlocation:
+            case R.id.addtak_bu_selectedlocation:
 
                 break;
         }

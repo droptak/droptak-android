@@ -64,6 +64,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
                 setUpEnabled(false);
                 if (currentSelectedMap == null) {
                     menuRes = R.menu.main_nomapselected;
+                    setUpEnabled(false);
                 } else {
                     menuRes = R.menu.main_mapselected;
                 }
@@ -107,6 +108,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
                 // Switch to the map view
                 if (currentSelectedMap == null) {
                     getFragmentManager().beginTransaction().replace(R.id.activity_map_mapview, new TakMapFragment()).commit();
+                    invalidateOptionsMenu();
                 } else {
                     TakFragmentManager.switchToMap(this, db.getMap(currentSelectedMap));
                 }

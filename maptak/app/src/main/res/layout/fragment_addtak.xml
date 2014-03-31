@@ -7,7 +7,7 @@
     android:padding="20dp" >
 
     <EditText
-        android:id="@+id/addmap_et_takname"
+        android:id="@+id/addtak_et_takname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -15,28 +15,28 @@
         />
 
     <EditText
-        android:id="@+id/addmap_et_description"
+        android:id="@+id/addtak_et_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/addmap_et_takname"
+        android:layout_below="@id/addtak_et_takname"
         android:hint="Description"
         />
 
     <Button
-        android:id="@+id/addmap_bu_fromcurrent"
+        android:id="@+id/addtak_bu_fromcurrent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/addmap_et_description"
+        android:layout_below="@id/addtak_et_description"
         android:layout_centerInParent="true"
         android:layout_marginTop="20dp"
         android:text="Add Tak"
         />
 
     <Button
-        android:id="@+id/addmap_bu_selectedlocation"
+        android:id="@+id/addtak_bu_selectedlocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/addmap_bu_fromcurrent"
+        android:layout_below="@id/addtak_bu_fromcurrent"
         android:layout_centerInParent="true"
         android:text="Select Location"
         />
