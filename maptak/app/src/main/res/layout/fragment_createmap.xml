@@ -1,22 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_createmap"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1">
 
+    <TextView
+        android:layout_width="152dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Create a Map"
+        android:id="@+id/textView"
+        android:paddingStart="20dp" />
+
     <EditText
-        android:layout_width="310dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:hint="Map Name"
         android:ems="10"
         android:id="@+id/mapNameText"
-        android:layout_weight="0.21" />
+        android:layout_weight="0.16"
+        android:singleLine="true"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp" />
+
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" Private"
+        android:id="@+id/switch1"
+        android:layout_weight="0.14"
+        android:checked="true"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/managerEmail"
+        android:layout_weight="0.17"
+        android:hint="Manager Email"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp" />
 
     <Button
-        android:layout_width="309dp"
-        android:layout_height="201dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Manager"
+        android:id="@+id/button2"
+        android:layout_weight="0.12"
+        android:clickable="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
         android:text="Submit"
-        android:id="@+id/button1" />
+        android:id="@+id/button1"
+        android:clickable="true" />
+
 </LinearLayout>
