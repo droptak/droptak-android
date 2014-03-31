@@ -1,20 +1,12 @@
 package edu.purdue.maptak.admin.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import edu.purdue.maptak.admin.QRCode.IntentIntegrator;
-import edu.purdue.maptak.admin.QRCode.IntentResult;
 import edu.purdue.maptak.admin.R;
 
 /*

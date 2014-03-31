@@ -1,4 +1,4 @@
-package edu.purdue.maptak.admin.QRCode;
+package edu.purdue.maptak.admin.qrcode;
 
 import android.app.Activity;
 import android.app.Fragment;

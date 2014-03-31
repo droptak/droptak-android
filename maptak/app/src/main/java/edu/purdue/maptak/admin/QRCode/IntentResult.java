@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.purdue.maptak.admin.QRCode;
+package edu.purdue.maptak.admin.qrcode;
 
 /**
  * <p>Encapsulates the result of a barcode scan invoked through {@link IntentIntegrator}.</p>

@@ -2,33 +2,18 @@ package edu.purdue.maptak.admin;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.util.Random;
 
-import edu.purdue.maptak.admin.QRCode.IntentIntegrator;
-import edu.purdue.maptak.admin.QRCode.IntentResult;
-import edu.purdue.maptak.admin.QRCode.QRCodeScanner;
+import edu.purdue.maptak.admin.qrcode.QRCodeScanner;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.fragments.AddTakFragment;
-import edu.purdue.maptak.admin.fragments.CreateMapFragment;
-import edu.purdue.maptak.admin.fragments.LoginFragment;
-import edu.purdue.maptak.admin.fragments.MapListFragment;
-import edu.purdue.maptak.admin.fragments.QRCodeFragment;
-import edu.purdue.maptak.admin.fragments.TakListFragment;
-import edu.purdue.maptak.admin.fragments.TakMapFragment;
-import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
 import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 import edu.purdue.maptak.admin.test.DummyData;
 

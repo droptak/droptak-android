@@ -73,7 +73,7 @@ public class CreateMapFragment extends Fragment {
                 }
                 MapID mID = new MapID(id);
                 MapObject map = new MapObject(mapNameText.getText().toString(),mID,taks);
-                Log.d("debug","mapid="+map.getID().getIDStr());
+                Log.d("debug","mapid="+map.getID().toString());
                 newDB.addMap(map);
                 try {
                     File sd = Environment.getExternalStorageDirectory();
