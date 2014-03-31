@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import edu.purdue.maptak.admin.QRCode.IntentIntegrator;
 import edu.purdue.maptak.admin.QRCode.IntentResult;
@@ -28,18 +31,11 @@ public class QRCodeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Bundle bundle = new Bundle();
+        String title = bundle.getString("title");
+        TextView qrTitle = (TextView) getActivity().findViewById(R.id.QRCodeTitle);
+        qrTitle.setText(title);
         return inflater.inflate(R.layout.fragment_qrcode, container, false);
     }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResult != null) {
-            Log.d("qrcode", "Scan Result, all good");
-        }else {
-            Log.d("qrcode", "Scan Result, all bad ");
-        }
-    }
-
-
 
 }

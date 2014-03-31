@@ -177,18 +177,8 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
                 break;
 
             case R.id.CreateQRCode:
+
                 QRCodeScanner qrCodeScanner = new QRCodeScanner(this);
-                /*
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.activity_map_mapview, new QRCodeFragment())
-                        .commit();
-
-                menu.clear();
-
-                setUpEnabled(true);
-                */
-                // function do avoid fragments
 
                 break;
         }
