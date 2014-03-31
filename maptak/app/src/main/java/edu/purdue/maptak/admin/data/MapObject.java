@@ -19,7 +19,7 @@ public class MapObject {
     private List<TakObject> takList;
 
     /** List of Managers */
-    private List<UUID> managerList;
+    private List<String> managerList;
 
     /** Map created by the backend. MapID is known. */
     public MapObject(String label, MapID id, List<TakObject> taks) {
