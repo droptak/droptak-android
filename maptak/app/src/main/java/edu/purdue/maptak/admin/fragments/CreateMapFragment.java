@@ -4,12 +4,14 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +19,10 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.io.File;
+import java.nio.channels.FileChannel;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
@@ -67,12 +73,43 @@ public class CreateMapFragment extends Fragment {
                 }
                 MapID mID = new MapID(id);
                 MapObject map = new MapObject(mapNameText.getText().toString(),mID,taks);
+                Log.d("debug","mapid="+map.getID().getIDStr());
                 newDB.addMap(map);
+                try {
+                    File sd = Environment.getExternalStorageDirectory();
+                    File data = Environment.getDataDirectory();
+
+                    if (sd.canWrite()) {
+                        String currentDBPath = "//data//"+ "edu.purdue.maptak.admin" +"//databases//"+"database_cached_taks";
+                        String backupDBPath = "database_cahced_taks";
+                        File currentDB = new File(data, currentDBPath);
+                        File backupDB = new File(sd, backupDBPath);
+
+                        FileChannel src = new FileInputStream(currentDB).getChannel();
+                        FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                        dst.transferFrom(src, 0, src.size());
+                        src.close();
+                        dst.close();
+                       // Toast.makeText(, backupDB.toString(), Toast.LENGTH_LONG).show();
+                        Log.d("debug","sql backupmade");
+
+                    }
+                } catch (Exception e) {
+
+                    //Toast.makeText(this.getActivity(), e.toString(), Toast.LENGTH_LONG).show();
+
+
+                }
+
+
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.activity_map_mapview,new MapListFragment());
                 ft.commit();
+
             }
         });
+
+
 
         return view;
     }
