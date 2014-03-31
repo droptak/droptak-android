@@ -25,14 +25,26 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
+import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 import edu.purdue.maptak.admin.tasks.AddMapTask;
 
 
 public class CreateMapFragment extends Fragment {
+
+    OnMapSelectedListener listener;
+
+    /** Standard constructor A listener is required because createMapFragment always returns to
+     *  the MapList after creation, and MapList requires an OnMapSelectedListener */
+    public static CreateMapFragment newInstanceOf(OnMapSelectedListener listener) {
+        CreateMapFragment f = new CreateMapFragment();
+        f.listener = listener;
+        return f;
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_createmap, container, false);
@@ -101,15 +113,11 @@ public class CreateMapFragment extends Fragment {
 
                 }
 
-
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.activity_map_mapview,new MapListFragment());
-                ft.commit();
+                // Switch back to the map list
+                TakFragmentManager.switchToMapList(getActivity(), listener);
 
             }
         });
-
-
 
         return view;
     }

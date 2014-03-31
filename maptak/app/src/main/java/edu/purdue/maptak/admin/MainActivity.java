@@ -121,7 +121,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
 
             case R.id.menu_createmap:
                 // Switch to create map view
-                TakFragmentManager.switchToCreateMap(this);
+                TakFragmentManager.switchToCreateMap(this, this);
                 break;
 
             case R.id.menu_addtak:

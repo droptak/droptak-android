@@ -44,10 +44,10 @@ public abstract class TakFragmentManager {
     }
 
     /** Switches the main fragment view to the create map fragment */
-    public static void switchToCreateMap(Activity activity) {
+    public static void switchToCreateMap(Activity activity, OnMapSelectedListener listener) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, new CreateMapFragment())
+                .replace(R.id.activity_map_mapview, CreateMapFragment.newInstanceOf(listener))
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.ADDMAP;
         activity.invalidateOptionsMenu();
