@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_maplist"
-        android:title="@string/menu_taklist_label"
+        android:title="@string/menu_maplist_label"
         android:icon="@drawable/ic_map_list"
         android:showAsAction="always" />
 

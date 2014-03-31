@@ -121,7 +121,7 @@ public class AddTakFragment extends Fragment implements
         // Reinflate a map fragment
         MapTakDB db = new MapTakDB(getActivity());
         MapObject mo = db.getMap(MainActivity.currentSelectedMap);
-        TakFragmentManager.switchToMap(getActivity().getFragmentManager(), mo);
+        TakFragmentManager.switchToMap(getActivity(), mo);
 
     }
 
