@@ -9,6 +9,8 @@ import java.util.UUID;
 /** Encapsulates all of the information for a single Map. MapObjects are immutable. */
 public class MapObject {
 
+    final static boolean DEFAULT_PRIVATE = false;
+
     /** A label the user has supplied for the map */
     private String label;
 
@@ -21,18 +23,39 @@ public class MapObject {
     /** List of Managers */
     private List<String> managerList;
 
+    /** Owner of the map(as UUID) */
+    private String mapOwner;
+
+    /** Determines whether map has private visibility or not */
+    private boolean isPrivate;
+
     /** Map created by the backend. MapID is known. */
     public MapObject(String label, MapID id, List<TakObject> taks) {
+        this(label, id, taks, DEFAULT_PRIVATE);
+    }
+
+    /** Map created by the backend. Specify whether the map is private or not. */
+    public MapObject(String label, MapID id, List<TakObject> taks, boolean isPriv) {
         this.label = label;
         this.mapID = id;
         this.takList = taks;
-        this.managerList = new LinkedList<UUID>();
+
+        this.managerList = new LinkedList<String>();
+        this.isPrivate = isPriv;
+
+        this.managerList = new LinkedList<String>();
     }
 
     /** Map created from the app/user. mapID is generated randomly until a sync with the server. */
     public MapObject(String label, List<TakObject> taks) {
         this(label, new MapID(UUID.randomUUID().toString().substring(0,12)), taks);
     }
+
+    /** Map created from the app/user. mapID is generated randomly until a sync with the server. */
+    public MapObject(String label, List<TakObject> taks, boolean isPriv) {
+        this(label, new MapID(UUID.randomUUID().toString().substring(0,12)), taks, isPriv);
+    }
+
 
     /** Returns the label for the map */
     public String getLabel() {
@@ -49,8 +72,25 @@ public class MapObject {
         return this.takList;
     }
 
+
+    /** Returns the private attribute of the map */
+    public boolean getPrivate(){  return this.isPrivate;  }
+
+    /** Sets private attribute on/off */
+    public void setPrivate(boolean priv){
+        this.isPrivate = priv;
+    }
+
+    /** Returns the owner(UUID) of the map */
+    public String getOwner(){   return mapOwner;    }
+
+    /** Add a manager(email) to the mapObject */
+    public void addManager(String managerEmail){
+        managerList.add(managerEmail);
+    }
+
     /** Returns the list of managers associated with this map */
-    public List<UUID> getManagerList() {
+    public List<String> getManagerList() {
         return this.managerList;
     }
 
