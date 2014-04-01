@@ -25,5 +25,15 @@
         android:text="QR Code"
         />
 
+    <Button
+        android:id="@+id/mainmenu_bu_login"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mainmenu_bu_qrscanner"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:text="Login"
+        />
+
 
 </RelativeLayout>

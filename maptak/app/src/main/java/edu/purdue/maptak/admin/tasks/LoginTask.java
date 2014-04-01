@@ -128,7 +128,7 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
     protected void onPostExecute(String token) {
         Log.i("Token", "Access token retrieved:" + token);
         progressDialog.dismiss();
-        TakFragmentManager.switchToMap(callingActivity, null);
+        TakFragmentManager.switchToMainMenu(callingActivity);
     }
 
 

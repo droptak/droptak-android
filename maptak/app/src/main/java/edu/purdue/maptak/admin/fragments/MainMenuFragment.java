@@ -29,9 +29,11 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
 
             Button buMapList = (Button) v.findViewById(R.id.mainmenu_bu_maplist);
             Button buQRCode = (Button) v.findViewById(R.id.mainmenu_bu_qrscanner);
+            Button buLogin = (Button) v.findViewById(R.id.mainmenu_bu_login);
 
             buMapList.setOnClickListener(this);
             buQRCode.setOnClickListener(this);
+            buLogin.setOnClickListener(this);
 
         }
 
@@ -48,6 +50,8 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             case R.id.mainmenu_bu_qrscanner:
 
                 break;
+            case R.id.mainmenu_bu_login:
+                TakFragmentManager.switchToLogin(getActivity());
         }
     }
 }

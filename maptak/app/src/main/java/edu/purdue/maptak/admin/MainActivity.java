@@ -36,16 +36,6 @@ public class MainActivity extends Activity {
 
         // Inflate the login fragment to the screen
         TakFragmentManager.switchToMainMenu(this);
-
-        /* TODO: Adding some sample Maps to the database for testing purposes */
-        MapTakDB db = new MapTakDB(this);
-        Random r = new Random();
-        if (r.nextInt(100) <= 50) {
-            //db.destroy();
-            Toast.makeText(this, "DEBUG: Clearing database.", Toast.LENGTH_LONG).show();
-        }
-        db.addMap(DummyData.createDummyMapObject());
-        /* TODO: End testing code */
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
