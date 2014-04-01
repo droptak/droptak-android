@@ -2,6 +2,7 @@ package edu.purdue.maptak.admin.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,25 +17,33 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
+
 import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.TakFragmentManager;
-import edu.purdue.maptak.admin.UserLocManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.data.TakID;
 import edu.purdue.maptak.admin.data.TakObject;
+import edu.purdue.maptak.admin.tasks.AddTakTask;
 
-public class AddTakFragment extends Fragment implements View.OnClickListener {
+public class AddTakFragment extends Fragment implements
+        View.OnClickListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+
+    /** Stores the user's location while this fragment is on the screen */
+    private boolean isLocationAvailable = false;
+    private LocationClient userLocation;
 
     /** EditText widgets on screen */
     private EditText etName, etDescription;
 
     /** Stores the MapID of the map that all taks created with this fragment should use */
     private MapID id;
-
-    /** Location client */
-    private UserLocManager locationManager;
 
     /** Create a new instance of this fragment with the given MapID as the owner for all taks
      *  created inside this fragment */
@@ -59,8 +68,11 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
         buFromCurrent.setOnClickListener(this);
         buSelectLoc.setOnClickListener(this);
 
-        // Create location client
-        locationManager = new UserLocManager(getActivity());
+        // Create the location client
+        userLocation = new LocationClient(getActivity(), this, this);
+        userLocation.connect();
+
+        Log.d("debug","mapId="+id.toString());
 
         return view;
     }
@@ -68,7 +80,7 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
     /** Called when the fragment leaves the screen */
     public void onStop() {
         super.onStop();
-        locationManager.disconnect();
+        userLocation.disconnect();
     }
 
     /** Called when the user clicks one of the buttons on the screen */
@@ -78,13 +90,41 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
             case R.id.addtak_bu_fromcurrent:
 
                 // Get the user's current location
-                if (locationManager.isLocationAvailable()) {
+                if (isLocationAvailable) {
                     String name = etName.getText().toString();
-                    double lat = locationManager.getLat();
-                    double lng = locationManager.getLng();
-                    TakObject newTak = new TakObject(name, lat, lng);
+                    Log.d("debug","userLocation="+userLocation.getLastLocation());
+                    double lat = userLocation.getLastLocation().getLatitude();
+                    double lng = userLocation.getLastLocation().getLongitude();
+                    String jsonString = null;
+                    String tid = null;
+                    //TakObject newTak = new TakObject(name, lat, lng);
+                    AddTakTask addTakTask = new AddTakTask(name,""+lat,""+lng,id,this.getActivity());
+                    try {
+                        jsonString = addTakTask.execute().get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    JSONObject jsonObject = null;
+
+                    try {
+                         jsonObject = new JSONObject(jsonString);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        tid = jsonObject.getString("takId");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    TakID takID = new TakID(tid);
+                    TakObject tak = new TakObject(takID,name,lat,lng);
                     MapTakDB db = new MapTakDB(getActivity());
-                    db.addTak(newTak, id);
+                    db.addTak(tak, MainActivity.currentSelectedMap);
+
 
                 } else {
                     Toast.makeText(getActivity(), "Location is not currently available.", Toast.LENGTH_SHORT).show();
@@ -110,10 +150,24 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
 
         // Reinflate a map fragment
         MapTakDB db = new MapTakDB(getActivity());
-        MapObject mo = db.getMap(id);
+        MapObject mo = db.getMap(MainActivity.currentSelectedMap);
         TakFragmentManager.switchToMap(getActivity(), mo);
 
     }
 
+    /** Called by GPlayServices when the request to establish a connection is completed */
+    public void onConnected(Bundle bundle) {
+        isLocationAvailable = true;
+    }
+
+    @Override
+    public void onDisconnected() {
+        isLocationAvailable = false;
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        isLocationAvailable = false;
+    }
 }
 

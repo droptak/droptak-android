@@ -15,6 +15,8 @@ import edu.purdue.maptak.admin.tasks.LoginTask;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
@@ -67,6 +69,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         view.findViewById(R.id.sign_in_button).setOnClickListener(this);
+        view.findViewById(R.id.revokeAccessButton).setOnClickListener(this);
         return view;
     }
 
@@ -86,11 +89,18 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
     public void onClick(View view) {
-        if(!mGoogleApiClient.isConnecting()) {
-            Log.d("Debug", "Goole+ Signin Pressed");
-            if (view.getId() == R.id.sign_in_button) {
-                mSignInClicked = true;
-                resolveSignInError();
+        if(view.getId() == R.id.revokeAccessButton){
+            revokeGplusAccess();
+            Log.d("debug","revokePressed");
+
+        }
+        else {
+            if (!mGoogleApiClient.isConnecting()) {
+                Log.d("Debug", "Goole+ Signin Pressed");
+                if (view.getId() == R.id.sign_in_button) {
+                    mSignInClicked = true;
+                    resolveSignInError();
+                }
             }
         }
     }
@@ -173,6 +183,23 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
             if (!mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
             }
+        }
+    }
+
+
+    private void revokeGplusAccess() {
+        if (mGoogleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status arg0) {
+                            Log.e("debug", "User access revoked!");
+                            mGoogleApiClient.connect();
+
+                        }
+
+                    });
         }
     }
 
