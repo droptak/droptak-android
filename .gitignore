@@ -1,3 +1,4 @@
 /server/flaskapp/google_appengine
 maptak/.idea/*
 maptak/.gradle/*
+.DS_STORE

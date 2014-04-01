@@ -19,10 +19,10 @@ public class MapObject {
     private List<TakObject> takList;
 
     /** List of Managers */
-    private List<String> managerList;
+    private List<UserID> managerList;
 
     /** Owner of the map (as UUID) */
-    private String mapOwner;
+    private UserID mapOwner;
 
     /** Determines whether map has private visibility or not */
     private boolean isPrivate;
@@ -66,15 +66,18 @@ public class MapObject {
     }
 
     /** Returns the owner(UUID) of the map */
-    public String getOwner(){   return mapOwner;    }
+    public UserID getOwner() {
+        return mapOwner;
+    }
 
     /** Add a manager(email) to the mapObject */
-    public void addManager(String managerEmail){
-        managerList.add(managerEmail);
+    public void addManager(String managerID, String managerEmail) {
+        UserID uid = new UserID(managerID, managerEmail);
+        managerList.add(uid);
     }
 
     /** Returns the list of managers associated with this map */
-    public List<String> getManagerList() {
+    public List<UserID> getManagerList() {
         return this.managerList;
     }
 
