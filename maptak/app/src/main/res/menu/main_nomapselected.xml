@@ -18,4 +18,8 @@
         android:title="QR Code"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_search"
+        android:title="Search"
+        android:showAsAction="never"/>
 </menu>

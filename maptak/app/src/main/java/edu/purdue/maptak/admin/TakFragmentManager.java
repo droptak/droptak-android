@@ -9,6 +9,7 @@ import edu.purdue.maptak.admin.fragments.AddTakFragment;
 import edu.purdue.maptak.admin.fragments.CreateMapFragment;
 import edu.purdue.maptak.admin.fragments.LoginFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
+import edu.purdue.maptak.admin.fragments.SearchFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
@@ -84,5 +85,13 @@ public abstract class TakFragmentManager {
         activity.invalidateOptionsMenu();
     }
 
+    public static void switchToSearch(Activity activity) {
+        activity.getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_map_mapview, new SearchFragment())
+                .commit();
+        MainActivity.mainFragmentState = MainActivity.MainFragmentState.SEARCH;
+        activity.invalidateOptionsMenu();
+    }
 
 }

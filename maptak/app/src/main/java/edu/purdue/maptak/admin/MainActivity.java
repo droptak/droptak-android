@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import java.util.Random;
 
+import edu.purdue.maptak.admin.fragments.SearchFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.qrcode.QRCodeScanner;
 import edu.purdue.maptak.admin.data.MapID;
@@ -34,7 +35,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
     /** Stores the currently inflated fragment. This is used by onCreateOptionsMenu, among
      *  other things, so it knows which options menu to inflate */
     public static MainFragmentState mainFragmentState = null;
-    public enum MainFragmentState { MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST }
+    public enum MainFragmentState { MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,6 +142,10 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
 
             case R.id.CreateQRCode:
                 QRCodeScanner qrCodeScanner = new QRCodeScanner(this);
+                break;
+
+            case R.id.menu_search:
+                TakFragmentManager.switchToSearch(this);
                 break;
         }
 
