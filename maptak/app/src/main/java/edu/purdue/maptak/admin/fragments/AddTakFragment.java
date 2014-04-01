@@ -87,7 +87,7 @@ public class AddTakFragment extends Fragment implements
 
                     TakObject newTak = new TakObject(name, lat, lng);
                     MapTakDB db = new MapTakDB(getActivity());
-                    db.addTak(newTak, MainActivity.currentSelectedMap);
+                    db.addTak(newTak, id);
                 } else {
                     Toast.makeText(getActivity(), "Location is not currently available.", Toast.LENGTH_SHORT).show();
                 }
@@ -112,7 +112,7 @@ public class AddTakFragment extends Fragment implements
 
         // Reinflate a map fragment
         MapTakDB db = new MapTakDB(getActivity());
-        MapObject mo = db.getMap(MainActivity.currentSelectedMap);
+        MapObject mo = db.getMap(id);
         TakFragmentManager.switchToMap(getActivity(), mo);
 
     }

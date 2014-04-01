@@ -25,7 +25,7 @@ public class DummyData {
             taks.add(createDummyTakObject());
         }
 
-        return new MapObject(name, new MapID(id), taks);
+        return new MapObject(name, new MapID(id), taks, false);
     }
 
     /** Creates a random tak with an ID */

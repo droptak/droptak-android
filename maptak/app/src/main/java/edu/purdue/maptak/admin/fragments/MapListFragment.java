@@ -14,10 +14,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 
 public class MapListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
@@ -31,13 +32,9 @@ public class MapListFragment extends Fragment implements AdapterView.OnItemClick
     List<MapObject> backingMapList;
     ListAdapter listAdapter;
 
-    /** Holds the listener which will be called when a map is selected */
-    OnMapSelectedListener mapSelectedListener;
-
     /** Creates a new instance of a MapListFragment */
-    public static MapListFragment newInstanceOf(OnMapSelectedListener listener) {
+    public static MapListFragment newInstanceOf() {
         MapListFragment f = new MapListFragment();
-        f.setOnMapSelectedListener(listener);
         return f;
     }
 
@@ -99,15 +96,12 @@ public class MapListFragment extends Fragment implements AdapterView.OnItemClick
 
     }
 
-    /** Sets the onMapSelectedListener for this fragment, which will initiate a callback once
-     *  the user has selected a map. */
-    public void setOnMapSelectedListener(OnMapSelectedListener listener) {
-        this.mapSelectedListener = listener;
-    }
-
     /** Called when the user selects an item on the listview backing this MapListFragment */
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        mapSelectedListener.onMapSelected(backingMapList.get(i).getID());
+        MapObject selected = backingMapList.get(i);
+        String id = selected.getID().toString();
+        getActivity().getPreferences(Context.MODE_PRIVATE).edit().putString(MainActivity.PREF_CURRENT_MAP, id).commit();
+        TakFragmentManager.switchToMap(getActivity(), selected);
     }
 
 }

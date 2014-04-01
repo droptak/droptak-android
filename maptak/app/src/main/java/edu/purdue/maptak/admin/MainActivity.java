@@ -10,31 +10,24 @@ import android.widget.Toast;
 
 import java.util.Random;
 
-import edu.purdue.maptak.admin.fragments.TakMapFragment;
-import edu.purdue.maptak.admin.qrcode.QRCodeScanner;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 import edu.purdue.maptak.admin.test.DummyData;
 
 
-public class MainActivity extends Activity implements OnMapSelectedListener {
+public class MainActivity extends Activity {
 
     /** Log tag for debugging logcat output */
     public static final String LOG_TAG = "maptak_log_tag";
 
-    /** Save the menu object so it can be changed dynamically later */
-    private Menu menu;
-
-    /** Store the current map the user has displayed as a static variable.
-     *  This way, fragments can access it as necessary when adding new taks to the current map. */
-    public static MapID currentSelectedMap = null;
+    /** Strings for various keys in the preferences */
+    public static final String PREF_CURRENT_MAP = "current_selected_map_id";
 
     /** Stores the currently inflated fragment. This is used by onCreateOptionsMenu, among
      *  other things, so it knows which options menu to inflate */
     public static MainFragmentState mainFragmentState = null;
-    public enum MainFragmentState { MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST }
+    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +35,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         setContentView(R.layout.activity_main);
 
         // Inflate the login fragment to the screen
-        TakFragmentManager.switchToLogin(this);
+        TakFragmentManager.switchToMainMenu(this);
 
         /* TODO: Adding some sample Maps to the database for testing purposes */
         MapTakDB db = new MapTakDB(this);
@@ -56,43 +49,40 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
 
         int menuRes = -1;
         switch (mainFragmentState) {
-            case MAP:
+            case MAINMENU:
                 setUpEnabled(false);
-                if (currentSelectedMap == null) {
-                    menuRes = R.menu.main_nomapselected;
-                    setUpEnabled(false);
-                } else {
-                    menuRes = R.menu.main_mapselected;
-                }
+                menuRes = R.menu.justsettings;
                 break;
-            case LOGIN:
+            case MAP:
                 setUpEnabled(true);
-                return super.onCreateOptionsMenu(menu);
+                menuRes = R.menu.main_mapselected;
+                break;
             case QR:
                 setUpEnabled(true);
-                return super.onCreateOptionsMenu(menu);
-            case ADDMAP:
-                setUpEnabled(true);
-                menuRes = R.menu.main_nomapselected;
+                menuRes = R.menu.justsettings;
                 break;
             case ADDTAK:
                 setUpEnabled(true);
-                menuRes = R.menu.main_nomapselected;
+                menuRes = R.menu.justsettings;
+                break;
+            case ADDMAP:
+                setUpEnabled(true);
+                menuRes = R.menu.justsettings;
+                break;
+            case TAKLIST:
+                setUpEnabled(true);
+                menuRes = R.menu.justsettings;
                 break;
             case MAPLIST:
                 setUpEnabled(true);
                 menuRes = R.menu.maplist;
                 break;
-            case TAKLIST:
-                setUpEnabled(true);
-                return super.onCreateOptionsMenu(menu);
             default:
                 setUpEnabled(false);
-                menuRes = R.menu.main_nomapselected;
+                menuRes = R.menu.justsettings;
                 break;
         }
 
@@ -103,44 +93,43 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         MapTakDB db = new MapTakDB(this);
+
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Switch to the map view
-                if (currentSelectedMap == null) {
-                    getFragmentManager().beginTransaction().replace(R.id.activity_map_mapview, new TakMapFragment()).commit();
-                    invalidateOptionsMenu();
-                } else {
-                    TakFragmentManager.switchToMap(this, db.getMap(currentSelectedMap));
-                }
-                break;
 
-            case R.id.menu_maplist:
-                // Switch to map list
-                TakFragmentManager.switchToMapList(this, this);
+                // Our view switches depending on where we're at currently
+                switch (mainFragmentState) {
+                    case MAPLIST: case LOGIN: case QR:
+                        TakFragmentManager.switchToMainMenu(this);
+                        break;
+                    case MAP: case ADDMAP:
+                        TakFragmentManager.switchToMapList(this);
+                        break;
+                    case ADDTAK: case TAKLIST:
+                        TakFragmentManager.switchToMap(this, getCurrentSelectedMap());
+                        break;
+                }
+
                 break;
 
             case R.id.menu_createmap:
                 // Switch to create map view
-                TakFragmentManager.switchToCreateMap(this, this);
+                TakFragmentManager.switchToCreateMap(this);
                 break;
 
             case R.id.menu_addtak:
                 // Switch to addtak fragment
-                TakFragmentManager.switchToAddTak(this, currentSelectedMap);
+                TakFragmentManager.switchToAddTak(this, getCurrentSelectedMap().getID());
                 break;
 
             case R.id.menu_taklist:
                 // Switch to tak list
                 // TODO: Create a tak selected listener
-                TakFragmentManager.switchToTakList(this, currentSelectedMap, null);
+                TakFragmentManager.switchToTakList(this, getCurrentSelectedMap().getID(), null);
                 break;
 
             case R.id.menu_settings:
 
-                break;
-
-            case R.id.CreateQRCode:
-                QRCodeScanner qrCodeScanner = new QRCodeScanner(this);
                 break;
         }
 
@@ -156,26 +145,14 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         }
     }
 
-    /** Overrides the back button. Currently does nothing, but will be used later. */
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    /** Called when a map is selected in MapListFragment */
-    public void onMapSelected(MapID selectedMapID) {
-        // Reset the state of the action bar
-        //menu.clear();
-        //getMenuInflater().inflate(R.menu.main_mapselected, menu);
-        //setUpEnabled(false);
-
-        // Set the global currently selected map
-        currentSelectedMap = selectedMapID;
-
-        // Re-inflate the main view
+    /** Returns the currently selected map. */
+    private MapObject getCurrentSelectedMap() {
         MapTakDB db = new MapTakDB(this);
-        MapObject mo = db.getMap(selectedMapID);
-        TakFragmentManager.switchToMap(this, mo);
-
+        String id = getPreferences(MODE_PRIVATE).getString(PREF_CURRENT_MAP, "");
+        if (id != "") {
+            return db.getMap(new MapID(id));
+        }
+        return null;
     }
 
 }

@@ -160,7 +160,7 @@ public class MapTakDB extends SQLiteOpenHelper {
                 List<TakObject> taks = getTaks(mapID);
 
                 // Create the map object
-                MapObject map = new MapObject(label, mapID, taks);
+                MapObject map = new MapObject(label, mapID, taks, false);
 
                 // Add to the list
                 results.add(map);
@@ -181,7 +181,7 @@ public class MapTakDB extends SQLiteOpenHelper {
                 String id = c.getString(c.getColumnIndex(MAP_ID));
                 String label = c.getString(c.getColumnIndex(MAP_LABEL));
                 List<TakObject> taks = getTaks(mapID);
-                MapObject map = new MapObject(label, mapID, taks);
+                MapObject map = new MapObject(label, mapID, taks, false);
                 return map;
             }
         }

@@ -50,10 +50,10 @@ public class TakListFragment extends ListFragment {
         MapTakDB db = new MapTakDB(getActivity());
         List<TakObject> takObjects;
 
-        if(MainActivity.currentSelectedMap == null){
+        if(mapID == null){
             takObjects = new LinkedList<TakObject>();
         } else{
-            takObjects = db.getTaks(MainActivity.currentSelectedMap);
+            takObjects = db.getTaks(mapID);
         }
 
         List<String> taks = new LinkedList<String>();

@@ -1,7 +1,6 @@
 package edu.purdue.maptak.admin.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,19 +28,15 @@ import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
-import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 import edu.purdue.maptak.admin.tasks.AddMapTask;
 
 
 public class CreateMapFragment extends Fragment {
 
-    OnMapSelectedListener listener;
-
-    /** Standard constructor A listener is required because createMapFragment always returns to
-     *  the MapList after creation, and MapList requires an OnMapSelectedListener */
-    public static CreateMapFragment newInstanceOf(OnMapSelectedListener listener) {
+    /** Standard constructor. A listener is required because createMapFragment always returns to
+     *  the MapList after creation, and MapList requires an  */
+    public static CreateMapFragment newInstanceOf() {
         CreateMapFragment f = new CreateMapFragment();
-        f.listener = listener;
         return f;
     }
 
@@ -84,7 +78,7 @@ public class CreateMapFragment extends Fragment {
                     e.printStackTrace();
                 }
                 MapID mID = new MapID(id);
-                MapObject map = new MapObject(mapNameText.getText().toString(),mID,taks);
+                MapObject map = new MapObject(mapNameText.getText().toString(),mID,taks,false);
                 Log.d("debug","mapid="+map.getID().toString());
                 newDB.addMap(map);
                 try {
@@ -114,7 +108,7 @@ public class CreateMapFragment extends Fragment {
                 }
 
                 // Switch back to the map list
-                TakFragmentManager.switchToMapList(getActivity(), listener);
+                TakFragmentManager.switchToMapList(getActivity());
 
             }
         });
