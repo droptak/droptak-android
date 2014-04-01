@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.android.gms.internal.db;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +75,8 @@ public class MapTakDB extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(create_table_maps);
         sqLiteDatabase.execSQL(create_table_maps_admins);
         sqLiteDatabase.execSQL(create_table_taks);
+
+        sqLiteDatabase.close();
     }
 
     /** Called when the database is upgraded from one DB_VERSION to the next */
@@ -90,6 +94,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE " + TABLE_TAKS);
             onCreate(db);
         }
+        db.close();
     }
 
     /** Adds a map and all of its taks to the database.
@@ -102,7 +107,12 @@ public class MapTakDB extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(MAP_ID, map.getID().toString());
         values.put(MAP_LABEL, map.getLabel());
-        getWritableDatabase().insert(TABLE_MAPS, null, values);
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            getWritableDatabase().insert(TABLE_MAPS, null, values);
+        }
+        db.close();
 
         // The map also contains taks, so add those as well
         for (TakObject t : map.getTakList()) {
@@ -123,7 +133,12 @@ public class MapTakDB extends SQLiteOpenHelper {
         values.put(TAK_LABEL, tak.getLabel());
         values.put(TAK_LAT, tak.getLatitude());
         values.put(TAK_LNG, tak.getLongitude());
-        getWritableDatabase().insert(TABLE_TAKS, null, values);
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            getWritableDatabase().insert(TABLE_TAKS, null, values);
+        }
+        db.close();
     }
 
     /** Adds an administrator ID to be associated with a given map */
@@ -134,7 +149,12 @@ public class MapTakDB extends SQLiteOpenHelper {
         values.put(MAPADMINS_ID, admin.getID());
         values.put(MAPADMINS_MAP_ID, map.toString());
         values.put(MAPADMINS_NAME, admin.getName());
-        getWritableDatabase().insert(TABLE_MAPS_ADMINS, null, values);
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.insert(TABLE_MAPS_ADMINS, null, values);
+        }
+        db.close();
     }
 
     /** Changes the ID of a map associated with "oldID" to "newID" */
@@ -144,6 +164,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ID + " = " + newID + " WHERE " + MAP_ID + " = " + oldID + ";");
         }
+        db.close();
     }
 
     /** Deletes a map associated with a given map ID from the local database.
@@ -154,6 +175,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + map.toString() + "\";");
         }
+        db.close();
     }
 
     /** Removes a tak associated with a given ID from the local database.
@@ -164,6 +186,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "=\"" + tak.toString() + "\";");
         }
+        db.close();
     }
 
     /** Deletes an administrator with the given ID from the local database */
@@ -174,12 +197,18 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\"");
         }
+        db.close();
     }
 
     /** Returns a list of the maps the user has cached on the device. */
     public List<MapObject> getUsersMaps() {
         List<MapObject> results = new ArrayList<MapObject>();
-        Cursor c = getReadableDatabase().query(TABLE_MAPS, null, null, null, null, null, null);
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = null;
+        if (db != null) {
+            c = db.query(TABLE_MAPS, null, null, null, null, null, null);
+        }
 
         // Statically generate all the column indexes as a performance improvement
         int COL_MAP_ID = c.getColumnIndex(MAP_ID);
@@ -206,6 +235,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
+        db.close();
         return results;
     }
 
@@ -223,6 +253,7 @@ public class MapTakDB extends SQLiteOpenHelper {
                 return map;
             }
         }
+        db.close();
         return null;
     }
 
@@ -246,9 +277,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 } while (c.moveToNext());
             }
 
+            db.close();
             return results;
         }
 
+        db.close();
         return null;
     }
 
@@ -267,10 +300,13 @@ public class MapTakDB extends SQLiteOpenHelper {
                 double takLat = c.getDouble(c.getColumnIndex(TAK_LAT));
                 double takLng = c.getDouble(c.getColumnIndex(TAK_LNG));
                 TakObject obj = new TakObject(new TakID(takIDStr), takLabel, takLat, takLng);
+
+                db.close();
                 return obj;
             }
         }
 
+        db.close();
         return null;
     }
 
@@ -292,8 +328,12 @@ public class MapTakDB extends SQLiteOpenHelper {
                     results.add(uid);
                 } while (c.moveToNext());
             }
+
+            db.close();
             return results;
         }
+
+        db.close();
         return null;
     }
 
