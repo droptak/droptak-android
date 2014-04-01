@@ -1,7 +1,6 @@
 package edu.purdue.maptak.admin.tasks;
 
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,9 +21,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.TakFragmentManager;
-import edu.purdue.maptak.admin.fragments.TakMapFragment;
+import edu.purdue.maptak.admin.managers.TakFragmentManager;
 
 
 public class LoginTask extends AsyncTask<Void,Void,String> {
@@ -128,7 +125,7 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
     protected void onPostExecute(String token) {
         Log.i("Token", "Access token retrieved:" + token);
         progressDialog.dismiss();
-        TakFragmentManager.switchToMap(callingActivity, null);
+        TakFragmentManager.switchToMainMenu(callingActivity);
     }
 
 

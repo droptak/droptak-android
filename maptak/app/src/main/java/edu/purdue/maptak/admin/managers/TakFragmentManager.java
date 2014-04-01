@@ -1,21 +1,32 @@
-package edu.purdue.maptak.admin;
+package edu.purdue.maptak.admin.managers;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 
+import edu.purdue.maptak.admin.activities.MainActivity;
+import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.fragments.AddTakFragment;
 import edu.purdue.maptak.admin.fragments.CreateMapFragment;
 import edu.purdue.maptak.admin.fragments.LoginFragment;
+import edu.purdue.maptak.admin.fragments.MainMenuFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
 import edu.purdue.maptak.admin.fragments.SearchFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
-import edu.purdue.maptak.admin.interfaces.OnMapSelectedListener;
 import edu.purdue.maptak.admin.interfaces.OnTakSelectedListener;
 
 public abstract class TakFragmentManager {
+
+    /** Switches to the main menu fragment */
+    public static void switchToMainMenu(Activity activity) {
+        activity.getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_map_mapview, new MainMenuFragment())
+                .commit();
+        MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAINMENU;
+        activity.invalidateOptionsMenu();
+    }
 
     /** Switches the main fragment view to the map given a specific map object */
     public static void switchToMap(Activity activity, MapObject mo) {
@@ -48,7 +59,7 @@ public abstract class TakFragmentManager {
     public static void switchToCreateMap(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, new CreateMapFragment())
+                .replace(R.id.activity_map_mapview, CreateMapFragment.newInstanceOf())
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.ADDMAP;
         activity.invalidateOptionsMenu();
@@ -65,10 +76,10 @@ public abstract class TakFragmentManager {
     }
 
     /** Switches the main fragment view to the map list fragment, given an OnMapSelected listener */
-    public static void switchToMapList(Activity activity, OnMapSelectedListener listener) {
+    public static void switchToMapList(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, MapListFragment.newInstanceOf(listener))
+                .replace(R.id.activity_map_mapview, MapListFragment.newInstanceOf())
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAPLIST;
         activity.invalidateOptionsMenu();

@@ -12,14 +12,11 @@ import android.widget.ListView;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
-import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.interfaces.OnTakSelectedListener;
-import edu.purdue.maptak.admin.test.DummyData;
 
 public class TakListFragment extends ListFragment {
 
@@ -50,10 +47,10 @@ public class TakListFragment extends ListFragment {
         MapTakDB db = new MapTakDB(getActivity());
         List<TakObject> takObjects;
 
-        if(MainActivity.currentSelectedMap == null){
+        if(mapID == null){
             takObjects = new LinkedList<TakObject>();
         } else{
-            takObjects = db.getTaks(MainActivity.currentSelectedMap);
+            takObjects = db.getTaks(mapID);
         }
 
         List<String> taks = new LinkedList<String>();

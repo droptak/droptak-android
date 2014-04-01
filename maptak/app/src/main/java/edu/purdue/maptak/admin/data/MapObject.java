@@ -19,22 +19,26 @@ public class MapObject {
     private List<TakObject> takList;
 
     /** List of Managers */
-    private List<UUID> managerList;
+    private List<UserID> managerList;
+
+    /** Owner of the map (as UUID) */
+    private UserID mapOwner;
+
+    /** Determines whether map has private visibility or not */
+    private boolean isPrivate;
 
     /** Map created by the backend. MapID is known. */
-    public MapObject(String label, MapID id, List<TakObject> taks) {
+    public MapObject(String label, MapID id, List<TakObject> taks, boolean isPrivate) {
         this.label = label;
         this.mapID = id;
         this.takList = taks;
-        this.managerList = new LinkedList<UUID>();
+        this.isPrivate = isPrivate;
     }
 
     /** Map created from the app/user. mapID is generated randomly until a sync with the server. */
-    public MapObject(String label, List<TakObject> taks) {
-        this(label, new MapID(""), taks);
+    public MapObject(String label, List<TakObject> taks, boolean isPrivate) {
+        this(label, new MapID(UUID.randomUUID().toString().substring(0, 12)), taks, isPrivate);
     }
-
-
 
     /** Returns the label for the map */
     public String getLabel() {
@@ -51,8 +55,29 @@ public class MapObject {
         return this.takList;
     }
 
+    /** Returns the private attribute of the map */
+    public boolean isPrivate(){
+        return this.isPrivate;
+    }
+
+    /** Sets private attribute on/off */
+    public void setPrivate(boolean priv){
+        this.isPrivate = priv;
+    }
+
+    /** Returns the owner(UUID) of the map */
+    public UserID getOwner() {
+        return mapOwner;
+    }
+
+    /** Add a manager(email) to the mapObject */
+    public void addManager(String managerID, String managerEmail) {
+        UserID uid = new UserID(managerID, managerEmail);
+        managerList.add(uid);
+    }
+
     /** Returns the list of managers associated with this map */
-    public List<UUID> getManagerList() {
+    public List<UserID> getManagerList() {
         return this.managerList;
     }
 

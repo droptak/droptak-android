@@ -7,12 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.android.gms.internal.db;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
-import edu.purdue.maptak.admin.MainActivity;
+import edu.purdue.maptak.admin.activities.MainActivity;
 
 public class MapTakDB extends SQLiteOpenHelper {
 
@@ -23,11 +24,17 @@ public class MapTakDB extends SQLiteOpenHelper {
 
     /** Tables */
     public static final String TABLE_MAPS = "t_maps";
+    public static final String TABLE_MAPS_ADMINS = "t_maps_admins";
     public static final String TABLE_TAKS = "t_taks";
 
     /** Columns - TABLE_MAPS */
     public static final String MAP_ID = "_id";
     public static final String MAP_LABEL = "map_label";
+
+    /** Columns - TABLE_MAPS_ADMINS */
+    public static final String MAPADMINS_ID = "_id";
+    public static final String MAPADMINS_MAP_ID = "map_id";
+    public static final String MAPADMINS_NAME = "name";
 
     /** Columns - TABLE_TAKS */
     public static final String TAK_ID = "_id";
@@ -52,6 +59,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 MAP_ID + " TEXT, " +
                 MAP_LABEL + " TEXT );";
 
+        String create_table_maps_admins = "CREATE TABLE " + TABLE_MAPS_ADMINS + " (" +
+                MAPADMINS_ID + " TEXT, " +
+                MAPADMINS_MAP_ID + " TEXT, " +
+                MAPADMINS_NAME + " TEXT );";
+
         String create_table_taks = "CREATE TABLE " + TABLE_TAKS + " ( " +
                 TAK_ID + " TEXT, " +
                 TAK_MAP_ID + " TEXT, " +
@@ -60,10 +72,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 TAK_LNG + " DOUBLE );";
 
         // Create the tables from the strings provided
-
         sqLiteDatabase.execSQL(create_table_maps);
+        sqLiteDatabase.execSQL(create_table_maps_admins);
         sqLiteDatabase.execSQL(create_table_taks);
 
+        sqLiteDatabase.close();
     }
 
     /** Called when the database is upgraded from one DB_VERSION to the next */
@@ -77,9 +90,11 @@ public class MapTakDB extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
             db.execSQL("DROP TABLE " + TABLE_MAPS);
+            db.execSQL("DROP TABLE " + TABLE_MAPS_ADMINS);
             db.execSQL("DROP TABLE " + TABLE_TAKS);
             onCreate(db);
         }
+        db.close();
     }
 
     /** Adds a map and all of its taks to the database.
@@ -92,7 +107,12 @@ public class MapTakDB extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(MAP_ID, map.getID().toString());
         values.put(MAP_LABEL, map.getLabel());
-        getWritableDatabase().insert(TABLE_MAPS, null, values);
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            getWritableDatabase().insert(TABLE_MAPS, null, values);
+        }
+        db.close();
 
         // The map also contains taks, so add those as well
         for (TakObject t : map.getTakList()) {
@@ -113,35 +133,82 @@ public class MapTakDB extends SQLiteOpenHelper {
         values.put(TAK_LABEL, tak.getLabel());
         values.put(TAK_LAT, tak.getLatitude());
         values.put(TAK_LNG, tak.getLongitude());
-        getWritableDatabase().insert(TABLE_TAKS, null, values);
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            getWritableDatabase().insert(TABLE_TAKS, null, values);
+        }
+        db.close();
+    }
+
+    /** Adds an administrator ID to be associated with a given map */
+    public void addAdmin(UserID admin, MapID map) {
+        Log.d(MainActivity.LOG_TAG, "Adding administrator " + admin.getName() + " to the db.");
+
+        ContentValues values = new ContentValues();
+        values.put(MAPADMINS_ID, admin.getID());
+        values.put(MAPADMINS_MAP_ID, map.toString());
+        values.put(MAPADMINS_NAME, admin.getName());
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.insert(TABLE_MAPS_ADMINS, null, values);
+        }
+        db.close();
+    }
+
+    /** Changes the ID of a map associated with "oldID" to "newID" */
+    public void setMapID(MapID oldID, MapID newID) {
+        Log.d(MainActivity.LOG_TAG, "Modifying mapID from " + oldID + " to " + newID);
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ID + " = " + newID + " WHERE " + MAP_ID + " = " + oldID + ";");
+        }
+        db.close();
     }
 
     /** Deletes a map associated with a given map ID from the local database.
      *  Returns true if successful, otherwise false */
-    public boolean deleteMap(MapID map) {
+    public void deleteMap(MapID map) {
         Log.d(MainActivity.LOG_TAG, "Deleting map from database with ID: " + map);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + map.toString() + "\";");
         }
-        return true;
+        db.close();
     }
 
     /** Removes a tak associated with a given ID from the local database.
      *  Returns true if successful, otherwise false. */
-    public boolean deleteTak(TakID tak) {
+    public void deleteTak(TakID tak) {
         Log.d(MainActivity.LOG_TAG, "Deleting tak from database with ID: " + tak);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "=\"" + tak.toString() + "\";");
         }
-        return true;
+        db.close();
+    }
+
+    /** Deletes an administrator with the given ID from the local database */
+    public void deleteAdmin(UserID admin) {
+        Log.d(MainActivity.LOG_TAG, "Deleting administartor " + admin.getName() + " from the local database");
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("DELETE FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\"");
+        }
+        db.close();
     }
 
     /** Returns a list of the maps the user has cached on the device. */
     public List<MapObject> getUsersMaps() {
         List<MapObject> results = new ArrayList<MapObject>();
-        Cursor c = getReadableDatabase().query(TABLE_MAPS, null, null, null, null, null, null);
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = null;
+        if (db != null) {
+            c = db.query(TABLE_MAPS, null, null, null, null, null, null);
+        }
 
         // Statically generate all the column indexes as a performance improvement
         int COL_MAP_ID = c.getColumnIndex(MAP_ID);
@@ -160,7 +227,7 @@ public class MapTakDB extends SQLiteOpenHelper {
                 List<TakObject> taks = getTaks(mapID);
 
                 // Create the map object
-                MapObject map = new MapObject(label, mapID, taks);
+                MapObject map = new MapObject(label, mapID, taks, false);
 
                 // Add to the list
                 results.add(map);
@@ -168,6 +235,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
+        db.close();
         return results;
     }
 
@@ -181,10 +249,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 String id = c.getString(c.getColumnIndex(MAP_ID));
                 String label = c.getString(c.getColumnIndex(MAP_LABEL));
                 List<TakObject> taks = getTaks(mapID);
-                MapObject map = new MapObject(label, mapID, taks);
+                MapObject map = new MapObject(label, mapID, taks, false);
                 return map;
             }
         }
+        db.close();
         return null;
     }
 
@@ -208,9 +277,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 } while (c.moveToNext());
             }
 
+            db.close();
             return results;
         }
 
+        db.close();
         return null;
     }
 
@@ -229,13 +300,42 @@ public class MapTakDB extends SQLiteOpenHelper {
                 double takLat = c.getDouble(c.getColumnIndex(TAK_LAT));
                 double takLng = c.getDouble(c.getColumnIndex(TAK_LNG));
                 TakObject obj = new TakObject(new TakID(takIDStr), takLabel, takLat, takLng);
+
+                db.close();
                 return obj;
             }
         }
 
+        db.close();
         return null;
     }
 
+    /** Returns all of the administrators associated with a given map.
+     *  Returns null if a grevious error has occured. Returns an empty list if no admins exist. */
+    public List<UserID> getAdmins(MapID mapID) {
+
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            Cursor c = db.rawQuery(
+                    "SELECT * FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_MAP_ID + "=\"" + mapID.toString() + "\"", null);
+
+            List<UserID> results = new LinkedList<UserID>();
+            if (c.moveToFirst()) {
+                do {
+                    String userID = c.getString(c.getColumnIndex(MAPADMINS_ID));
+                    String userName = c.getString(c.getColumnIndex(MAPADMINS_NAME));
+                    UserID uid = new UserID(userID, userName);
+                    results.add(uid);
+                } while (c.moveToNext());
+            }
+
+            db.close();
+            return results;
+        }
+
+        db.close();
+        return null;
+    }
 
 
 }

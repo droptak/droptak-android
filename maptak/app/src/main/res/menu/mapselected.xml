@@ -14,11 +14,6 @@
         android:icon="@drawable/ic_pin" />
 
     <item
-        android:id="@+id/menu_maplist"
-        android:title="@string/menu_maplist_label"
-        android:icon="@drawable/ic_map_list" />
-
-    <item
         android:id="@+id/menu_settings"
         android:title="@string/menu_settings_label"
         android:showAsAction="never" />
