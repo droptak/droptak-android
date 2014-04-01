@@ -14,9 +14,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import edu.purdue.maptak.admin.MainActivity;
+import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.TakFragmentManager;
+import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 

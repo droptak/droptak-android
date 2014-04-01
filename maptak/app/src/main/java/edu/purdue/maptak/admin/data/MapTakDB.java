@@ -10,9 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
-import edu.purdue.maptak.admin.MainActivity;
+import edu.purdue.maptak.admin.activities.MainActivity;
 
 public class MapTakDB extends SQLiteOpenHelper {
 

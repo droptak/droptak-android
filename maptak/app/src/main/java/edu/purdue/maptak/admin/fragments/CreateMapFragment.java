@@ -23,7 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.TakFragmentManager;
+import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;

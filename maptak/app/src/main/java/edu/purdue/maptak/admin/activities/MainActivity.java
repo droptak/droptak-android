@@ -1,4 +1,4 @@
-package edu.purdue.maptak.admin;
+package edu.purdue.maptak.admin.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import java.util.Random;
-
+import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.test.DummyData;
+import edu.purdue.maptak.admin.managers.TakFragmentManager;
 
 
 public class MainActivity extends Activity {

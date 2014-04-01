@@ -1,4 +1,4 @@
-package edu.purdue.maptak.admin;
+package edu.purdue.maptak.admin.managers;
 
 import android.content.Context;
 import android.location.Location;
@@ -13,7 +13,7 @@ import com.google.android.gms.location.LocationClient;
  *  Calls to getLat() or getLng() should be enclosed in an if(isLocationAvailable()) statement.
  *  Call disconnect() when you're finished with it. */
 
-public class UserLocManager
+public class UserLocationManager
         implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     /** Stores the user's location at all times */
@@ -23,7 +23,7 @@ public class UserLocManager
     private boolean isAvailable;
 
     /** Constructor. Pass in context of activity. */
-    public UserLocManager(Context c) {
+    public UserLocationManager(Context c) {
         userLocation = new LocationClient(c, this, this);
         userLocation.connect();
     }

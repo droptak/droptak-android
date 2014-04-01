@@ -1,7 +1,7 @@
 package edu.purdue.maptak.admin.fragments;
 
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.TakFragmentManager;
+import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapTakDB;
 
 import android.app.Fragment;

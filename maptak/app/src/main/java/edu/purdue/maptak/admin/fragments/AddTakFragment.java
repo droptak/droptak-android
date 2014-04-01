@@ -17,8 +17,8 @@ import org.json.JSONObject;
 import java.util.concurrent.ExecutionException;
 
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.TakFragmentManager;
-import edu.purdue.maptak.admin.UserLocManager;
+import edu.purdue.maptak.admin.managers.TakFragmentManager;
+import edu.purdue.maptak.admin.managers.UserLocationManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
@@ -29,7 +29,7 @@ import edu.purdue.maptak.admin.tasks.AddTakTask;
 public class AddTakFragment extends Fragment implements View.OnClickListener {
 
     /** Location manager for location updates */
-    private UserLocManager locManager;
+    private UserLocationManager locManager;
 
     /** EditText widgets on screen */
     private EditText etName, etDescription;
@@ -61,7 +61,7 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
         buSelectLoc.setOnClickListener(this);
 
         // Create the location client
-        locManager = new UserLocManager(getActivity());
+        locManager = new UserLocationManager(getActivity());
 
         Log.d("debug","mapId="+id.toString());
 

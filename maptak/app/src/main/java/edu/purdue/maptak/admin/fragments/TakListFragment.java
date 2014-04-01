@@ -12,14 +12,11 @@ import android.widget.ListView;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
-import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.interfaces.OnTakSelectedListener;
-import edu.purdue.maptak.admin.test.DummyData;
 
 public class TakListFragment extends ListFragment {
 

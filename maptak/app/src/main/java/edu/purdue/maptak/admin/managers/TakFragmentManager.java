@@ -1,7 +1,9 @@
-package edu.purdue.maptak.admin;
+package edu.purdue.maptak.admin.managers;
 
 import android.app.Activity;
 
+import edu.purdue.maptak.admin.activities.MainActivity;
+import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.fragments.AddTakFragment;
