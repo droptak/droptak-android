@@ -19,23 +19,22 @@ import com.google.android.gms.location.LocationClient;
 import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.TakFragmentManager;
+import edu.purdue.maptak.admin.UserLocManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 
-public class AddTakFragment extends Fragment implements
-        View.OnClickListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
-
-    /** Stores the user's location while this fragment is on the screen */
-    private boolean isLocationAvailable = false;
-    private LocationClient userLocation;
+public class AddTakFragment extends Fragment implements View.OnClickListener {
 
     /** EditText widgets on screen */
     private EditText etName, etDescription;
 
     /** Stores the MapID of the map that all taks created with this fragment should use */
     private MapID id;
+
+    /** Location client */
+    private UserLocManager locationManager;
 
     /** Create a new instance of this fragment with the given MapID as the owner for all taks
      *  created inside this fragment */
@@ -60,9 +59,8 @@ public class AddTakFragment extends Fragment implements
         buFromCurrent.setOnClickListener(this);
         buSelectLoc.setOnClickListener(this);
 
-        // Create the location client
-        userLocation = new LocationClient(getActivity(), this, this);
-        userLocation.connect();
+        // Create location client
+        locationManager = new UserLocManager(getActivity());
 
         return view;
     }
@@ -70,7 +68,7 @@ public class AddTakFragment extends Fragment implements
     /** Called when the fragment leaves the screen */
     public void onStop() {
         super.onStop();
-        userLocation.disconnect();
+        locationManager.disconnect();
     }
 
     /** Called when the user clicks one of the buttons on the screen */
@@ -80,14 +78,14 @@ public class AddTakFragment extends Fragment implements
             case R.id.addtak_bu_fromcurrent:
 
                 // Get the user's current location
-                if (isLocationAvailable) {
+                if (locationManager.isLocationAvailable()) {
                     String name = etName.getText().toString();
-                    double lat = userLocation.getLastLocation().getLatitude();
-                    double lng = userLocation.getLastLocation().getLongitude();
-
+                    double lat = locationManager.getLat();
+                    double lng = locationManager.getLng();
                     TakObject newTak = new TakObject(name, lat, lng);
                     MapTakDB db = new MapTakDB(getActivity());
                     db.addTak(newTak, id);
+
                 } else {
                     Toast.makeText(getActivity(), "Location is not currently available.", Toast.LENGTH_SHORT).show();
                 }
@@ -117,19 +115,5 @@ public class AddTakFragment extends Fragment implements
 
     }
 
-    /** Called by GPlayServices when the request to establish a connection is completed */
-    public void onConnected(Bundle bundle) {
-        isLocationAvailable = true;
-    }
-
-    @Override
-    public void onDisconnected() {
-        isLocationAvailable = false;
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        isLocationAvailable = false;
-    }
 }
 
