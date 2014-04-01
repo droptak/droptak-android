@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements OnMapSelectedListener {
         MapTakDB db = new MapTakDB(this);
         Random r = new Random();
         if (r.nextInt(100) <= 50) {
-            db.destroy();
+            //db.destroy();
             Toast.makeText(this, "DEBUG: Clearing database.", Toast.LENGTH_LONG).show();
         }
         db.addMap(DummyData.createDummyMapObject());

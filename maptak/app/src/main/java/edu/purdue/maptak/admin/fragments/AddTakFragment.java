@@ -2,6 +2,7 @@ package edu.purdue.maptak.admin.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
+
 import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.data.TakID;
 import edu.purdue.maptak.admin.data.TakObject;
+import edu.purdue.maptak.admin.tasks.AddTakTask;
 
 public class AddTakFragment extends Fragment implements
         View.OnClickListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
@@ -64,6 +72,8 @@ public class AddTakFragment extends Fragment implements
         userLocation = new LocationClient(getActivity(), this, this);
         userLocation.connect();
 
+        Log.d("debug","mapId="+id.toString());
+
         return view;
     }
 
@@ -82,12 +92,40 @@ public class AddTakFragment extends Fragment implements
                 // Get the user's current location
                 if (isLocationAvailable) {
                     String name = etName.getText().toString();
+                    Log.d("debug","userLocation="+userLocation.getLastLocation());
                     double lat = userLocation.getLastLocation().getLatitude();
                     double lng = userLocation.getLastLocation().getLongitude();
+                    String jsonString = null;
+                    String tid = null;
+                    //TakObject newTak = new TakObject(name, lat, lng);
+                    AddTakTask addTakTask = new AddTakTask(name,""+lat,""+lng,id,this.getActivity());
+                    try {
+                        jsonString = addTakTask.execute().get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    JSONObject jsonObject = null;
 
-                    TakObject newTak = new TakObject(name, lat, lng);
+                    try {
+                         jsonObject = new JSONObject(jsonString);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        tid = jsonObject.getString("takId");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    TakID takID = new TakID(tid);
+                    TakObject tak = new TakObject(takID,name,lat,lng);
                     MapTakDB db = new MapTakDB(getActivity());
-                    db.addTak(newTak, MainActivity.currentSelectedMap);
+                    db.addTak(tak, MainActivity.currentSelectedMap);
+
+
                 } else {
                     Toast.makeText(getActivity(), "Location is not currently available.", Toast.LENGTH_SHORT).show();
                 }
