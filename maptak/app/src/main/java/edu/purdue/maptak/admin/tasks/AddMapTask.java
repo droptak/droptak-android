@@ -58,9 +58,10 @@ public class AddMapTask extends AsyncTask<Void, Void, String>  {
         while(!hasSuccess){
             ;
         }
+        processDialog.dismiss();
         return AddMapTask.jsonsString;
     }
     protected void onPostExecute(Void v) {
-       processDialog.dismiss();
+       //processDialog.dismiss();
     }
 }
