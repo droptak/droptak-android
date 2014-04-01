@@ -2,6 +2,7 @@ package edu.purdue.maptak.admin.fragments;
 
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.TakFragmentManager;
+import edu.purdue.maptak.admin.data.MapTakDB;
 
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainMenuFragment extends Fragment implements View.OnClickListener {
 
@@ -30,10 +32,12 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             Button buMapList = (Button) v.findViewById(R.id.mainmenu_bu_maplist);
             Button buQRCode = (Button) v.findViewById(R.id.mainmenu_bu_qrscanner);
             Button buLogin = (Button) v.findViewById(R.id.mainmenu_bu_login);
+            Button buClearDB = (Button) v.findViewById(R.id.mainmenu_bu_cleardb);
 
             buMapList.setOnClickListener(this);
             buQRCode.setOnClickListener(this);
             buLogin.setOnClickListener(this);
+            buClearDB.setOnClickListener(this);
 
         }
 
@@ -52,6 +56,12 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.mainmenu_bu_login:
                 TakFragmentManager.switchToLogin(getActivity());
+                break;
+            case R.id.mainmenu_bu_cleardb:
+                Toast.makeText(getActivity(), "Clearing database of all information.", Toast.LENGTH_SHORT).show();
+                MapTakDB db = new MapTakDB(getActivity());
+                db.destroy();
+                break;
         }
     }
 }

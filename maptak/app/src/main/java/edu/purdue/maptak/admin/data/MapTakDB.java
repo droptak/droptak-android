@@ -58,7 +58,7 @@ public class MapTakDB extends SQLiteOpenHelper {
                 MAP_ID + " TEXT, " +
                 MAP_LABEL + " TEXT );";
 
-        String create_table_maps_admins = "CREATE TABLE " + TABLE_MAPS + " (" +
+        String create_table_maps_admins = "CREATE TABLE " + TABLE_MAPS_ADMINS + " (" +
                 MAPADMINS_ID + " TEXT, " +
                 MAPADMINS_MAP_ID + " TEXT, " +
                 MAPADMINS_NAME + " TEXT );";
