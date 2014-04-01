@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
                 break;
             case MAP:
                 setUpEnabled(true);
-                menuRes = R.menu.main_mapselected;
+                menuRes = R.menu.mapselected;
                 break;
             case QR:
                 setUpEnabled(true);

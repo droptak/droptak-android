@@ -10,21 +10,15 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-//import android.accounts.AccountManager;
-//import android.accounts.Account;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
-import edu.purdue.maptak.admin.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.TakFragmentManager;
+import edu.purdue.maptak.admin.UserLocManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
@@ -32,12 +26,10 @@ import edu.purdue.maptak.admin.data.TakID;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.tasks.AddTakTask;
 
-public class AddTakFragment extends Fragment implements
-        View.OnClickListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class AddTakFragment extends Fragment implements View.OnClickListener {
 
-    /** Stores the user's location while this fragment is on the screen */
-    private boolean isLocationAvailable = false;
-    private LocationClient userLocation;
+    /** Location manager for location updates */
+    private UserLocManager locManager;
 
     /** EditText widgets on screen */
     private EditText etName, etDescription;
@@ -69,8 +61,7 @@ public class AddTakFragment extends Fragment implements
         buSelectLoc.setOnClickListener(this);
 
         // Create the location client
-        userLocation = new LocationClient(getActivity(), this, this);
-        userLocation.connect();
+        locManager = new UserLocManager(getActivity());
 
         Log.d("debug","mapId="+id.toString());
 
@@ -80,7 +71,7 @@ public class AddTakFragment extends Fragment implements
     /** Called when the fragment leaves the screen */
     public void onStop() {
         super.onStop();
-        userLocation.disconnect();
+        locManager.disconnect();
     }
 
     /** Called when the user clicks one of the buttons on the screen */
@@ -90,11 +81,12 @@ public class AddTakFragment extends Fragment implements
             case R.id.addtak_bu_fromcurrent:
 
                 // Get the user's current location
-                if (isLocationAvailable) {
+                if (locManager.isLocationAvailable()) {
+
                     String name = etName.getText().toString();
-                    Log.d("debug","userLocation="+userLocation.getLastLocation());
-                    double lat = userLocation.getLastLocation().getLatitude();
-                    double lng = userLocation.getLastLocation().getLongitude();
+
+                    double lat = locManager.getLat();
+                    double lng = locManager.getLng();
                     String jsonString = null;
                     String tid = null;
                     //TakObject newTak = new TakObject(name, lat, lng);
@@ -123,8 +115,7 @@ public class AddTakFragment extends Fragment implements
                     TakID takID = new TakID(tid);
                     TakObject tak = new TakObject(takID,name,lat,lng);
                     MapTakDB db = new MapTakDB(getActivity());
-                    db.addTak(tak, MainActivity.currentSelectedMap);
-
+                    db.addTak(tak, id);
 
                 } else {
                     Toast.makeText(getActivity(), "Location is not currently available.", Toast.LENGTH_SHORT).show();
@@ -150,24 +141,11 @@ public class AddTakFragment extends Fragment implements
 
         // Reinflate a map fragment
         MapTakDB db = new MapTakDB(getActivity());
-        MapObject mo = db.getMap(MainActivity.currentSelectedMap);
+        MapObject mo = db.getMap(id);
         TakFragmentManager.switchToMap(getActivity(), mo);
 
     }
 
-    /** Called by GPlayServices when the request to establish a connection is completed */
-    public void onConnected(Bundle bundle) {
-        isLocationAvailable = true;
-    }
 
-    @Override
-    public void onDisconnected() {
-        isLocationAvailable = false;
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        isLocationAvailable = false;
-    }
 }
 
