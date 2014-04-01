@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.tasks.LoginTask;
 
@@ -74,27 +75,26 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
     private void resolveSignInError() {
-        Log.d("debug","resolve");
-        if (mSignInIntent!= null) {
+        Log.d("debug", "resolve");
+        if (mSignInIntent != null) {
             try {
                 mSignInProgress = STATE_IN_PROGRESS;
-                mConnectionResult.startResolutionForResult(this.getActivity(),RC_SIGN_IN);
+                mConnectionResult.startResolutionForResult(this.getActivity(), RC_SIGN_IN);
             } catch (SendIntentException e) {
                 // The intent was canceled before it was sent.  Return to the default
                 // state and attempt to connect to get an updated ConnectionResult.
-                mSignInProgress =STATE_SIGN_IN;
+                mSignInProgress = STATE_SIGN_IN;
                 mGoogleApiClient.connect();
             }
         }
     }
 
     public void onClick(View view) {
-        if(view.getId() == R.id.revokeAccessButton){
+        if (view.getId() == R.id.revokeAccessButton) {
             revokeGplusAccess();
-            Log.d("debug","revokePressed");
+            Log.d("debug", "revokePressed");
 
-        }
-        else {
+        } else {
             if (!mGoogleApiClient.isConnecting()) {
                 Log.d("Debug", "Goole+ Signin Pressed");
                 if (view.getId() == R.id.sign_in_button) {
@@ -126,12 +126,12 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
             mConnectionResult = result;
         }
 
-            if (mSignInProgress == STATE_SIGN_IN) {
-                // STATE_SIGN_IN indicates the user already clicked the sign in button
-                // so we should continue processing errors until the user is signed in
-                // or they click cancel.
-                resolveSignInError();
-            }
+        if (mSignInProgress == STATE_SIGN_IN) {
+            // STATE_SIGN_IN indicates the user already clicked the sign in button
+            // so we should continue processing errors until the user is signed in
+            // or they click cancel.
+            resolveSignInError();
+        }
     }
 
 
@@ -141,34 +141,34 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         mSignInClicked = false;
         String personName = "";
         String email = "";
-       // Toast.makeText(this.getActivity(), "User is connected!", Toast.LENGTH_LONG).show();
+        // Toast.makeText(this.getActivity(), "User is connected!", Toast.LENGTH_LONG).show();
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-           personName = currentPerson.getDisplayName();
-           email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+            personName = currentPerson.getDisplayName();
+            email = Plus.AccountApi.getAccountName(mGoogleApiClient);
         }
-        Toast.makeText(this.getActivity(),personName+ " logged in " + email, Toast.LENGTH_LONG).show();
+        Toast.makeText(this.getActivity(), personName + " logged in " + email, Toast.LENGTH_LONG).show();
         getStoreToken();
-        
+
 
     }
 
-    public void getStoreToken(){
-        LoginTask loginTask = new LoginTask(this.getActivity(),mGoogleApiClient);
+    public void getStoreToken() {
+        LoginTask loginTask = new LoginTask(this.getActivity(), mGoogleApiClient);
         try {
             loginTask.execute();
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
 
     }
 
-    public void onConnectionSuspended(int cause){
+    public void onConnectionSuspended(int cause) {
         mGoogleApiClient.connect();
 
     }
 
-    public void onDisconnected(){
+    public void onDisconnected() {
 
     }
 
