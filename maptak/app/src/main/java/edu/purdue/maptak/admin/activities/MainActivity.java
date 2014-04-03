@@ -2,7 +2,6 @@ package edu.purdue.maptak.admin.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,13 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.fragments.QRCodeFragment;
 import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 import edu.purdue.maptak.admin.qrcode.IntentResult;
@@ -90,7 +86,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        MapTakDB db = new MapTakDB(this);
+        MapTakDB db = MapTakDB.getDB(this);
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -145,7 +141,7 @@ public class MainActivity extends Activity {
 
     /** Returns the currently selected map. */
     private MapObject getCurrentSelectedMap() {
-        MapTakDB db = new MapTakDB(this);
+        MapTakDB db = MapTakDB.getDB(this);
         String id = getPreferences(MODE_PRIVATE).getString(PREF_CURRENT_MAP, "");
         if (id != "") {
             return db.getMap(new MapID(id));
@@ -153,6 +149,23 @@ public class MainActivity extends Activity {
         return null;
     }
 
+    @Override
+    public void onBackPressed() {
+        switch (mainFragmentState) {
+            case MAINMENU:
+                super.onBackPressed();
+                break;
+            case MAPLIST: case QR: case LOGIN:
+                TakFragmentManager.switchToMainMenu(this);
+                break;
+            case MAP: case ADDMAP:
+                TakFragmentManager.switchToMapList(this);
+                break;
+            case ADDTAK: case TAKLIST:
+                TakFragmentManager.switchToMap(this, getCurrentSelectedMap());
+                break;
+        }
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -168,7 +181,6 @@ public class MainActivity extends Activity {
             Log.d(MainActivity.LOG_TAG,"There was an error");
         }
     }
-
 
 
 }

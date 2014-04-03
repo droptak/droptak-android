@@ -55,10 +55,11 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     private int mSignInProgress;
 
 
+
+
     /**
      * Inflates the view for this fragment.
      */
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mGoogleApiClient = new GoogleApiClient.Builder(this.getActivity().getBaseContext())
                 .addConnectionCallbacks(this)
@@ -187,7 +188,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     }
 
 
-    private void revokeGplusAccess() {
+    public void revokeGplusAccess() {
         if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)

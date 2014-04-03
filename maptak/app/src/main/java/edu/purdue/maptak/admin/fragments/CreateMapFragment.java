@@ -44,7 +44,7 @@ public class CreateMapFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_createmap, container, false);
         final Context context = this.getActivity();
         final EditText mapNameText = (EditText) view.findViewById(R.id.addmap_et_mapname);
-        final MapTakDB newDB = new MapTakDB(getActivity());
+        final MapTakDB newDB = MapTakDB.getDB(getActivity());
 
         /** Button1 creates a tak at the user's current location */
         Button button = (Button) view.findViewById(R.id.addmap_bu_addmap);

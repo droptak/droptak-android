@@ -35,12 +35,14 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             Button buLogin = (Button) v.findViewById(R.id.mainmenu_bu_login);
             Button buClearDB = (Button) v.findViewById(R.id.mainmenu_bu_cleardb);
             Button buSearch = (Button) v.findViewById(R.id.mainmenu_bu_search);
+            Button buRevoke = (Button) v.findViewById(R.id.mainmenu_bu_revoke);
 
             buMapList.setOnClickListener(this);
             buQRCode.setOnClickListener(this);
             buLogin.setOnClickListener(this);
             buClearDB.setOnClickListener(this);
             buSearch.setOnClickListener(this);
+            buRevoke.setOnClickListener(this);
 
         }
 
@@ -63,12 +65,17 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.mainmenu_bu_cleardb:
                 Toast.makeText(getActivity(), "Clearing database of all information.", Toast.LENGTH_SHORT).show();
-                MapTakDB db = new MapTakDB(getActivity());
+                MapTakDB db = MapTakDB.getDB(getActivity());
                 db.destroy();
                 break;
             case R.id.mainmenu_bu_search:
                 TakFragmentManager.switchToSearch(getActivity());
+            case R.id.mainmenu_bu_revoke:
+                LoginFragment l = new LoginFragment();
+                l.revokeGplusAccess();
                 break;
         }
     }
+
+
 }
