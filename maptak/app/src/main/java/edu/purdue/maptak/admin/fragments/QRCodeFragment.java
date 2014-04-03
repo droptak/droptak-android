@@ -16,6 +16,7 @@ import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 import edu.purdue.maptak.admin.qrcode.IntentResult;
+import edu.purdue.maptak.admin.tasks.GetQRMapTask;
 
 /*
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -48,6 +49,8 @@ public class QRCodeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_qrcode, container, false);
         url = (TextView) v.findViewById(R.id.QRCodeTitle);
         url.setText(this.code);
+        GetQRMapTask getQRMapTask = new GetQRMapTask(code,getActivity());
+        getQRMapTask.execute();
         return v;
     }
 }
