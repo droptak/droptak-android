@@ -43,5 +43,13 @@
         android:layout_alignParentBottom="true"
         android:text="Clear DB" />
 
+    <Button
+        android:id="@+id/mainmenu_bu_revoke"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/mainmenu_bu_cleardb"
+        android:layout_alignParentBottom="true"
+        android:text="Revoke" />
+
 
 </RelativeLayout>

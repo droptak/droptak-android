@@ -33,11 +33,13 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             Button buQRCode = (Button) v.findViewById(R.id.mainmenu_bu_qrscanner);
             Button buLogin = (Button) v.findViewById(R.id.mainmenu_bu_login);
             Button buClearDB = (Button) v.findViewById(R.id.mainmenu_bu_cleardb);
+            Button buRevoke = (Button) v.findViewById(R.id.mainmenu_bu_revoke);
 
             buMapList.setOnClickListener(this);
             buQRCode.setOnClickListener(this);
             buLogin.setOnClickListener(this);
             buClearDB.setOnClickListener(this);
+            buRevoke.setOnClickListener(this);
 
         }
 
@@ -62,6 +64,12 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 MapTakDB db = new MapTakDB(getActivity());
                 db.destroy();
                 break;
+            case R.id.mainmenu_bu_revoke:
+                LoginFragment l = new LoginFragment();
+                l.revokeGplusAccess();
+                break;
         }
     }
+
+
 }

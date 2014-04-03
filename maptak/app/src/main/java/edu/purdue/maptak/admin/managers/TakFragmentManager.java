@@ -1,6 +1,10 @@
 package edu.purdue.maptak.admin.managers;
 
 import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.R;
@@ -39,6 +43,7 @@ public abstract class TakFragmentManager {
                 .beginTransaction()
                 .replace(R.id.activity_map_mapview, fragment)
                 .commit();
+        collapseKeyboard(activity);
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAP;
         activity.invalidateOptionsMenu();
     }
@@ -80,6 +85,7 @@ public abstract class TakFragmentManager {
                 .beginTransaction()
                 .replace(R.id.activity_map_mapview, MapListFragment.newInstanceOf())
                 .commit();
+        collapseKeyboard(activity);
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAPLIST;
         activity.invalidateOptionsMenu();
     }
@@ -95,5 +101,12 @@ public abstract class TakFragmentManager {
         activity.invalidateOptionsMenu();
     }
 
+    private static void collapseKeyboard(Activity a) {
+        InputMethodManager inputManager = (InputMethodManager) a.getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = a.getCurrentFocus();
+        if (v != null) {
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
 
 }

@@ -11,6 +11,7 @@ import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.managers.TakFragmentManager;
 
 
@@ -143,4 +144,21 @@ public class MainActivity extends Activity {
         return null;
     }
 
+    @Override
+    public void onBackPressed() {
+        switch (mainFragmentState) {
+            case MAINMENU:
+                super.onBackPressed();
+                break;
+            case MAPLIST: case QR: case LOGIN:
+                TakFragmentManager.switchToMainMenu(this);
+                break;
+            case MAP: case ADDMAP:
+                TakFragmentManager.switchToMapList(this);
+                break;
+            case ADDTAK: case TAKLIST:
+                TakFragmentManager.switchToMap(this, getCurrentSelectedMap());
+                break;
+        }
+    }
 }

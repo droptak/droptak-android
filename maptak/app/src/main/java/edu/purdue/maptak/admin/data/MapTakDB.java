@@ -94,7 +94,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE " + TABLE_TAKS);
             onCreate(db);
         }
-        db.close();
+
     }
 
     /** Adds a map and all of its taks to the database.
@@ -112,7 +112,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             getWritableDatabase().insert(TABLE_MAPS, null, values);
         }
-        db.close();
+
 
         // The map also contains taks, so add those as well
         for (TakObject t : map.getTakList()) {
@@ -138,7 +138,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             getWritableDatabase().insert(TABLE_TAKS, null, values);
         }
-        db.close();
+
     }
 
     /** Adds an administrator ID to be associated with a given map */
@@ -154,7 +154,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.insert(TABLE_MAPS_ADMINS, null, values);
         }
-        db.close();
+
     }
 
     /** Changes the ID of a map associated with "oldID" to "newID" */
@@ -164,7 +164,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ID + " = " + newID + " WHERE " + MAP_ID + " = " + oldID + ";");
         }
-        db.close();
+
     }
 
     /** Deletes a map associated with a given map ID from the local database.
@@ -175,7 +175,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + map.toString() + "\";");
         }
-        db.close();
+
     }
 
     /** Removes a tak associated with a given ID from the local database.
@@ -186,7 +186,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "=\"" + tak.toString() + "\";");
         }
-        db.close();
+
     }
 
     /** Deletes an administrator with the given ID from the local database */
@@ -197,7 +197,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\"");
         }
-        db.close();
+
     }
 
     /** Returns a list of the maps the user has cached on the device. */
@@ -235,7 +235,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        db.close();
+
         return results;
     }
 
@@ -253,7 +253,7 @@ public class MapTakDB extends SQLiteOpenHelper {
                 return map;
             }
         }
-        db.close();
+
         return null;
     }
 
@@ -277,11 +277,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 } while (c.moveToNext());
             }
 
-            db.close();
+
             return results;
         }
 
-        db.close();
+
         return null;
     }
 
@@ -301,12 +301,12 @@ public class MapTakDB extends SQLiteOpenHelper {
                 double takLng = c.getDouble(c.getColumnIndex(TAK_LNG));
                 TakObject obj = new TakObject(new TakID(takIDStr), takLabel, takLat, takLng);
 
-                db.close();
+
                 return obj;
             }
         }
 
-        db.close();
+
         return null;
     }
 
@@ -329,11 +329,11 @@ public class MapTakDB extends SQLiteOpenHelper {
                 } while (c.moveToNext());
             }
 
-            db.close();
+
             return results;
         }
 
-        db.close();
+
         return null;
     }
 
