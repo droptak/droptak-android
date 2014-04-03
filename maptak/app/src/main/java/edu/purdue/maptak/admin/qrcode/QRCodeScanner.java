@@ -25,10 +25,6 @@ public class QRCodeScanner extends Fragment {
     }
 
     public void getQRCode() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.activity_map_mapview, qrCodeFragment);
-        fragmentTransaction.commit();
         IntentIntegrator integrator = new IntentIntegrator(thisActivity);
         integrator.initiateScan();
     }
@@ -36,13 +32,9 @@ public class QRCodeScanner extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
-            Bundle args = new Bundle();
-            args.putString("title", scanResult.toString());
-            qrCodeFragment.setArguments(args);
             Toast.makeText(getActivity(), "This didn't happen", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getActivity(), "This happened", Toast.LENGTH_SHORT).show();
         }
     }
-
 }
