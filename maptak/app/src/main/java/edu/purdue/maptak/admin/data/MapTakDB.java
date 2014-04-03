@@ -28,6 +28,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     /** Columns - TABLE_MAPS */
     public static final String MAP_ID = "_id";
     public static final String MAP_LABEL = "map_label";
+    public static final String MAP_ISPUBLIC = "map_ispublic";
 
     /** Columns - TABLE_MAPS_ADMINS */
     public static final String MAPADMINS_ID = "_id";
@@ -64,7 +65,8 @@ public class MapTakDB extends SQLiteOpenHelper {
 
         String create_table_maps = "CREATE TABLE " + TABLE_MAPS + " (" +
                 MAP_ID + " TEXT, " +
-                MAP_LABEL + " TEXT );";
+                MAP_LABEL + " TEXT, " +
+                MAP_ISPUBLIC + " BOOLEAN );";
 
         String create_table_maps_admins = "CREATE TABLE " + TABLE_MAPS_ADMINS + " (" +
                 MAPADMINS_ID + " TEXT, " +
