@@ -44,7 +44,7 @@ public class TakListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        MapTakDB db = new MapTakDB(getActivity());
+        MapTakDB db = MapTakDB.getDB(getActivity());
         List<TakObject> takObjects;
 
         if(mapID == null){

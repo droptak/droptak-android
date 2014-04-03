@@ -114,7 +114,7 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
 
                     TakID takID = new TakID(tid);
                     TakObject tak = new TakObject(takID,name,lat,lng);
-                    MapTakDB db = new MapTakDB(getActivity());
+                    MapTakDB db = MapTakDB.getDB(getActivity());
                     db.addTak(tak, id);
 
                 } else {
@@ -140,7 +140,7 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         // Reinflate a map fragment
-        MapTakDB db = new MapTakDB(getActivity());
+        MapTakDB db = MapTakDB.getDB(getActivity());
         MapObject mo = db.getMap(id);
         TakFragmentManager.switchToMap(getActivity(), mo);
 

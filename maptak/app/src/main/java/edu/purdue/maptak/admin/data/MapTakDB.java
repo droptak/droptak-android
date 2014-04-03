@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.google.android.gms.internal.db;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +41,17 @@ public class MapTakDB extends SQLiteOpenHelper {
     public static final String TAK_LAT = "tak_lat";
     public static final String TAK_LNG = "tak_lng";
 
+    /** Static method that returns the database object you should use */
+    private static MapTakDB instance = null;
+    public static MapTakDB getDB(Context c) {
+        if (instance == null) {
+            instance = new MapTakDB(c);
+        }
+        return instance;
+    }
+
     /** Default constructor */
-    public MapTakDB(Context context) {
+    private MapTakDB(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
     }
@@ -75,8 +82,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(create_table_maps);
         sqLiteDatabase.execSQL(create_table_maps_admins);
         sqLiteDatabase.execSQL(create_table_taks);
-
-        sqLiteDatabase.close();
     }
 
     /** Called when the database is upgraded from one DB_VERSION to the next */
@@ -112,7 +117,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             getWritableDatabase().insert(TABLE_MAPS, null, values);
         }
-
 
         // The map also contains taks, so add those as well
         for (TakObject t : map.getTakList()) {
@@ -235,7 +239,7 @@ public class MapTakDB extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-
+        c.close();
         return results;
     }
 
@@ -250,6 +254,8 @@ public class MapTakDB extends SQLiteOpenHelper {
                 String label = c.getString(c.getColumnIndex(MAP_LABEL));
                 List<TakObject> taks = getTaks(mapID);
                 MapObject map = new MapObject(label, mapID, taks, false);
+
+                c.close();
                 return map;
             }
         }
@@ -277,10 +283,9 @@ public class MapTakDB extends SQLiteOpenHelper {
                 } while (c.moveToNext());
             }
 
-
+            c.close();
             return results;
         }
-
 
         return null;
     }
@@ -301,11 +306,10 @@ public class MapTakDB extends SQLiteOpenHelper {
                 double takLng = c.getDouble(c.getColumnIndex(TAK_LNG));
                 TakObject obj = new TakObject(new TakID(takIDStr), takLabel, takLat, takLng);
 
-
+                c.close();
                 return obj;
             }
         }
-
 
         return null;
     }
@@ -329,10 +333,9 @@ public class MapTakDB extends SQLiteOpenHelper {
                 } while (c.moveToNext());
             }
 
-
+            c.close();
             return results;
         }
-
 
         return null;
     }

@@ -42,7 +42,7 @@ public class MapListFragment extends Fragment implements AdapterView.OnItemClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Create instance of database
-        mapTakDB = new MapTakDB(getActivity());
+        mapTakDB = MapTakDB.getDB(getActivity());
 
         // Inflate the view and create the listview
         View v = inflater.inflate(R.layout.fragment_maplist, container, false);

@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        MapTakDB db = new MapTakDB(this);
+        MapTakDB db = MapTakDB.getDB(this);
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
 
     /** Returns the currently selected map. */
     private MapObject getCurrentSelectedMap() {
-        MapTakDB db = new MapTakDB(this);
+        MapTakDB db = MapTakDB.getDB(this);
         String id = getPreferences(MODE_PRIVATE).getString(PREF_CURRENT_MAP, "");
         if (id != "") {
             return db.getMap(new MapID(id));
