@@ -15,6 +15,8 @@ import edu.purdue.maptak.admin.fragments.CreateMapFragment;
 import edu.purdue.maptak.admin.fragments.LoginFragment;
 import edu.purdue.maptak.admin.fragments.MainMenuFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
+import edu.purdue.maptak.admin.fragments.QRCodeFragment;
+import edu.purdue.maptak.admin.fragments.SearchFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.interfaces.OnTakSelectedListener;
@@ -98,6 +100,24 @@ public abstract class TakFragmentManager {
                 .replace(R.id.activity_map_mapview, TakListFragment.newInstanceOf(id, listener))
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.TAKLIST;
+        activity.invalidateOptionsMenu();
+    }
+
+    public static void switchToSearch(Activity activity) {
+        activity.getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_map_mapview, new SearchFragment())
+                .commit();
+        MainActivity.mainFragmentState = MainActivity.MainFragmentState.SEARCH;
+        activity.invalidateOptionsMenu();
+    }
+
+    public static void switchToQRCode(Activity activity, String string) {
+        activity.getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_map_mapview, QRCodeFragment.newInstance(string))
+                .commit();
+        MainActivity.mainFragmentState  = MainActivity.MainFragmentState.QR;
         activity.invalidateOptionsMenu();
     }
 

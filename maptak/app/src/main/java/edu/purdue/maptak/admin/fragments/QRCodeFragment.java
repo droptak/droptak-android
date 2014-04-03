@@ -1,13 +1,21 @@
 package edu.purdue.maptak.admin.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.activities.MainActivity;
+import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
+import edu.purdue.maptak.admin.qrcode.IntentResult;
 
 /*
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -20,14 +28,26 @@ import edu.purdue.maptak.admin.R;
  */
 public class QRCodeFragment extends Fragment {
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Bundle bundle = new Bundle();
-        String title = bundle.getString("title");
-        TextView qrTitle = (TextView) getActivity().findViewById(R.id.QRCodeTitle);
-        qrTitle.setText(title);
-        return inflater.inflate(R.layout.fragment_qrcode, container, false);
+    public QRCodeFragment(){}
+    private String code;
+    static TextView url = null;
+
+    public static QRCodeFragment newInstance(String code) {
+        Bundle args = new Bundle();
+        args.putSerializable("EXTRA", code);
+        Log.d(MainActivity.LOG_TAG, code);
+        QRCodeFragment fragment = new QRCodeFragment();
+        fragment.code = code;
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_qrcode, container, false);
+        url = (TextView) v.findViewById(R.id.QRCodeTitle);
+        url.setText(this.code);
+        return v;
+    }
 }

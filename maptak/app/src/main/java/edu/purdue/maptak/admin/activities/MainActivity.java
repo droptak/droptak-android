@@ -2,17 +2,21 @@ package edu.purdue.maptak.admin.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.managers.TakFragmentManager;
+import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
+import edu.purdue.maptak.admin.qrcode.IntentResult;
 
 
 public class MainActivity extends Activity {
@@ -26,7 +30,8 @@ public class MainActivity extends Activity {
     /** Stores the currently inflated fragment. This is used by onCreateOptionsMenu, among
      *  other things, so it knows which options menu to inflate */
     public static MainFragmentState mainFragmentState = null;
-    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST }
+    TextView url = null;
+    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,4 +166,21 @@ public class MainActivity extends Activity {
                 break;
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        url = (TextView) findViewById(R.id.QRCodeTitle);
+        if ( scanResult != null ){
+            FragmentManager fm = getFragmentManager();
+            //Fragment newFrame = QRCodeFragment.newInstance(scanResult.getContents());
+            //fm.beginTransaction().replace(R.id.activity_map_mapview, newFrame).commit();
+            TakFragmentManager.switchToQRCode(this, scanResult.getContents());
+        } else {
+            Log.d(MainActivity.LOG_TAG,"There was an error");
+        }
+    }
+
+
 }
