@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
      *  other things, so it knows which options menu to inflate */
     public static MainFragmentState mainFragmentState = null;
     TextView url = null;
-    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH }
+    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH, SEARCH_RESULTS }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

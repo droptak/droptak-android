@@ -14,6 +14,14 @@ import edu.purdue.maptak.admin.fragments.QRCodeFragment;
 /**
  * Created by tylorgarrett on 3/29/14.
  */
+
+
+/**
+ *
+ * THIS CLASS IS CURRENTLY NOT IN USE
+ * THIS CLASS IS CURRENTLY NOT IN USE
+ *
+ */
 public class QRCodeScanner extends Fragment {
 
     Activity thisActivity = null;

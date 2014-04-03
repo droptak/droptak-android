@@ -2,6 +2,8 @@ package edu.purdue.maptak.admin.managers;
 
 import android.app.Activity;
 
+import java.util.List;
+
 import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
@@ -13,6 +15,7 @@ import edu.purdue.maptak.admin.fragments.MainMenuFragment;
 import edu.purdue.maptak.admin.fragments.MapListFragment;
 import edu.purdue.maptak.admin.fragments.QRCodeFragment;
 import edu.purdue.maptak.admin.fragments.SearchFragment;
+import edu.purdue.maptak.admin.fragments.SearchResultsFragment;
 import edu.purdue.maptak.admin.fragments.TakListFragment;
 import edu.purdue.maptak.admin.fragments.TakMapFragment;
 import edu.purdue.maptak.admin.interfaces.OnTakSelectedListener;
@@ -112,6 +115,15 @@ public abstract class TakFragmentManager {
                 .replace(R.id.activity_map_mapview, QRCodeFragment.newInstance(string))
                 .commit();
         MainActivity.mainFragmentState  = MainActivity.MainFragmentState.QR;
+        activity.invalidateOptionsMenu();
+    }
+
+    public static void switchToSearchResults(Activity activity, List<MapObject> listOfObjects){
+        activity.getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.activity_map_mapview, new SearchResultsFragment(listOfObjects))
+                .commit();
+        MainActivity.mainFragmentState = MainActivity.MainFragmentState.SEARCH_RESULTS;
         activity.invalidateOptionsMenu();
     }
 

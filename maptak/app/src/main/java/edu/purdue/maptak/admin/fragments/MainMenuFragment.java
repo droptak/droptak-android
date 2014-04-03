@@ -34,11 +34,13 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             Button buQRCode = (Button) v.findViewById(R.id.mainmenu_bu_qrscanner);
             Button buLogin = (Button) v.findViewById(R.id.mainmenu_bu_login);
             Button buClearDB = (Button) v.findViewById(R.id.mainmenu_bu_cleardb);
+            Button buSearch = (Button) v.findViewById(R.id.mainmenu_bu_search);
 
             buMapList.setOnClickListener(this);
             buQRCode.setOnClickListener(this);
             buLogin.setOnClickListener(this);
             buClearDB.setOnClickListener(this);
+            buSearch.setOnClickListener(this);
 
         }
 
@@ -63,6 +65,9 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getActivity(), "Clearing database of all information.", Toast.LENGTH_SHORT).show();
                 MapTakDB db = new MapTakDB(getActivity());
                 db.destroy();
+                break;
+            case R.id.mainmenu_bu_search:
+                TakFragmentManager.switchToSearch(getActivity());
                 break;
         }
     }
