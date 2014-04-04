@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:textColor="@color/white"
-        android:text="Create A Map"
+        android:text="Add A Map"
         />
 
     <ListView
@@ -19,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/drawer_bu_createmap"
+        android:layout_alignParentTop="true"
         />
 
 </RelativeLayout>
