@@ -32,6 +32,10 @@ public class MainActivity extends Activity {
 
     /** Strings for various keys in the preferences */
     public static final String PREF_CURRENT_MAP = "current_selected_map_id";
+    public static final String PREF_USER_EMAIL = "user_email";
+    public static final String PREF_USER_NAME = "user_name";
+    public static final String PREF_USER_LOGIN_TOKEN = "user_login_token";
+    public static final String PREF_IS_LOGGED_IN = "user_is_logged_in";
 
     /** Stores the currently inflated fragment. This is used by onCreateOptionsMenu, among
      *  other things, so it knows which options menu to inflate */
@@ -55,6 +59,12 @@ public class MainActivity extends Activity {
         menuRes = R.menu.justsettings;
         getMenuInflater().inflate(menuRes, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LoginFragment.mGoogleApiClient.disconnect();
     }
 
     @Override

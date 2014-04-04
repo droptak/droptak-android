@@ -5,6 +5,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.tasks.LoginTask;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,7 +44,7 @@ public class LoginFragment extends Fragment
     private static final int RC_SIGN_IN = 0;
 
     /** Client used to interact with Google APIs. */
-    private GoogleApiClient mGoogleApiClient;
+    public static GoogleApiClient mGoogleApiClient;
 
     /** A flag indicating that a PendingIntent is in progress and prevents
      * us from starting further intents. */
@@ -55,21 +58,35 @@ public class LoginFragment extends Fragment
 
     /** Inflates the view for this fragment. */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mGoogleApiClient = new GoogleApiClient.Builder(this.getActivity().getBaseContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API, null)
-                .addScope(Plus.SCOPE_PLUS_LOGIN)
-                .build();
 
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
-        view.findViewById(R.id.sign_in_button).setOnClickListener(this);
-        view.findViewById(R.id.revokeAccessButton).setOnClickListener(this);
-        return view;
+        Log.d(MainActivity.LOG_TAG, "Creating LoginFragment and connecting GoogleAPIClient");
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this.getActivity().getBaseContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Plus.API, null)
+                    .addScope(Plus.SCOPE_PLUS_LOGIN)
+                    .build();
+        }
+
+        boolean isLoggedIn = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(MainActivity.PREF_IS_LOGGED_IN, false);
+
+        View v = null;
+        if (isLoggedIn) {
+            v = inflater.inflate(R.layout.fragment_splash, container, false);
+        } else {
+            v = inflater.inflate(R.layout.fragment_login, container, false);
+            v.findViewById(R.id.sign_in_button).setOnClickListener(this);
+        }
+
+        return v;
     }
 
     private void resolveSignInError() {
-        Log.d("debug", "resolve");
+        Log.d(MainActivity.LOG_TAG, "Resolving any signin errors");
+
         if (mSignInIntent != null) {
             try {
                 mSignInProgress = STATE_IN_PROGRESS;
@@ -84,32 +101,23 @@ public class LoginFragment extends Fragment
     }
 
     public void onClick(View view) {
-        if (view.getId() == R.id.revokeAccessButton) {
-            revokeGplusAccess();
-            Log.d("debug", "revokePressed");
+        switch (view.getId()) {
 
-        } else {
-            if (!mGoogleApiClient.isConnecting()) {
-                Log.d("Debug", "Goole+ Signin Pressed");
-                if (view.getId() == R.id.sign_in_button) {
+            case R.id.sign_in_button:
+                if (!mGoogleApiClient.isConnecting()) {
+                    Log.d(MainActivity.LOG_TAG, "Google+ Signin Pressed");
                     mSignInClicked = true;
                     resolveSignInError();
                 }
-            }
+                break;
+
         }
+
     }
 
     public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
-    }
-
-    public void onStop() {
-        super.onStop();
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
     }
 
     public void onConnectionFailed(ConnectionResult result) {
@@ -132,29 +140,35 @@ public class LoginFragment extends Fragment
     public void onConnected(Bundle connectionHint) {
         // We've resolved any connection errors.  mGoogleApiClient can be used to
         // access Google APIs on behalf of the user.
+        Log.d(MainActivity.LOG_TAG, "Google+ signin complete. UN/Email are now in shared preferences.");
+
         mSignInClicked = false;
         String personName = "";
         String email = "";
-        // Toast.makeText(this.getActivity(), "User is connected!", Toast.LENGTH_LONG).show();
+
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
             personName = currentPerson.getDisplayName();
             email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-        }
-        Toast.makeText(this.getActivity(), personName + " logged in " + email, Toast.LENGTH_LONG).show();
-        getStoreToken();
 
+            // Add them to the shared preferences
+            SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+            prefs.edit().putString(MainActivity.PREF_USER_NAME, personName);
+            prefs.edit().putString(MainActivity.PREF_USER_EMAIL, email);
+            prefs.edit().putBoolean(MainActivity.PREF_IS_LOGGED_IN, true);
+        }
+
+        Toast.makeText(this.getActivity(), "Welcome back, " + personName + " (" + email + ")", Toast.LENGTH_LONG).show();
+        initiateMaptakAuthentication();
+
+        // Replace the main view
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new LoginFragment()).commit();
 
     }
 
-    public void getStoreToken() {
+    public void initiateMaptakAuthentication() {
         LoginTask loginTask = new LoginTask(this.getActivity(), mGoogleApiClient);
-        try {
-            loginTask.execute();
-        } catch (Exception e) {
-
-        }
-
+        loginTask.execute();
     }
 
     public void onConnectionSuspended(int cause) {
@@ -179,7 +193,6 @@ public class LoginFragment extends Fragment
             }
         }
     }
-
 
     public void revokeGplusAccess() {
         if (mGoogleApiClient.isConnected()) {

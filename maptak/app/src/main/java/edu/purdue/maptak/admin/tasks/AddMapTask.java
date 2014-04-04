@@ -40,7 +40,7 @@ public class AddMapTask extends AsyncTask<Void, Void, String>  {
     @Override
     protected String doInBackground(Void... voids) {
         String userName = settings.getString("name", "");
-        String userId = settings.getString(LoginTask.PREF_USER_LOGIN_TOKEN, "");
+        String userId = settings.getString(MainActivity.PREF_USER_LOGIN_TOKEN, "");
         userName = userName.replaceAll("\\s", "%20");
         mapName = mapName.replaceAll("\\s", "%20");
         Log.d("debug", userName);

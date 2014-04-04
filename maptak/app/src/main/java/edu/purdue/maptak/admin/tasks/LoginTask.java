@@ -27,8 +27,6 @@ import edu.purdue.maptak.admin.managers.TakFragmentManager;
 
 public class LoginTask extends AsyncTask<Void,Void,String> {
 
-    public static final String PREF_USER_LOGIN_TOKEN = "user_login_token";
-
     private Activity callingActivity;
     private GoogleApiClient mGoogleApiClient;
     private SharedPreferences settings;
@@ -82,7 +80,6 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
         String personName = "";
         String email = "";
         String id = "";
-        // Toast.makeText(this.getActivity(), "User is connected!", Toast.LENGTH_LONG).show();
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
             personName = currentPerson.getDisplayName();
@@ -112,9 +109,8 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
                     e.printStackTrace();
                 }
 
-                Log.d("debug","Got id="+id);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString(PREF_USER_LOGIN_TOKEN, id);
+                editor.putString(MainActivity.PREF_USER_LOGIN_TOKEN, id);
                 editor.commit();
             }
         });
@@ -123,7 +119,7 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
 
     @Override
     protected void onPostExecute(String token) {
-        Log.i("Token", "Access token retrieved:" + token);
+        Log.d(MainActivity.LOG_TAG, "Access token retrieved from MapTak servers: " + token);
         progressDialog.dismiss();
     }
 
