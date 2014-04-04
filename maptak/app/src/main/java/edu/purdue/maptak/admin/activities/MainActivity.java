@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
      *  other things, so it knows which options menu to inflate */
     public static MainFragmentState mainFragmentState = null;
     TextView url = null;
-    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH }
+    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH, SEARCH_RESULTS }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +74,14 @@ public class MainActivity extends Activity {
                 setUpEnabled(true);
                 menuRes = R.menu.maplist;
                 break;
+            case SEARCH:
+                setUpEnabled(true);
+                menuRes = R.menu.justsettings;
+                break;
+            case SEARCH_RESULTS:
+                setUpEnabled(true);
+                menuRes = R.menu.justsettings;
+                break;
             default:
                 setUpEnabled(false);
                 menuRes = R.menu.justsettings;
@@ -93,7 +101,7 @@ public class MainActivity extends Activity {
 
                 // Our view switches depending on where we're at currently
                 switch (mainFragmentState) {
-                    case MAPLIST: case LOGIN: case QR:
+                    case MAPLIST: case LOGIN: case QR: case SEARCH:
                         TakFragmentManager.switchToMainMenu(this);
                         break;
                     case MAP: case ADDMAP:
@@ -101,6 +109,9 @@ public class MainActivity extends Activity {
                         break;
                     case ADDTAK: case TAKLIST:
                         TakFragmentManager.switchToMap(this, getCurrentSelectedMap());
+                        break;
+                    case SEARCH_RESULTS:
+                        TakFragmentManager.switchToSearch(this);
                         break;
                 }
 
@@ -155,7 +166,7 @@ public class MainActivity extends Activity {
             case MAINMENU:
                 super.onBackPressed();
                 break;
-            case MAPLIST: case QR: case LOGIN:
+            case MAPLIST: case QR: case LOGIN: case SEARCH: case SEARCH_RESULTS:
                 TakFragmentManager.switchToMainMenu(this);
                 break;
             case MAP: case ADDMAP:

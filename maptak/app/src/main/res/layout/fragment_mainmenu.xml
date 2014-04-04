@@ -36,6 +36,15 @@
         />
 
     <Button
+        android:id="@+id/mainmenu_bu_search"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mainmenu_bu_login"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:text="Search"/>
+
+    <Button
         android:id="@+id/mainmenu_bu_cleardb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
