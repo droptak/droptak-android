@@ -100,7 +100,7 @@ public class MapListFragment extends Fragment implements AdapterView.OnItemClick
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         MapObject selected = backingMapList.get(i);
         String id = selected.getID().toString();
-        getActivity().getPreferences(Context.MODE_PRIVATE).edit().putString(MainActivity.PREF_CURRENT_MAP, id).commit();
+        getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit().putString(MainActivity.PREF_CURRENT_MAP, id).commit();
         TakFragmentManager.switchToMap(getActivity(), selected);
     }
 

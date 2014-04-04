@@ -21,31 +21,31 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.managers.TakFragmentManager;
 
 
 public class LoginTask extends AsyncTask<Void,Void,String> {
 
-    Activity callingActivity;
-    GoogleApiClient mGoogleApiClient;
-    SharedPreferences settings;
-    ProgressDialog progressDialog;
-    FragmentManager fragMan;
+    public static final String PREF_USER_LOGIN_TOKEN = "user_login_token";
+
+    private Activity callingActivity;
+    private GoogleApiClient mGoogleApiClient;
+    private SharedPreferences settings;
+    private ProgressDialog progressDialog;
 
     public LoginTask(Activity activity, GoogleApiClient mGoogleApiClient) {
         this.callingActivity = activity;
         this.mGoogleApiClient = mGoogleApiClient;
-        settings = activity.getSharedPreferences("settings",0);
+        settings = activity.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         progressDialog = new ProgressDialog(activity);
-
     }
 
-    public void onPreExecute(){
+    public void onPreExecute() {
         this.progressDialog.setMessage("Processing...");
         this.progressDialog.show();
     }
 
-    @Override
     protected String doInBackground(Void... voids) {
         String token = null;
         Bundle appActivities = new Bundle();
@@ -114,7 +114,7 @@ public class LoginTask extends AsyncTask<Void,Void,String> {
 
                 Log.d("debug","Got id="+id);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString("id",id);
+                editor.putString(PREF_USER_LOGIN_TOKEN, id);
                 editor.commit();
             }
         });

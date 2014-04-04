@@ -27,7 +27,7 @@ public abstract class TakFragmentManager {
     public static void switchToMainMenu(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, new MainMenuFragment())
+                .replace(R.id.mainview, new MainMenuFragment())
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAINMENU;
         activity.invalidateOptionsMenu();
@@ -43,7 +43,7 @@ public abstract class TakFragmentManager {
         }
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, fragment)
+                .replace(R.id.mainview, fragment)
                 .commit();
         collapseKeyboard(activity);
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAP;
@@ -55,7 +55,7 @@ public abstract class TakFragmentManager {
     public static void switchToAddTak(Activity activity, MapID id) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, AddTakFragment.newInstanceOf(id))
+                .replace(R.id.mainview, AddTakFragment.newInstanceOf(id))
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.ADDTAK;
         activity.invalidateOptionsMenu();
@@ -65,7 +65,7 @@ public abstract class TakFragmentManager {
     public static void switchToCreateMap(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, CreateMapFragment.newInstanceOf())
+                .replace(R.id.mainview, CreateMapFragment.newInstanceOf())
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.ADDMAP;
         activity.invalidateOptionsMenu();
@@ -75,7 +75,7 @@ public abstract class TakFragmentManager {
     public static void switchToLogin(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, new LoginFragment())
+                .replace(R.id.mainview, new LoginFragment())
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.LOGIN;
         activity.invalidateOptionsMenu();
@@ -85,7 +85,7 @@ public abstract class TakFragmentManager {
     public static void switchToMapList(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, MapListFragment.newInstanceOf())
+                .replace(R.id.mainview, MapListFragment.newInstanceOf())
                 .commit();
         collapseKeyboard(activity);
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.MAPLIST;
@@ -97,7 +97,7 @@ public abstract class TakFragmentManager {
     public static void switchToTakList(Activity activity, MapID id, OnTakSelectedListener listener) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, TakListFragment.newInstanceOf(id, listener))
+                .replace(R.id.mainview, TakListFragment.newInstanceOf(id, listener))
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.TAKLIST;
         activity.invalidateOptionsMenu();
@@ -106,7 +106,7 @@ public abstract class TakFragmentManager {
     public static void switchToSearch(Activity activity) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, new SearchFragment())
+                .replace(R.id.mainview, new SearchFragment())
                 .commit();
         MainActivity.mainFragmentState = MainActivity.MainFragmentState.SEARCH;
         activity.invalidateOptionsMenu();
@@ -115,7 +115,7 @@ public abstract class TakFragmentManager {
     public static void switchToQRCode(Activity activity, String string) {
         activity.getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.activity_map_mapview, QRCodeFragment.newInstance(string))
+                .replace(R.id.mainview, QRCodeFragment.newInstance(string))
                 .commit();
         MainActivity.mainFragmentState  = MainActivity.MainFragmentState.QR;
         activity.invalidateOptionsMenu();

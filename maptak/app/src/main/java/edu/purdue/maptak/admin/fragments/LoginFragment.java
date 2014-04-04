@@ -25,41 +25,35 @@ import android.content.IntentSender.*;
 import android.content.Intent;
 import android.widget.Toast;
 
-public class LoginFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, View.OnClickListener {
-    /* Track whether the sign-in button has been clicked so that we know to resolve
-    * all issues preventing sign-in without waiting.
-    */
+public class LoginFragment extends Fragment
+        implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, View.OnClickListener {
+
+    /** Track whether the sign-in button has been clicked so that we know to resolve
+     *  all issues preventing sign-in without waiting. */
     private boolean mSignInClicked;
 
-    /* Store the connection result from onConnectionFailed callbacks so that we can
-     * resolve them when the user clicks sign-in.
-     */
+    /** Store the connection result from onConnectionFailed callbacks so that we can
+     *  resolve them when the user clicks sign-in. */
     private ConnectionResult mConnectionResult;
 
 
-    /* Request code used to invoke sign in user interactions. */
+    /** Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
 
-    /* Client used to interact with Google APIs. */
+    /** Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
 
-  /* A flag indicating that a PendingIntent is in progress and prevents
-   * us from starting further intents.
-   */
-
+    /** A flag indicating that a PendingIntent is in progress and prevents
+     * us from starting further intents. */
     private boolean mIntentInProgress;
+
     private PendingIntent mSignInIntent;
     private static final int STATE_DEFAULT = 0;
     private static final int STATE_SIGN_IN = 1;
     private static final int STATE_IN_PROGRESS = 2;
     private int mSignInProgress;
 
-
-
-
-    /**
-     * Inflates the view for this fragment.
-     */
+    /** Inflates the view for this fragment. */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mGoogleApiClient = new GoogleApiClient.Builder(this.getActivity().getBaseContext())
                 .addConnectionCallbacks(this)
@@ -67,7 +61,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                 .addApi(Plus.API, null)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .build();
-
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         view.findViewById(R.id.sign_in_button).setOnClickListener(this);

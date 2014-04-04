@@ -14,6 +14,9 @@ import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.fragments.CreateMapFragment;
+import edu.purdue.maptak.admin.fragments.DrawerFragment;
+import edu.purdue.maptak.admin.fragments.LoginFragment;
 import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 import edu.purdue.maptak.admin.qrcode.IntentResult;
@@ -24,12 +27,15 @@ public class MainActivity extends Activity {
     /** Log tag for debugging logcat output */
     public static final String LOG_TAG = "maptak_log_tag";
 
+    /** Name of shared preferences where we store everything */
+    public static final String SHARED_PREFS_NAME = "edu.purdue.maptak-sharedprefs";
+
     /** Strings for various keys in the preferences */
     public static final String PREF_CURRENT_MAP = "current_selected_map_id";
 
     /** Stores the currently inflated fragment. This is used by onCreateOptionsMenu, among
      *  other things, so it knows which options menu to inflate */
-    public static MainFragmentState mainFragmentState = null;
+    public static MainFragmentState mainFragmentState;
     TextView url = null;
     public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH }
 
@@ -38,48 +44,15 @@ public class MainActivity extends Activity {
         Log.i(LOG_TAG, "MapActivity.onCreate() called.");
         setContentView(R.layout.activity_main);
 
-        // Inflate the login fragment to the screen
-        TakFragmentManager.switchToMainMenu(this);
+        // Inflate the login fragment and the sidebar to the screen
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new LoginFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-
         int menuRes = -1;
-        switch (mainFragmentState) {
-            case MAINMENU:
-                setUpEnabled(false);
-                menuRes = R.menu.justsettings;
-                break;
-            case MAP:
-                setUpEnabled(true);
-                menuRes = R.menu.mapselected;
-                break;
-            case QR:
-                setUpEnabled(true);
-                menuRes = R.menu.justsettings;
-                break;
-            case ADDTAK:
-                setUpEnabled(true);
-                menuRes = R.menu.justsettings;
-                break;
-            case ADDMAP:
-                setUpEnabled(true);
-                menuRes = R.menu.justsettings;
-                break;
-            case TAKLIST:
-                setUpEnabled(true);
-                menuRes = R.menu.justsettings;
-                break;
-            case MAPLIST:
-                setUpEnabled(true);
-                menuRes = R.menu.maplist;
-                break;
-            default:
-                setUpEnabled(false);
-                menuRes = R.menu.justsettings;
-                break;
-        }
-
+        setUpEnabled(false);
+        menuRes = R.menu.justsettings;
         getMenuInflater().inflate(menuRes, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -142,7 +115,7 @@ public class MainActivity extends Activity {
     /** Returns the currently selected map. */
     private MapObject getCurrentSelectedMap() {
         MapTakDB db = MapTakDB.getDB(this);
-        String id = getPreferences(MODE_PRIVATE).getString(PREF_CURRENT_MAP, "");
+        String id = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).getString(PREF_CURRENT_MAP, "");
         if (id != "") {
             return db.getMap(new MapID(id));
         }
