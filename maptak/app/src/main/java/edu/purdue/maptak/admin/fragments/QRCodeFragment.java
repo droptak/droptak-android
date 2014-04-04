@@ -42,7 +42,6 @@ public class QRCodeFragment extends Fragment {
         QRCodeFragment fragment = new QRCodeFragment();
         fragment.code = code;
         fragment.setArguments(args);
-
         return fragment;
     }
 
