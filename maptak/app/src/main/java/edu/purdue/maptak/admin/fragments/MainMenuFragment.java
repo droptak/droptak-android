@@ -70,6 +70,7 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.mainmenu_bu_search:
                 TakFragmentManager.switchToSearch(getActivity());
+                break;
             case R.id.mainmenu_bu_revoke:
                 LoginFragment l = new LoginFragment();
                 l.revokeGplusAccess();
