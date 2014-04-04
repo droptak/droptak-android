@@ -133,7 +133,7 @@ public abstract class TakFragmentManager {
         activity.invalidateOptionsMenu();
     }
 
-    private static void collapseKeyboard(Activity a) {
+    public static void collapseKeyboard(Activity a) {
         InputMethodManager inputManager = (InputMethodManager) a.getSystemService(Context.INPUT_METHOD_SERVICE);
         View v = a.getCurrentFocus();
         if (v != null) {
