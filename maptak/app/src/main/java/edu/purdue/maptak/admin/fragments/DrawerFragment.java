@@ -38,7 +38,6 @@ public class DrawerFragment extends Fragment {
         //}
 
         // Get widgets on the screen
-        Button buLogin = (Button) v.findViewById(R.id.drawer_bu_login);
         Button buQR = (Button) v.findViewById(R.id.drawer_bu_qrcode);
         ListView lvMaps = (ListView) v.findViewById(R.id.drawer_lv_maplist);
 

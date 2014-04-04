@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
             //fm.beginTransaction().replace(R.id.activity_map_mapview, newFrame).commit();
             TakFragmentManager.switchToQRCode(this, scanResult.getContents());
         } else {
-            Log.d(MainActivity.LOG_TAG,"There was an error");
+            Log.d(MainActivity.LOG_TAG, "There was an error");
         }
     }
 
