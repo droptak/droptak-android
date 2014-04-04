@@ -10,13 +10,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 import edu.purdue.maptak.admin.qrcode.IntentResult;
+import edu.purdue.maptak.admin.tasks.GetQRMapTask;
+import edu.purdue.maptak.admin.tasks.GetQRTaksTask;
 
 
 public class MainActivity extends Activity {
@@ -176,6 +182,29 @@ public class MainActivity extends Activity {
             FragmentManager fm = getFragmentManager();
             //Fragment newFrame = QRCodeFragment.newInstance(scanResult.getContents());
             //fm.beginTransaction().replace(R.id.activity_map_mapview, newFrame).commit();
+            MapObject map = null;
+            GetQRMapTask getQRMapTask = new GetQRMapTask(scanResult.getContents(),this);
+            try {
+                map = getQRMapTask.execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("debug","mapName="+map.getLabel());
+            GetQRTaksTask task = new GetQRTaksTask(this,map.getLabel(),Long.parseLong(map.getID().toString()));
+            List<TakObject> taks = null;
+            try {
+                taks = task.execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("deubg","call");
+            map.setTaskList(taks);
+            MapTakDB db = MapTakDB.getDB(this);
+            db.addMap(map);
             TakFragmentManager.switchToQRCode(this, scanResult.getContents());
         } else {
             Log.d(MainActivity.LOG_TAG,"There was an error");

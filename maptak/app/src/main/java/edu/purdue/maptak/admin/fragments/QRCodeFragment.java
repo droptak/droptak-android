@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.util.concurrent.ExecutionException;
+
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
@@ -49,8 +51,6 @@ public class QRCodeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_qrcode, container, false);
         url = (TextView) v.findViewById(R.id.QRCodeTitle);
         url.setText(this.code);
-        GetQRMapTask getQRMapTask = new GetQRMapTask(code,getActivity());
-        getQRMapTask.execute();
         return v;
     }
 }

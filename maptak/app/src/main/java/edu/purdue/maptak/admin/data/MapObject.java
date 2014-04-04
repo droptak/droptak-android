@@ -55,6 +55,8 @@ public class MapObject {
         return this.takList;
     }
 
+    public void setTaskList(List<TakObject> taks){ this.takList = taks;}
+
     /** Returns the private attribute of the map */
     public boolean isPrivate(){
         return this.isPrivate;
