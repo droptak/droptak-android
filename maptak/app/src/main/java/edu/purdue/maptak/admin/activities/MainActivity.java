@@ -4,7 +4,10 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,12 +17,12 @@ import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.fragments.CreateMapFragment;
 import edu.purdue.maptak.admin.fragments.DrawerFragment;
-import edu.purdue.maptak.admin.fragments.LoginFragment;
-import edu.purdue.maptak.admin.managers.TakFragmentManager;
+import edu.purdue.maptak.admin.interfaces.OnGPlusLoginListener;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 import edu.purdue.maptak.admin.qrcode.IntentResult;
+import edu.purdue.maptak.admin.tasks.GPlusLoginTask;
+import edu.purdue.maptak.admin.tasks.MapTakLoginTask;
 
 
 public class MainActivity extends Activity {
@@ -32,25 +35,42 @@ public class MainActivity extends Activity {
 
     /** Strings for various keys in the preferences */
     public static final String PREF_CURRENT_MAP = "current_selected_map_id";
-    public static final String PREF_USER_EMAIL = "user_email";
-    public static final String PREF_USER_NAME = "user_name";
-    public static final String PREF_USER_LOGIN_TOKEN = "user_login_token";
-    public static final String PREF_IS_LOGGED_IN = "user_is_logged_in";
+    public static final String PREF_USER_GPLUS_EMAIL = "user_email";
+    public static final String PREF_USER_GPLUS_NAME = "user_name";
+    public static final String PREF_USER_GPLUS_ID = "google_plus_id";
+    public static final String PREF_USER_GPLUS_TOKEN = "google_oauth_token";
+    public static final String PREF_USER_GPLUS_ISLOGGEDIN = "user_is_logged_in";
+    public static final String PREF_USER_MAPTAK_TOKEN = "maptak_token";
 
-    /** Stores the currently inflated fragment. This is used by onCreateOptionsMenu, among
-     *  other things, so it knows which options menu to inflate */
-    public static MainFragmentState mainFragmentState;
-    TextView url = null;
-    public enum MainFragmentState { MAINMENU, MAP, LOGIN, QR, ADDTAK, ADDMAP, TAKLIST, MAPLIST, SEARCH }
+    /** Class variables related to the drawer */
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "MapActivity.onCreate() called.");
+
+        // Set main content view and log
+        Log.d(LOG_TAG, "MapActivity.onCreate() called.");
         setContentView(R.layout.activity_main);
 
-        // Inflate the login fragment and the sidebar to the screen
-        getFragmentManager().beginTransaction().replace(R.id.mainview, new LoginFragment()).commit();
+        // Attempt to sign the user into google plus and maptak
+        new GPlusLoginTask(this, new OnGPlusLoginListener() {
+            public void onGooglePlusLogin() {
+                new MapTakLoginTask(MainActivity.this).execute();
+            }
+        });
+
+        // Inflate the sidebar and main screen fragments
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+
+        // Make the drawer layout openable with the app icon
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer_toggle, R.string.drawer_text_open, R.string.drawer_text_closed);
+        drawerLayout.setDrawerListener(drawerToggle);
+
+        // Configure action bar
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,55 +82,16 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        LoginFragment.mGoogleApiClient.disconnect();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        MapTakDB db = MapTakDB.getDB(this);
-
-        switch (item.getItemId()) {
-            case android.R.id.home:
-
-                // Our view switches depending on where we're at currently
-                switch (mainFragmentState) {
-                    case MAPLIST: case LOGIN: case QR:
-                        TakFragmentManager.switchToMainMenu(this);
-                        break;
-                    case MAP: case ADDMAP:
-                        TakFragmentManager.switchToMapList(this);
-                        break;
-                    case ADDTAK: case TAKLIST:
-                        TakFragmentManager.switchToMap(this, getCurrentSelectedMap());
-                        break;
-                }
-
-                break;
-
-            case R.id.menu_createmap:
-                // Switch to create map view
-                TakFragmentManager.switchToCreateMap(this);
-                break;
-
-            case R.id.menu_addtak:
-                // Switch to addtak fragment
-                TakFragmentManager.switchToAddTak(this, getCurrentSelectedMap().getID());
-                break;
-
-            case R.id.menu_taklist:
-                // Switch to tak list
-                // TODO: Create a tak selected listener
-                TakFragmentManager.switchToTakList(this, getCurrentSelectedMap().getID(), null);
-                break;
-
-            case R.id.menu_settings:
-
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+    protected void onStop() {
+        super.onStop();
     }
 
     /** Enabled the "up" button on the action bar app icon, which will take the user back to
@@ -133,33 +114,15 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onBackPressed() {
-        switch (mainFragmentState) {
-            case MAINMENU:
-                super.onBackPressed();
-                break;
-            case MAPLIST: case QR: case LOGIN:
-                TakFragmentManager.switchToMainMenu(this);
-                break;
-            case MAP: case ADDMAP:
-                TakFragmentManager.switchToMapList(this);
-                break;
-            case ADDTAK: case TAKLIST:
-                TakFragmentManager.switchToMap(this, getCurrentSelectedMap());
-                break;
-        }
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        url = (TextView) findViewById(R.id.QRCodeTitle);
+        TextView url = (TextView) findViewById(R.id.QRCodeTitle);
         if ( scanResult != null ){
             FragmentManager fm = getFragmentManager();
             //Fragment newFrame = QRCodeFragment.newInstance(scanResult.getContents());
             //fm.beginTransaction().replace(R.id.activity_map_mapview, newFrame).commit();
-            TakFragmentManager.switchToQRCode(this, scanResult.getContents());
+            //TakFragmentManager.switchToQRCode(this, scanResult.getContents());
         } else {
             Log.d(MainActivity.LOG_TAG, "There was an error");
         }

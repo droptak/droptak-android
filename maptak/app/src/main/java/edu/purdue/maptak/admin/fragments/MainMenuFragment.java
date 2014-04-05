@@ -1,7 +1,6 @@
 package edu.purdue.maptak.admin.fragments;
 
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 
@@ -51,24 +50,17 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
 
-            case R.id.mainmenu_bu_maplist:
-                TakFragmentManager.switchToMapList(getActivity());
-                break;
             case R.id.mainmenu_bu_qrscanner:
                 IntentIntegrator integrator = new IntentIntegrator(getActivity());
                 integrator.initiateScan();
                 break;
             case R.id.mainmenu_bu_login:
-                TakFragmentManager.switchToLogin(getActivity());
+                //TakFragmentManager.switchToLogin(getActivity());
                 break;
             case R.id.mainmenu_bu_cleardb:
                 Toast.makeText(getActivity(), "Clearing database of all information.", Toast.LENGTH_SHORT).show();
                 MapTakDB db = MapTakDB.getDB(getActivity());
                 db.destroy();
-                break;
-            case R.id.mainmenu_bu_revoke:
-                LoginFragment l = new LoginFragment();
-                l.revokeGplusAccess();
                 break;
         }
     }

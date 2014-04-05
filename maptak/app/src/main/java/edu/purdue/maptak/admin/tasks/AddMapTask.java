@@ -9,12 +9,7 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import edu.purdue.maptak.admin.activities.MainActivity;
-import edu.purdue.maptak.admin.data.MapTakDB;
-import edu.purdue.maptak.admin.fragments.LoginFragment;
 
 public class AddMapTask extends AsyncTask<Void, Void, String>  {
     private String mapName;
@@ -40,7 +35,7 @@ public class AddMapTask extends AsyncTask<Void, Void, String>  {
     @Override
     protected String doInBackground(Void... voids) {
         String userName = settings.getString("name", "");
-        String userId = settings.getString(MainActivity.PREF_USER_LOGIN_TOKEN, "");
+        String userId = settings.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "");
         userName = userName.replaceAll("\\s", "%20");
         mapName = mapName.replaceAll("\\s", "%20");
         Log.d("debug", userName);

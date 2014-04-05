@@ -23,23 +23,4 @@
         android:text="Set Private"
         />
 
-    <EditText
-        android:id="@+id/addmap_et_admin1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/addmap_sw_isprivate"
-        android:hint="Administrator"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp" />
-
-    <Button
-        android:id="@+id/addmap_bu_addmap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/addmap_et_admin1"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="20dp"
-        android:text="Add Map"/>
-
 </RelativeLayout>

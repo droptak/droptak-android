@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import java.util.concurrent.ExecutionException;
 
 import edu.purdue.maptak.admin.R;
-import edu.purdue.maptak.admin.managers.TakFragmentManager;
 import edu.purdue.maptak.admin.managers.UserLocationManager;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
@@ -142,7 +141,7 @@ public class AddTakFragment extends Fragment implements View.OnClickListener {
         // Reinflate a map fragment
         MapTakDB db = MapTakDB.getDB(getActivity());
         MapObject mo = db.getMap(id);
-        TakFragmentManager.switchToMap(getActivity(), mo);
+        //TakFragmentManager.switchToMap(getActivity(), mo);
 
     }
 
