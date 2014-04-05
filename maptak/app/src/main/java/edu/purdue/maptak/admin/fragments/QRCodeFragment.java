@@ -12,10 +12,13 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.util.concurrent.ExecutionException;
+
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
 import edu.purdue.maptak.admin.qrcode.IntentResult;
+import edu.purdue.maptak.admin.tasks.GetQRMapTask;
 
 /*
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -39,7 +42,6 @@ public class QRCodeFragment extends Fragment {
         QRCodeFragment fragment = new QRCodeFragment();
         fragment.code = code;
         fragment.setArguments(args);
-
         return fragment;
     }
 

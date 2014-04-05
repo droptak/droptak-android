@@ -10,6 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import edu.purdue.maptak.admin.activities.MainActivity;
 
@@ -41,6 +43,10 @@ public class MapTakDB extends SQLiteOpenHelper {
     public static final String TAK_LABEL = "tak_label";
     public static final String TAK_LAT = "tak_lat";
     public static final String TAK_LNG = "tak_lng";
+
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final Lock r = rwl.readLock();
+    private final Lock w = rwl.writeLock();
 
     /** Static method that returns the database object you should use */
     private static MapTakDB instance = null;
@@ -107,23 +113,26 @@ public class MapTakDB extends SQLiteOpenHelper {
     /** Adds a map and all of its taks to the database.
      *  Does no sanity checking for if the map already exists. */
     public void addMap(MapObject map) {
-        // Add the map to the local database
-        Log.d(MainActivity.LOG_TAG, "Adding map to database.");
-        Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getLabel());
+            // Add the map to the local database
+            Log.d(MainActivity.LOG_TAG, "Adding map to database.");
+            Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getLabel());
 
-        ContentValues values = new ContentValues();
-        values.put(MAP_ID, map.getID().toString());
-        values.put(MAP_LABEL, map.getLabel());
+            ContentValues values = new ContentValues();
+            values.put(MAP_ID, map.getID().toString());
+            values.put(MAP_LABEL, map.getLabel());
 
-        SQLiteDatabase db = getWritableDatabase();
-        if (db != null) {
-            getWritableDatabase().insert(TABLE_MAPS, null, values);
-        }
+            SQLiteDatabase db = getWritableDatabase();
+            if (db != null) {
+                getWritableDatabase().insert(TABLE_MAPS, null, values);
+            }
 
-        // The map also contains taks, so add those as well
-        for (TakObject t : map.getTakList()) {
-            addTak(t, map.getID());
-        }
+            // The map also contains taks, so add those as well
+            for (TakObject t : map.getTakList()) {
+                addTak(t, map.getID());
+            }
+
+            db.close();
+
     }
 
     /** Adds a new tak for a given map to the database.
