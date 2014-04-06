@@ -90,12 +90,15 @@ public class MainActivity extends Activity {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        return super.onOptionsItemSelected(item);
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /** Enabled the "up" button on the action bar app icon, which will take the user back to

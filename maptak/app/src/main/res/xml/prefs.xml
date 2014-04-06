@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Account Management"
+        android:key="pref_category_account_management" >
+
+        <Preference
+            android:title="Manually Log In To G+ and MapTak"
+            android:key="pref_account_login" />
+
+        <Preference
+            android:title="Log out of MapTak"
+            android:key="pref_account_logout" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Debugging"
+        android:key="pref_category_debugging" >
+
+        <Preference
+            android:title="Clear local cache"
+            android:key="pref_debug_clearcache" />
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>
