@@ -9,68 +9,95 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
+import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.data.TakObject;
 
 public class AddTakTask extends AsyncTask<Void, Void, String>  {
-    private String takName;
-    private String lat;
-    private String lng;
-    private MapID id;
-    private Context context;
-    SharedPreferences settings;
-    ProgressDialog processDialog;
-    public static  String jsonsString;
-    private boolean hasSuccess = false;
 
-    public AddTakTask(String takName,String lat, String lng, MapID id, Context context) {
-        this.takName =takName;
-        this.lat = lat;
-        this.lng = lng;
-        this.id = id;
+    private static final String BASE_URL = "http://mapitapps.appspot.com/api/tak";
 
-        settings = context.getSharedPreferences("settings", 0);
-        processDialog = new ProgressDialog(context);
+    private Context c;
+    private TakObject tak;
+    private MapID mapID;
 
+    public AddTakTask(Context c, TakObject tak, MapID mapID) {
+        this.c = c;
+        this.tak = tak;
+        this.mapID = mapID;;
     }
 
+    @Override
     public void onPreExecute(){
-        processDialog.setMessage("Adding Map");
-        processDialog.show();
+
     }
-
-
-
 
     @Override
     protected String doInBackground(Void... voids) {
-        String userName = settings.getString("name", "");
-        String userId = settings.getString("id", "");
-        userName = userName.replaceAll("\\s", "%20");
-        takName = takName.replaceAll("\\s", "%20");
-        Log.d("debug", userName);
-        takName.replaceAll(" ", "%20");
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.post("http://mapitapps.appspot.com/api/tak?name="+userName+"&id="+userId+"&mapId="+id.toString()+"&title="+takName+"&lat="+lat+"&lng="+lng, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(String response) {
-                Log.d("debug", "onSucess");
-                AddMapTask.jsonsString = response;
-                hasSuccess = true;
 
-            }
-        });
-        while(!hasSuccess){
-            ;
+        // Get access to the shared preferences
+        SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+
+        // Get user information from the preferences
+        String userName = prefs.getString(MainActivity.PREF_USER_GPLUS_NAME, "ERROR");
+        String userEmail = prefs.getString(MainActivity.PREF_USER_GPLUS_EMAIL, "ERROR");
+        String userID = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "ERROR");
+
+        if (userName.equals("ERROR") || userEmail.equals("ERROR") || userID.equals("ERROR")) {
+            Log.d(MainActivity.LOG_TAG, "Error sending tak. Not logged in.");
+            return null;
         }
-        processDialog.dismiss();
-        return AddMapTask.jsonsString;
+
+        // Get tak information from object passed in
+        String takName = tak.getLabel();
+        double takLat = tak.getLatitude();
+        double takLng = tak.getLongitude();
+
+        // Sanitize the strings
+        userName = userName.replaceAll(" ", "%20");
+        takName = takName.replaceAll(" ", "%20");
+
+        // Create the URL we will post to
+        String url = BASE_URL +
+                "?name=" + userName +
+                "&id=" + userID +
+                "&mapId=" + mapID.toString() +
+                "&title=" + takName +
+                "&lat=" + takLat +
+                "&lng=" + takLng;
+
+        // Create our asynchronous http client and issue a post request to a given URL
+        HttpClient client = new DefaultHttpClient();
+        HttpPost post = new HttpPost(url);
+
+        // Make the post and get the response as a JSON string
+        String responseString = null;
+        try {
+            HttpResponse response = client.execute(post);
+            responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Return the JSON string
+        return responseString;
 
     }
-    protected void onPostExecute(Void v) {
-        //processDialog.dismiss();
+
+    @Override
+    protected void onPostExecute(String s) {
+
     }
+
 }

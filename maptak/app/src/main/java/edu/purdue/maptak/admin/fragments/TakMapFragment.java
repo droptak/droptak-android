@@ -1,6 +1,7 @@
 package edu.purdue.maptak.admin.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
@@ -10,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import edu.purdue.maptak.admin.R;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,11 +21,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.interfaces.OnGMapLoadedListener;
+import edu.purdue.maptak.admin.managers.UserLocationManager;
 
 /** To create instances of this class, you can do a standard "new" thing but
  *  it won't have any points on it. To get points on it, create the class with
@@ -32,35 +37,25 @@ public class TakMapFragment extends MapFragment {
     /** Listener for when the gmap has been fully loaded to the screen */
     private OnGMapLoadedListener loadedListener;
 
-    /** Call this method to create instances of this fragment */
-    public static TakMapFragment newInstanceOf(MapObject objectToDisplay) {
-        final MapObject object = objectToDisplay;
-        final TakMapFragment fragment = new TakMapFragment();
-        fragment.setOnGMapLoadedListener(new OnGMapLoadedListener() {
-            public void onGMapLoaded() {
-                fragment.addTaksToGMap(object);
-            }
-        });
-        return fragment;
-    }
-
-    /** First method that is called, before View or Activity is created */
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-    /** Super class takes care of creating the view since we're just extending Google's MapFragment. */
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
     /** Called when the fragment has been fully inflated into the activity */
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Center the camera on the user
-        centerCameraOnUser();
+        // Enable location tracking
+        getMap().setMyLocationEnabled(true);
+
+        // Get the currently loaded map object if it exists
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+        String mapIDStr = prefs.getString(MainActivity.PREF_CURRENT_MAP, "");
+
+        // Add the pins to the map
+        if (mapIDStr.equals("")) {
+            centerCameraOnUser();
+        } else {
+            MapID mapID = new MapID(mapIDStr);
+            MapObject mo = MapTakDB.getDB(getActivity()).getMap(mapID);
+            addTaksToGMap(mo);
+        }
 
         // Alert listeners that the gmap is loaded
         if (loadedListener != null) {
@@ -70,17 +65,14 @@ public class TakMapFragment extends MapFragment {
 
     /** Centers the map's camera on the user */
     public void centerCameraOnUser() {
-        // Enable the user's location on the map
-        getMap().setMyLocationEnabled(true);
 
         // Get their current location
-        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        Location userLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        UserLocationManager manager = new UserLocationManager(getActivity());
 
-        if (userLocation != null) {
-            double lat = userLocation.getLatitude();
-            double lng = userLocation.getLongitude();
-            LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        if (manager.isLocationAvailable()) {
+            double lat = manager.getLat();
+            double lng = manager.getLng();
+            LatLng userLatLng = new LatLng(lat, lng);
 
             // Center the map to that position
             CameraUpdate moveCam = CameraUpdateFactory.newLatLngZoom(userLatLng, 14.5f);

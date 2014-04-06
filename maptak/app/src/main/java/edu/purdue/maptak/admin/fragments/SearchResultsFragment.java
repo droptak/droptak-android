@@ -50,46 +50,9 @@ public class SearchResultsFragment extends Fragment implements AdapterView.OnIte
         View v = inflater.inflate(R.layout.fragment_maplist, container, false);
         mapList = (ListView) v.findViewById(R.id.fragment_maplist_listview);
         mapList.setOnItemClickListener(this);
-        listAdapter = new MapObjectAdapter(getActivity(), android.R.layout.simple_list_item_1, listOfMaps);
+        //listAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, listOfMaps);
         mapList.setAdapter(listAdapter);
-        return v;
-    }
-
-    private class MapObjectAdapter extends ArrayAdapter {
-        private Context mContext;
-        private int id;
-        private List<MapObject> mMaps;
-
-        public MapObjectAdapter(Context context, int textViewResourceId, List<MapObject> maps){
-            super(context, textViewResourceId, maps);
-            mContext = context;
-            id = textViewResourceId;
-            mMaps = maps;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent){
-            View row = convertView;
-            MapObjectData temp = null;
-            if ( row == null ){
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                row = inflater.inflate(R.layout.listview_mapobject, parent, false);
-                temp = new MapObjectData();
-                temp.title = (TextView) row.findViewById(R.id.mapTitle);
-                row.setTag(temp);
-            } else {
-                temp = (MapObjectData)row.getTag();
-            }
-            MapObject mapToBeDisplayed = mMaps.get(position);
-            temp.title.setText(mapToBeDisplayed.getLabel());
-            return row;
-        }
-
-        class MapObjectData
-        {
-            TextView title;
-        }
-
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

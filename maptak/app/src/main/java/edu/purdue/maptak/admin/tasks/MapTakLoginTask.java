@@ -19,7 +19,7 @@ import java.io.IOException;
 import edu.purdue.maptak.admin.activities.MainActivity;
 
 /** Sends a user's Google OAUTH token to the MapTak servers for authentication */
-public class MapTakLoginTask extends AsyncTask<Void,Void,String> {
+public class MapTakLoginTask extends AsyncTask<Void, Void, Void> {
 
     private Activity callingActivity;
     private ProgressDialog progressDialog;
@@ -44,7 +44,7 @@ public class MapTakLoginTask extends AsyncTask<Void,Void,String> {
     }
 
 
-    protected String doInBackground(Void... voids) {
+    protected Void doInBackground(Void... voids) {
 
         // Get instance of shared preferences
         SharedPreferences preferences = callingActivity.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
@@ -76,6 +76,7 @@ public class MapTakLoginTask extends AsyncTask<Void,Void,String> {
         HttpClient client = new DefaultHttpClient();
         HttpPost post = new HttpPost(url);
 
+        // Do the post and get the JSON as a reponse
         String responseString = null;
         try {
             HttpResponse response = client.execute(post);
@@ -102,7 +103,7 @@ public class MapTakLoginTask extends AsyncTask<Void,Void,String> {
 
 
     @Override
-    protected void onPostExecute(String token) {
+    protected void onPostExecute(Void v) {
         callingActivity.runOnUiThread(new Runnable() {
             public void run() {
                 progressDialog.dismiss();

@@ -8,6 +8,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 
+import edu.purdue.maptak.admin.interfaces.OnLocationReadyListener;
+
 /** Class which handles returns a user's location when required.
  *  Create it normally.
  *  Calls to getLat() or getLng() should be enclosed in an if(isLocationAvailable()) statement.
@@ -21,6 +23,9 @@ public class UserLocationManager
 
     /** Whether or not the location is currently good */
     private boolean isAvailable;
+
+    /** Listener for callbacks when location is ready */
+    private OnLocationReadyListener listener;
 
     /** Constructor. Pass in context of activity. */
     public UserLocationManager(Context c) {
@@ -51,9 +56,17 @@ public class UserLocationManager
         return userLocation.getLastLocation().getLongitude();
     }
 
+    /** Sets an OnLocationReadyListener should you desire one */
+    public void setOnLocationReadyListener(OnLocationReadyListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
         isAvailable = true;
+        if (listener != null) {
+            listener.onLocationReady();
+        }
     }
 
     @Override
