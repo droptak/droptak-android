@@ -33,6 +33,7 @@ import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
+import edu.purdue.maptak.admin.fragments.DrawerFragment;
 import edu.purdue.maptak.admin.tasks.AddMapTask;
 
 
@@ -112,7 +113,8 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         MapTakDB db = MapTakDB.getDB(getActivity());
         db.addMap(mapObject);
 
-        // Close the dialog
+        // Close the dialog and re-inflate the side drawer to refresh the map list
+        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
         getDialog().cancel();
     }
 

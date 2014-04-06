@@ -77,6 +77,14 @@ public class MainActivity extends Activity {
         getActionBar().setHomeButtonEnabled(true);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Re-create the drawer
+        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+    }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         int menuRes = -1;
         setUpEnabled(false);
