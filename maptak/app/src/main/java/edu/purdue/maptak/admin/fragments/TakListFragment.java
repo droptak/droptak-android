@@ -26,7 +26,7 @@ public class TakListFragment extends ListFragment {
     /** The MapObject which owns all of the taks listed in the list */
     private MapID mapID;
 
-    /** Creates a new instance of a TakListFragment and returns it */
+    /** Creates a new instance of a TakListDialog and returns it */
     public static TakListFragment newInstanceOf(MapID toDisplay, OnTakSelectedListener listener) {
         TakListFragment f = new TakListFragment();
         f.mapID = toDisplay;
@@ -58,7 +58,7 @@ public class TakListFragment extends ListFragment {
         while(!takObjects.isEmpty()){
             taks.add(takObjects.remove(0).getLabel());
         }
-        Log.i("TakListFragment", "1");
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, taks);
         setListAdapter(adapter);
     }

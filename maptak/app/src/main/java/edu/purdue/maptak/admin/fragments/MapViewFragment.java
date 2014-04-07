@@ -16,6 +16,7 @@ import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.fragments.dialogs.CreateTakDialog;
+import edu.purdue.maptak.admin.fragments.dialogs.TakListDialog;
 
 public class MapViewFragment extends Fragment implements View.OnClickListener {
 
@@ -28,7 +29,9 @@ public class MapViewFragment extends Fragment implements View.OnClickListener {
 
         // Prepare buttons on screen
         Button buAddTak = (Button) v.findViewById(R.id.takmapview_bu_addtak);
+        Button buTakList = (Button) v.findViewById(R.id.takmapview_bu_taklist);
         buAddTak.setOnClickListener(this);
+        buTakList.setOnClickListener(this);
 
         return v;
     }
@@ -46,19 +49,31 @@ public class MapViewFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
 
+        // Get shared prefs and database
+        MapTakDB db = MapTakDB.getDB(getActivity());
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+
+        // Get the current map ID
+        MapID id = new MapID(prefs.getString(MainActivity.PREF_CURRENT_MAP, ""));
+
         switch (view.getId()) {
             case R.id.takmapview_bu_addtak:
 
                 // Show the dialog box for creating a new tak
                 new CreateTakDialog().show(getFragmentManager(), "create_tak_dialog");
 
-                // Get the shared preferences and database
-                MapTakDB db = MapTakDB.getDB(getActivity());
-                SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
-
                 // Update the map with the new tak we just added
-                MapID id = new MapID(prefs.getString(MainActivity.PREF_CURRENT_MAP, ""));
                 mapFragment.addTaksToGMap(db.getMap(id));
+
+                break;
+
+            case R.id.takmapview_bu_taklist:
+
+                // Get the list of taks
+                List<TakObject> taks = db.getTaks(id);
+
+                // Create the dialogfragment
+                new TakListDialog(taks).show(getFragmentManager(), "tak_list_dialog");
 
                 break;
         }
