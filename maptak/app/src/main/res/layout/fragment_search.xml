@@ -5,17 +5,10 @@
     android:padding="20dp"
     tools:context="edu.purdue.maptak.admin.fragments.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
     <EditText
         android:id="@+id/search_et_searchbar"
         android:hint="Search Maps"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:layout_below="@id/search_et_searchbar"
-        android:id="@+id/search_bu_search"
-        android:text="Search"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 

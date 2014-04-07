@@ -31,7 +31,6 @@ import edu.purdue.maptak.admin.tasks.GetQRMapTask;
  */
 public class QRCodeFragment extends Fragment {
 
-    public QRCodeFragment(){}
     private String code;
     static TextView url = null;
 

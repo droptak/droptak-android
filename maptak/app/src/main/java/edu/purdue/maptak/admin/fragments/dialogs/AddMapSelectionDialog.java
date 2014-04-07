@@ -7,6 +7,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 
+import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.fragments.QRCodeFragment;
+import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
+
 public class AddMapSelectionDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     private String[] listItems = new String[] {
@@ -37,10 +41,15 @@ public class AddMapSelectionDialog extends DialogFragment implements DialogInter
                 d.show(getFragmentManager(), "create_map_dialog");
                 break;
             case 1:
-
+                // Scan a QR code
+                getDialog().cancel();
+                IntentIntegrator integrator = new IntentIntegrator(getActivity());
+                integrator.initiateScan();
                 break;
             case 2:
-
+                // Search for a map
+                SearchDialog e = new SearchDialog();
+                e.show(getFragmentManager(), "search_dialog");
                 break;
         }
 
