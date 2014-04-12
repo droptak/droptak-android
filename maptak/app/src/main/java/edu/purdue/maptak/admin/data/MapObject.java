@@ -25,19 +25,19 @@ public class MapObject {
     private UserID mapOwner;
 
     /** Determines whether map has private visibility or not */
-    private boolean isPrivate;
+    private boolean isPublic;
 
     /** Map created by the backend. MapID is known. */
     public MapObject(String label, MapID id, List<TakObject> taks, boolean isPrivate) {
         this.label = label;
         this.mapID = id;
         this.takList = taks;
-        this.isPrivate = isPrivate;
+        this.isPublic = isPrivate;
     }
 
     /** Map created from the app/user. mapID is generated randomly until a sync with the server. */
     public MapObject(String label, List<TakObject> taks, boolean isPrivate) {
-        this(label, new MapID(UUID.randomUUID().toString().substring(0, 12)), taks, isPrivate);
+        this(label, new MapID("TTTT" + UUID.randomUUID().toString().substring(0, 12)), taks, isPrivate);
     }
 
     /** Returns the label for the map */
@@ -58,13 +58,13 @@ public class MapObject {
     public void setTaskList(List<TakObject> taks){ this.takList = taks;}
 
     /** Returns the private attribute of the map */
-    public boolean isPrivate(){
-        return this.isPrivate;
+    public boolean isPublic(){
+        return this.isPublic;
     }
 
     /** Sets private attribute on/off */
-    public void setPrivate(boolean priv){
-        this.isPrivate = priv;
+    public void setPublic(boolean priv){
+        this.isPublic = priv;
     }
 
     /** Returns the owner(UUID) of the map */

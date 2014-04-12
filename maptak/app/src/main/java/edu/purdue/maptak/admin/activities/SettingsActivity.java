@@ -1,5 +1,6 @@
 package edu.purdue.maptak.admin.activities;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -7,9 +8,6 @@ import android.preference.PreferenceActivity;
 import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapTakDB;
 
-/**
- * Created by mike on 4/6/14.
- */
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener {
 
     @Override
@@ -21,6 +19,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         findPreference("pref_account_login").setOnPreferenceClickListener(this);
         findPreference("pref_account_logout").setOnPreferenceClickListener(this);
         findPreference("pref_debug_clearcache").setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //getFragmentManager().beginTransaction().replace(R.id.mainview, new Fragment()).commit();
+        super.onBackPressed();
     }
 
     @Override

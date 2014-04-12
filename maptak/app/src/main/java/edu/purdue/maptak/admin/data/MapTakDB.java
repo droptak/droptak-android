@@ -26,16 +26,19 @@ public class MapTakDB extends SQLiteOpenHelper {
     public static final String TABLE_MAPS = "t_maps";
     public static final String TABLE_MAPS_ADMINS = "t_maps_admins";
     public static final String TABLE_TAKS = "t_taks";
+    public static final String TABLE_TAK_METADATA = "t_taks_metadata";
 
     /** Columns - TABLE_MAPS */
     public static final String MAP_ID = "_id";
     public static final String MAP_LABEL = "map_label";
     public static final String MAP_ISPUBLIC = "map_ispublic";
+    public static final String MAP_OWNER_ID = "map_owner_id";
+    public static final String MAP_OWNER_STR = "map_owner_string";
 
     /** Columns - TABLE_MAPS_ADMINS */
     public static final String MAPADMINS_ID = "_id";
-    public static final String MAPADMINS_MAP_ID = "map_id";
     public static final String MAPADMINS_NAME = "name";
+    public static final String MAPADMINS_MAP_ID = "map_id";
 
     /** Columns - TABLE_TAKS */
     public static final String TAK_ID = "_id";
@@ -44,9 +47,11 @@ public class MapTakDB extends SQLiteOpenHelper {
     public static final String TAK_LAT = "tak_lat";
     public static final String TAK_LNG = "tak_lng";
 
-    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-    private final Lock r = rwl.readLock();
-    private final Lock w = rwl.writeLock();
+    /** Columns - TABLE_TAKS_METADATA */
+    public static final String TAK_METADATA_ID = "_id";
+    public static final String TAK_METADATA_TAKID = "tak_id";
+    public static final String TAK_METADATA_KEY = "tak_metadata_key";
+    public static final String TAK_METADATA_VALUE = "tak_metadata_value";
 
     /** Static method that returns the database object you should use */
     private static MapTakDB instance = null;
@@ -72,7 +77,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         String create_table_maps = "CREATE TABLE " + TABLE_MAPS + " (" +
                 MAP_ID + " TEXT, " +
                 MAP_LABEL + " TEXT, " +
-                MAP_ISPUBLIC + " BOOLEAN );";
+                MAP_ISPUBLIC + " INTEGER " +
+                MAP_OWNER_ID + " TEXT, " +
+                MAP_OWNER_STR + " TEXT );";
 
         String create_table_maps_admins = "CREATE TABLE " + TABLE_MAPS_ADMINS + " (" +
                 MAPADMINS_ID + " TEXT, " +
@@ -86,10 +93,17 @@ public class MapTakDB extends SQLiteOpenHelper {
                 TAK_LAT + " DOUBLE, " +
                 TAK_LNG + " DOUBLE );";
 
+        String create_table_tak_metadata = "CREATE TABLE " + TABLE_TAK_METADATA + " (" +
+                TAK_METADATA_ID + " TEXT, " +
+                TAK_METADATA_TAKID + " TEXT, " +
+                TAK_METADATA_KEY + " TEXT, " +
+                TAK_METADATA_VALUE + " TEXT );";
+
         // Create the tables from the strings provided
         sqLiteDatabase.execSQL(create_table_maps);
         sqLiteDatabase.execSQL(create_table_maps_admins);
         sqLiteDatabase.execSQL(create_table_taks);
+        sqLiteDatabase.execSQL(create_table_tak_metadata);
     }
 
     /** Called when the database is upgraded from one DB_VERSION to the next */
@@ -105,33 +119,46 @@ public class MapTakDB extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE " + TABLE_MAPS);
             db.execSQL("DROP TABLE " + TABLE_MAPS_ADMINS);
             db.execSQL("DROP TABLE " + TABLE_TAKS);
+            db.execSQL("DROP TABLE " + TABLE_TAK_METADATA);
             onCreate(db);
         }
-
     }
 
-    /** Adds a map and all of its taks to the database.
-     *  Does no sanity checking for if the map already exists. */
+    /** Adds a map and all of its metadata to the database.
+     *  This includes: Map name, map ID, whether it is public or private, and all of its administrators. */
     public void addMap(MapObject map) {
-            // Add the map to the local database
-            Log.d(MainActivity.LOG_TAG, "Adding map to database.");
-            Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getLabel());
+        // Add the map to the local database
+        Log.d(MainActivity.LOG_TAG, "Adding map to database.");
+        Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getLabel());
 
-            ContentValues values = new ContentValues();
-            values.put(MAP_ID, map.getID().toString());
-            values.put(MAP_LABEL, map.getLabel());
+        // Get database
+        SQLiteDatabase db = getWritableDatabase();
 
-            SQLiteDatabase db = getWritableDatabase();
-            if (db != null) {
-                getWritableDatabase().insert(TABLE_MAPS, null, values);
-            }
+        // Add the map to the database
+        ContentValues valuesMaps = new ContentValues();
+        valuesMaps.put(MAP_ID, map.getID().toString());
+        valuesMaps.put(MAP_LABEL, map.getLabel());
+        valuesMaps.put(MAP_ISPUBLIC, map.isPublic());
+        valuesMaps.put(MAP_OWNER_ID, map.getOwner().getID());
+        valuesMaps.put(MAP_OWNER_STR, map.getOwner().toString());
 
-            // The map also contains taks, so add those as well
-            for (TakObject t : map.getTakList()) {
-                addTak(t, map.getID());
-            }
+        if (db != null) {
+            db.insert(TABLE_MAPS, null, valuesMaps);
+        }
 
+        // Add the managers
+        for (UserID admin : map.getManagerList()) {
+            addAdmin(admin, map.getID());
+        }
+
+        // Add the taks
+        for (TakObject t : map.getTakList()) {
+            addTak(t, map.getID());
+        }
+
+        if (db != null) {
             db.close();
+        }
 
     }
 
@@ -172,14 +199,106 @@ public class MapTakDB extends SQLiteOpenHelper {
 
     }
 
+    /** Adds a piece of tak metadata to the database */
+    public void addTakMetadata(TakID takID, TakMetadata metadata) {
+
+        ContentValues values = new ContentValues();
+        values.put(TAK_METADATA_ID, "1");
+        values.put(TAK_METADATA_TAKID, takID.toString());
+        values.put(TAK_METADATA_KEY, metadata.getKey());
+        values.put(TAK_METADATA_VALUE, metadata.getValue());
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.insert(TABLE_TAK_METADATA, null, values);
+        }
+    }
+
     /** Changes the ID of a map associated with "oldID" to "newID" */
     public void setMapID(MapID oldID, MapID newID) {
         Log.d(MainActivity.LOG_TAG, "Modifying mapID from " + oldID + " to " + newID);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ID + " = " + newID + " WHERE " + MAP_ID + " = " + oldID + ";");
+            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ID + " = \"" + newID + "\" WHERE " + MAP_ID + " = \"" + oldID + "\";");
         }
 
+    }
+
+    /** Changes the name of a map associated with "id" to "name" */
+    public void setMapName(MapID id, String newName) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_LABEL + "=\"" + newName + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+        }
+    }
+
+    /** Changes the isPublic status of a map to the given boolean */
+    public void setMapIsPublic(MapID id, boolean isPublic) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            int isPub = -1;
+            isPub = isPublic ? 1 : 0;
+            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ISPUBLIC + "=\"" + isPub + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+        }
+    }
+
+    /** Changes the owner id and owner name of a given map to the given user ID */
+    public void setMapOwner(MapID id, UserID user) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_OWNER_ID + "=\"" + user.getID() + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_OWNER_STR + "=\"" + user.getName() + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+        }
+    }
+
+    /** Changes the TakID of a given tak from the old takID to the new takID */
+    public void setTakID(TakID oldTak, TakID newTak) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_TAKS + " SET " + TAK_ID + "=\"" + newTak + "\" WHERE " + TAK_ID + " = \"" + oldTak + "\";");
+        }
+    }
+
+    /** Changes the mapid of a given tak from the old to the new */
+    public void setTakMapID(TakID tak, MapID newMap) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_TAKS + " SET " + TAK_MAP_ID + "=\"" + newMap + "\" WHERE " + TAK_ID + " = \"" + tak + "\";");
+        }
+    }
+
+    /** Changes the tak name of a supplied tak to what is provided */
+    public void setTakName(TakID id, String name) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_TAKS + " SET "+ TAK_LABEL + "=\"" + name + "\" WHERE " + TAK_ID + " = \"" + id + "\";");
+        }
+    }
+
+    /** Changes the tak's latitude and longitude to the given lat/lng pair */
+    public void setTakLatLng(TakID id, double lat, double lng) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_TAKS + " SET " + TAK_LAT + "=\"" + lat + "\" WHERE " + TAK_ID + " = \"" + id + "\";");
+            db.execSQL("UPDATE " + TABLE_TAKS + " SET " + TAK_LNG + "=\"" + lng + "\" WHERE " + TAK_ID + " = \"" + id + "\";");
+        }
+    }
+
+    /** Changes the name and ID associated with oldID's user-id to the data in newID */
+    public void setMapAdminsUser(UserID oldID, UserID newID) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_ID + "=\"" + newID.getID() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
+            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_NAME + "=\"" + newID.getName() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
+        }
+    }
+
+    /** Changes the mapID a given administrator is associated with */
+    public void setMapAdminsMapID(UserID id, MapID newMapID) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_MAP_ID + "=\"" + newMapID.toString() + "\" WHERE " + MAPADMINS_ID + "=\"" + id.getID() + "\";");
+        }
     }
 
     /** Deletes a map associated with a given map ID from the local database.
@@ -190,7 +309,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + map.toString() + "\";");
         }
-
     }
 
     /** Removes a tak associated with a given ID from the local database.
@@ -212,7 +330,14 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\"");
         }
+    }
 
+    /** Deletes the tak metadata associated with a given TakMetadata object (id, specifically) from the database */
+    public void deleteTakMetadata(TakMetadata metadata) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("DELETE FROM " + TABLE_TAK_METADATA + " WHERE " + TAK_METADATA_ID + "=\"" + metadata.getID() + "\"");
+        }
     }
 
     /** Returns a list of the maps the user has cached on the device. */
