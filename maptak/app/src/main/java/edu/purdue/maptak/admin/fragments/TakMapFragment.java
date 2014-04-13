@@ -90,17 +90,17 @@ public class TakMapFragment extends MapFragment {
         gmap.clear();
 
         // If the map has no points (brand new) then just return
-        if (map.getTakList().size() == 0) {
+        if (map.getTaks().size() == 0) {
             return;
         }
 
         // Get all the latlng points for the map and add them
         LatLngBounds.Builder builder = LatLngBounds.builder();
-        for (TakObject t : map.getTakList()) {
-            LatLng l = new LatLng(t.getLatitude(), t.getLongitude());
+        for (TakObject t : map.getTaks()) {
+            LatLng l = new LatLng(t.getLat(), t.getLng());
             builder.include(l);
             gmap.addMarker(new MarkerOptions()
-                    .title(t.getLabel())
+                    .title(t.getName())
                     .position(l));
         }
 

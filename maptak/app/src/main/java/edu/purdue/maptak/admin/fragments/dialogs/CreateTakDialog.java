@@ -14,6 +14,7 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import edu.purdue.maptak.admin.R;
@@ -21,6 +22,7 @@ import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakID;
+import edu.purdue.maptak.admin.data.TakMetadata;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.interfaces.OnLocationReadyListener;
 import edu.purdue.maptak.admin.managers.UserLocationManager;
@@ -107,7 +109,12 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
         double lng = Double.parseDouble(etLng.getText().toString());
 
         // Create the first tak object
-        TakObject oldtak = new TakObject(name, lat, lng);
+        TakObject oldtak = new TakObject();
+        oldtak.setName(name);
+        oldtak.setLat(lat);
+        oldtak.setLng(lng);
+        oldtak.setID(null);
+        oldtak.setMetadata(null);
 
         // Pass it to the AddTakTask and start it up
         AddTakTask task = new AddTakTask(getActivity(), oldtak, mapID);
@@ -130,8 +137,12 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
         }
 
         // Create the TakID object and the new TakObject
-        TakID id = new TakID(takID);
-        TakObject newtak = new TakObject(id, name, lat, lng);
+        TakObject newtak = new TakObject();
+        newtak.setID(new TakID(takID));
+        newtak.setName(name);
+        newtak.setLat(lat);
+        newtak.setLng(lng);
+        newtak.setMetadata(new HashMap<String, TakMetadata>());
 
         // Add it to the database
         MapTakDB db = MapTakDB.getDB(getActivity());

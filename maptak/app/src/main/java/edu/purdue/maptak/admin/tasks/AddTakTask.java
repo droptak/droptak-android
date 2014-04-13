@@ -60,9 +60,9 @@ public class AddTakTask extends AsyncTask<Void, Void, String>  {
         }
 
         // Get tak information from object passed in
-        String takName = tak.getLabel();
-        double takLat = tak.getLatitude();
-        double takLng = tak.getLongitude();
+        String takName = tak.getName();
+        double takLat = tak.getLat();
+        double takLng = tak.getLng();
 
         // Sanitize the strings
         userName = userName.replaceAll(" ", "%20");

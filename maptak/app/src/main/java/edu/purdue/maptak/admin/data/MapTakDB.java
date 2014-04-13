@@ -8,8 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -129,7 +131,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     public void addMap(MapObject map) {
         // Add the map to the local database
         Log.d(MainActivity.LOG_TAG, "Adding map to database.");
-        Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getLabel());
+        Log.d(MainActivity.LOG_TAG, "\tID: " + map.getID() + "\tName: " + map.getName());
 
         // Get database
         SQLiteDatabase db = getWritableDatabase();
@@ -137,7 +139,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         // Add the map to the database
         ContentValues valuesMaps = new ContentValues();
         valuesMaps.put(MAP_ID, map.getID().toString());
-        valuesMaps.put(MAP_LABEL, map.getLabel());
+        valuesMaps.put(MAP_LABEL, map.getName());
         valuesMaps.put(MAP_ISPUBLIC, map.isPublic());
         valuesMaps.put(MAP_OWNER_ID, map.getOwner().getID());
         valuesMaps.put(MAP_OWNER_STR, map.getOwner().toString());
@@ -147,12 +149,12 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
 
         // Add the managers
-        for (UserID admin : map.getManagerList()) {
+        for (UserID admin : map.getManagers()) {
             addAdmin(admin, map.getID());
         }
 
         // Add the taks
-        for (TakObject t : map.getTakList()) {
+        for (TakObject t : map.getTaks()) {
             addTak(t, map.getID());
         }
 
@@ -172,13 +174,18 @@ public class MapTakDB extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(TAK_ID, tak.getID().toString());
         values.put(TAK_MAP_ID, map.toString());
-        values.put(TAK_LABEL, tak.getLabel());
-        values.put(TAK_LAT, tak.getLatitude());
-        values.put(TAK_LNG, tak.getLongitude());
+        values.put(TAK_LABEL, tak.getName());
+        values.put(TAK_LAT, tak.getLat());
+        values.put(TAK_LNG, tak.getLng());
 
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             getWritableDatabase().insert(TABLE_TAKS, null, values);
+        }
+
+        // Add all of its metadata as well
+        for (TakMetadata t : tak.getMeta().values()) {
+            addTakMetadata(tak.getID(), t);
         }
 
     }
@@ -350,24 +357,37 @@ public class MapTakDB extends SQLiteOpenHelper {
             c = db.query(TABLE_MAPS, null, null, null, null, null, null);
         }
 
-        // Statically generate all the column indexes as a performance improvement
-        int COL_MAP_ID = c.getColumnIndex(MAP_ID);
-        int COL_MAP_LABEL = c.getColumnIndex(MAP_LABEL);
-
         if (c.moveToFirst()) {
             do {
-                // Create the ID
-                String id = c.getString(COL_MAP_ID);
+                // Get the ID
+                String id = c.getString(c.getColumnIndex(MAP_ID));
                 MapID mapID = new MapID(id);
 
-                // Create the label
-                String label = c.getString(COL_MAP_LABEL);
+                // Get the label
+                String label = c.getString(c.getColumnIndex(MAP_LABEL));
 
                 // Get the taks for the map
                 List<TakObject> taks = getTaks(mapID);
 
+                // Get the owner information
+                String ownerID = c.getString(c.getColumnIndex(MAP_OWNER_ID));
+                String ownerNm = c.getString(c.getColumnIndex(MAP_OWNER_STR));
+                UserID owner = new UserID(ownerID, ownerNm);
+
+                // Get administrator information
+                List<UserID> admins = getAdmins(mapID);
+
+                // Get public/private information
+                int isP = c.getInt(c.getColumnIndex(MAP_ISPUBLIC));
+
                 // Create the map object
-                MapObject map = new MapObject(label, mapID, taks, false);
+                MapObject map = new MapObject();
+                map.setName(label);
+                map.setID(mapID);
+                map.setTaks(taks);
+                map.setOwner(owner);
+                map.setManagers(admins);
+                map.setIsPublic(isP == 1);
 
                 // Add to the list
                 results.add(map);
@@ -383,13 +403,34 @@ public class MapTakDB extends SQLiteOpenHelper {
     public MapObject getMap(MapID mapID) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
-            Cursor c = db.rawQuery(
-                    "SELECT * FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + mapID.toString() + "\";", null);
+            Cursor c = db.rawQuery("SELECT * FROM " + TABLE_MAPS + " WHERE " + MAP_ID + "=\"" + mapID.toString() + "\";", null);
             if (c.moveToFirst()) {
-                String id = c.getString(c.getColumnIndex(MAP_ID));
+
+                // Get name
                 String label = c.getString(c.getColumnIndex(MAP_LABEL));
+
+                // Get taks
                 List<TakObject> taks = getTaks(mapID);
-                MapObject map = new MapObject(label, mapID, taks, false);
+
+                // Get owner
+                String ownerID = c.getString(c.getColumnIndex(MAP_OWNER_ID));
+                String ownerNm = c.getString(c.getColumnIndex(MAP_OWNER_ID));
+                UserID owner = new UserID(ownerID, ownerNm);
+
+                // Get the administrators
+                List<UserID> admins = getAdmins(mapID);
+
+                // Get public information
+                int isPub = c.getInt(c.getColumnIndex(MAP_ISPUBLIC));
+
+                // Create map
+                MapObject map = new MapObject();
+                map.setName(label);
+                map.setID(mapID);
+                map.setTaks(taks);
+                map.setManagers(admins);
+                map.setOwner(owner);
+                map.setIsPublic(isPub == 1);
 
                 c.close();
                 return map;
@@ -410,11 +451,28 @@ public class MapTakDB extends SQLiteOpenHelper {
             List<TakObject> results = new LinkedList<TakObject>();
             if (c.moveToFirst()) {
                 do {
-                    String takID = c.getString(c.getColumnIndex(TAK_ID));
+
+                    // Get ID
+                    String takIDStr = c.getString(c.getColumnIndex(TAK_ID));
+                    TakID id = new TakID(takIDStr);
+
+                    // Get name
                     String takLabel = c.getString(c.getColumnIndex(TAK_LABEL));
+
+                    // Get lat and lng
                     double takLat = c.getDouble(c.getColumnIndex(TAK_LAT));
                     double takLng = c.getDouble(c.getColumnIndex(TAK_LNG));
-                    TakObject t = new TakObject(new TakID(takID), takLabel, takLat, takLng);
+
+                    // Get metadata
+                    Map<String, TakMetadata> meta = getTakMetadata(id);
+
+                    TakObject t = new TakObject();
+                    t.setID(new TakID(takIDStr));
+                    t.setName(takLabel);
+                    t.setLat(takLat);
+                    t.setLng(takLng);
+                    t.setMetadata(meta);
+
                     results.add(t);
                 } while (c.moveToNext());
             }
@@ -436,14 +494,31 @@ public class MapTakDB extends SQLiteOpenHelper {
                     "SELECT * FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "\"" + takID.toString() + "\";", null);
 
             if (c.moveToFirst()) {
+
+                // Get id
                 String takIDStr = c.getString(c.getColumnIndex(TAK_ID));
+                TakID id = new TakID(takIDStr);
+
+                // Get name
                 String takLabel = c.getString(c.getColumnIndex(TAK_LABEL));
+
+                // Get location
                 double takLat = c.getDouble(c.getColumnIndex(TAK_LAT));
                 double takLng = c.getDouble(c.getColumnIndex(TAK_LNG));
-                TakObject obj = new TakObject(new TakID(takIDStr), takLabel, takLat, takLng);
+
+                // Get metadata
+                Map<String, TakMetadata> map = getTakMetadata(id);
+
+                // Create and return object
+                TakObject t = new TakObject();
+                t.setName(takLabel);
+                t.setID(id);
+                t.setLat(takLat);
+                t.setLng(takLng);
+                t.setMetadata(map);
 
                 c.close();
-                return obj;
+                return t;
             }
         }
 
@@ -457,7 +532,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor c = db.rawQuery(
-                    "SELECT * FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_MAP_ID + "=\"" + mapID.toString() + "\"", null);
+                    "SELECT * FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_MAP_ID + "=\"" + mapID.toString() + "\";", null);
 
             List<UserID> results = new LinkedList<UserID>();
             if (c.moveToFirst()) {
@@ -474,6 +549,36 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
 
         return null;
+    }
+
+    /** Returns a map of all the metadata associated with a given tak */
+    public Map<String, TakMetadata> getTakMetadata(TakID tak) {
+
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+
+            Cursor c = db.rawQuery("SELECT * FROM " + TABLE_TAK_METADATA + " WHERE " + TAK_METADATA_TAKID + "=\"" + tak.toString() + "\";", null);
+            Map<String, TakMetadata> map = new HashMap<String, TakMetadata>();
+
+            if (c.moveToFirst()) {
+                do {
+
+                    String id = c.getString(c.getColumnIndex(TAK_METADATA_ID));
+                    String key = c.getString(c.getColumnIndex(TAK_METADATA_KEY));
+                    String value = c.getString(c.getColumnIndex(TAK_METADATA_VALUE));
+
+                    TakMetadata t = new TakMetadata(id, key, value);
+                    map.put(key, t);
+
+                } while (c.moveToNext());
+            }
+
+            return map;
+
+        }
+
+        return null;
+
     }
 
 

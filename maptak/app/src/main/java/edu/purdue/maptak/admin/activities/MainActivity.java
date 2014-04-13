@@ -146,8 +146,8 @@ public class MainActivity extends Activity {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-            Log.d("debug","mapName="+map.getLabel());
-            GetQRTaksTask task = new GetQRTaksTask(this,map.getLabel(),Long.parseLong(map.getID().toString()));
+            Log.d("debug","mapName="+map.getName());
+            GetQRTaksTask task = new GetQRTaksTask(this,map.getName(),Long.parseLong(map.getID().toString()));
             List<TakObject> taks = null;
             try {
                 taks = task.execute().get();
@@ -157,7 +157,7 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
             Log.d("deubg","call");
-            map.setTaskList(taks);
+            map.setTaks(taks);
             MapTakDB db = MapTakDB.getDB(this);
             db.addMap(map);
             //TakFragmentManager.switchToQRCode(this, scanResult.getContents());

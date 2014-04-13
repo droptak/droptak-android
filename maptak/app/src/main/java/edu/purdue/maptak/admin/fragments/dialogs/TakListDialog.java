@@ -30,7 +30,7 @@ public class TakListDialog extends DialogFragment implements DialogInterface.OnC
         // Set the items in the view
         String[] items = new String[taks.size()];
         for (int i = 0; i < taks.size(); i++) {
-            items[i] = taks.get(i).getLabel();
+            items[i] = taks.get(i).getName();
         }
         builder.setItems(items, this);
 

@@ -79,7 +79,7 @@ public class SearchDialog extends DialogFragment implements DialogInterface.OnCl
         List<MapObject> results = new ArrayList<MapObject>();
 
         for (MapObject map : maps) {
-            String name = map.getLabel();
+            String name = map.getName();
             if (name.contains(query)) {
                 results.add(map);
             }

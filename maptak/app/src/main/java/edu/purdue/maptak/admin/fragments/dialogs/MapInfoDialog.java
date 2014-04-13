@@ -32,7 +32,7 @@ public class MapInfoDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Set title
-        builder.setTitle(map.getLabel());
+        builder.setTitle(map.getName());
 
         // Set the main content view
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -48,7 +48,7 @@ public class MapInfoDialog extends DialogFragment {
 
         // Set the owner of the map
         etMapName = (EditText) v.findViewById(R.id.mapinfo_et_mapname);
-        etMapName.setText(map.getLabel());
+        etMapName.setText(map.getName());
 
         // Set the administrators of the map
         etMapDesc = (EditText) v.findViewById(R.id.mapinfo_et_mapdescription);

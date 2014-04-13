@@ -115,8 +115,13 @@ public class GetQRMapTask extends AsyncTask<Void, Void,MapObject>  {
             ;
         }
         Log.d("deubg","return");
-        MapID mid = new MapID(""+mapId);
-        MapObject map = new MapObject(mapName,mid,takObjects,false);
+
+        MapObject map = new MapObject();
+        map.setID(new MapID(""+mapId));
+        map.setName(mapName);
+        map.setTaks(takObjects);
+        map.setIsPublic(false);
+
         return map;
     }
     protected void onPostExecute(Void v) {

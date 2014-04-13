@@ -44,7 +44,7 @@ public class MapListItemAdapter extends BaseAdapter {
         View v = inflater.inflate(R.layout.adapter_map_item, viewGroup, false);
 
         TextView tvLabel = (TextView) v.findViewById(R.id.maplistadapter_tv_maplabel);
-        tvLabel.setText(maps.get(i).getLabel());
+        tvLabel.setText(maps.get(i).getName());
 
         Button buInfo = (Button) v.findViewById(R.id.maplistadapter_bu_info);
         buInfo.setOnClickListener(new View.OnClickListener() {

@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +34,7 @@ import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
+import edu.purdue.maptak.admin.data.UserID;
 import edu.purdue.maptak.admin.fragments.DrawerFragment;
 import edu.purdue.maptak.admin.tasks.AddMapTask;
 
@@ -106,12 +108,19 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         }
 
         // Create the map object based on the information the user has given us
+        // TODO: Need to get other information (admins, owner, etc) from server
         LinkedList<TakObject> taks = new LinkedList<TakObject>();
-        MapObject mapObject = new MapObject(name, realMapID, taks, isPrivate);
+        MapObject map = new MapObject();
+        map.setName(name);
+        map.setID(realMapID);
+        map.setTaks(taks);
+        map.setIsPublic(!isPrivate);
+        map.setOwner(new UserID("12345", "Fake Owner"));
+        map.setManagers(new ArrayList<UserID>());
 
         // Add the new map to the local database
         MapTakDB db = MapTakDB.getDB(getActivity());
-        db.addMap(mapObject);
+        db.addMap(map);
 
         // Close the dialog and re-inflate the side drawer to refresh the map list
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();

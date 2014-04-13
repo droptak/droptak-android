@@ -98,8 +98,12 @@ public class GetQRTaksTask extends AsyncTask<Void,Void,List<TakObject>> {
                             e.printStackTrace();
                         }
 
-                        TakID tid = new TakID("" + takId);
-                        TakObject tak = new TakObject(tid, takTitle, lat, lng);
+                        TakObject tak = new TakObject();
+                        tak.setID(new TakID("" + takId));
+                        tak.setName(takTitle);
+                        tak.setLat(lat);
+                        tak.setLng(lng);
+
                         takObjects.add(tak);
 
 

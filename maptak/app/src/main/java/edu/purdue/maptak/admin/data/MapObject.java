@@ -27,60 +27,68 @@ public class MapObject {
     /** Determines whether map has private visibility or not */
     private boolean isPublic;
 
-    /** Map created by the backend. MapID is known. */
-    public MapObject(String label, MapID id, List<TakObject> taks, boolean isPrivate) {
-        this.label = label;
-        this.mapID = id;
-        this.takList = taks;
-        this.isPublic = isPrivate;
-    }
 
-    /** Map created from the app/user. mapID is generated randomly until a sync with the server. */
-    public MapObject(String label, List<TakObject> taks, boolean isPrivate) {
-        this(label, new MapID("TTTT" + UUID.randomUUID().toString().substring(0, 12)), taks, isPrivate);
-    }
+    /** === GETTERS === */
 
-    /** Returns the label for the map */
-    public String getLabel() {
+    public String getName() {
+        if (label == null) {
+            throw new RuntimeException("Map label field has not been properly set.");
+        }
         return this.label;
     }
 
-    /** Returns the ID for the map */
     public MapID getID() {
+        if (mapID == null) {
+            throw new RuntimeException("Map ID field has not been properly set.");
+        }
         return this.mapID;
     }
 
-    /** Returns the TakList backing this map */
-    public List<TakObject> getTakList() {
+    public List<TakObject> getTaks() {
+        if (takList == null) {
+            throw new RuntimeException("Map TakList field has not been properly set.");
+        }
         return this.takList;
     }
 
-    public void setTaskList(List<TakObject> taks){ this.takList = taks;}
-
-    /** Returns the private attribute of the map */
-    public boolean isPublic(){
-        return this.isPublic;
-    }
-
-    /** Sets private attribute on/off */
-    public void setPublic(boolean priv){
-        this.isPublic = priv;
-    }
-
-    /** Returns the owner(UUID) of the map */
     public UserID getOwner() {
-        return mapOwner;
+        if (mapOwner == null) {
+            throw new RuntimeException("Map Owner field has not been properly set.");
+        }
+        return this.mapOwner;
     }
 
-    /** Add a manager(email) to the mapObject */
-    public void addManager(String managerID, String managerEmail) {
-        UserID uid = new UserID(managerID, managerEmail);
-        managerList.add(uid);
-    }
-
-    /** Returns the list of managers associated with this map */
-    public List<UserID> getManagerList() {
+    public List<UserID> getManagers() {
+        if (managerList == null) {
+            throw new RuntimeException("Map Managers field has not been properly set.");
+        }
         return this.managerList;
     }
+
+    public boolean isPublic() { return this.isPublic; }
+
+
+    /** === SETTERS ===
+     *  Note that none of these methods change the backing database. */
+
+    public void setName(String name) { this.label = name; }
+
+    public void setID(MapID id) { this.mapID = id; }
+
+    public void setTaks(List<TakObject> list) { this.takList = list; }
+
+    public void setOwner(UserID owner) { this.mapOwner = owner; }
+
+    public void setManagers(List<UserID> managers) { this.managerList = managers; }
+
+    public void setIsPublic(boolean isPublic) { this.isPublic = isPublic; }
+
+
+    /** == MISC ===
+     *  Again, note that none of these methods change the backing database. Use them wisely */
+
+    public void addTak(TakObject t) { this.takList.add(t); }
+
+    public void addManager(UserID i) { this.managerList.add(i); }
 
 }

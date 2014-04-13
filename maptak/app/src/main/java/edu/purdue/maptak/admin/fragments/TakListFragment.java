@@ -56,7 +56,7 @@ public class TakListFragment extends ListFragment {
         List<String> taks = new LinkedList<String>();
 
         while(!takObjects.isEmpty()){
-            taks.add(takObjects.remove(0).getLabel());
+            taks.add(takObjects.remove(0).getName());
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, taks);

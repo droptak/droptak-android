@@ -34,7 +34,7 @@ public class SearchResultsDialog extends DialogFragment implements DialogInterfa
         // Assemble list of strings and set them as items in the interface
         List<String> resultStrings = new ArrayList<String>();
         for (MapObject m : results) {
-            resultStrings.add(m.getLabel());
+            resultStrings.add(m.getName());
         }
         String[] array = resultStrings.toArray(new String[resultStrings.size()]);
         builder.setItems(array, this);
