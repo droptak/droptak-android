@@ -18,13 +18,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.data.TakID;
+import edu.purdue.maptak.admin.data.TakMetadata;
 import edu.purdue.maptak.admin.data.TakObject;
 
-public class AddTakTask extends AsyncTask<Void, Void, String>  {
+
+/** Task which handles everything involved in creating a new tak. This will add the tak
+ *  to the local database with a temporary ID, push the map to the maptak servers, get a new
+ *  ID from the maptak servers, and finally update the local database with this new ID */
+
+public class AddTakTask extends AsyncTask<Void, Void, Void>  {
 
     private static final String BASE_URL = "http://mapitapps.appspot.com/api/tak";
 
@@ -39,12 +47,20 @@ public class AddTakTask extends AsyncTask<Void, Void, String>  {
     }
 
     @Override
-    public void onPreExecute(){
+    protected void onPreExecute() {
+
+        // Create a temporary id for the tak we are adding
+        String tempID = "TEMPID-" + UUID.randomUUID().toString().substring(0,15);
+        tak.setID(new TakID(tempID));
+
+        // Add the tak to the database with this temporary ID
+        MapTakDB db = MapTakDB.getDB(c);
+        db.addTak(tak, mapID);
 
     }
 
     @Override
-    protected String doInBackground(Void... voids) {
+    protected Void doInBackground(Void... voids) {
 
         // Get access to the shared preferences
         SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
@@ -90,14 +106,23 @@ public class AddTakTask extends AsyncTask<Void, Void, String>  {
             e.printStackTrace();
         }
 
-        // Return the JSON string
-        return responseString;
+        // Parse the new ID out of the JSON
+        // TODO: Do the actual parsing lol
+        String newIDStr = "1234";
+        TakID newID = new TakID(newIDStr);
 
+        // Update the database with the new ID
+        MapTakDB db = MapTakDB.getDB(c);
+        db.setTakID(tak.getID(), newID);
+
+        // Update any metadata that might have changed during the async push with this new ID
+        for (TakMetadata m : db.getTakMetadata(tak.getID()).values()) {
+            // TODO: Update tak metadata here after discussing how IDs will be handled with nick
+        }
+
+
+        return null;
     }
 
-    @Override
-    protected void onPostExecute(String s) {
-
-    }
 
 }

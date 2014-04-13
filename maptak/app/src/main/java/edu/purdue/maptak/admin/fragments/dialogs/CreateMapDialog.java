@@ -3,15 +3,13 @@ package edu.purdue.maptak.admin.fragments.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 
@@ -22,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.io.File;
 import java.nio.channels.FileChannel;
@@ -30,13 +27,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import edu.purdue.maptak.admin.R;
+import edu.purdue.maptak.admin.activities.MainActivity;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
 import edu.purdue.maptak.admin.data.TakObject;
 import edu.purdue.maptak.admin.data.UserID;
 import edu.purdue.maptak.admin.fragments.DrawerFragment;
-import edu.purdue.maptak.admin.tasks.AddMapTask;
+import edu.purdue.maptak.admin.tasks.CreateMapTask;
 
 
 public class CreateMapDialog extends DialogFragment implements DialogInterface.OnClickListener {
@@ -87,40 +85,24 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
     }
 
     /** Creates the map and pushes it to the database using a background task */
-    private void createMap(String name, boolean isPrivate) {
+    private void createMap(String mapName, boolean isPrivate) {
 
-        // Create the task that we use to push the map to the server
-        AddMapTask addMapTask = new AddMapTask(name, getActivity());
+        // Get the shared preferences
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+        String uid = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "");
+        String userName = prefs.getString(MainActivity.PREF_USER_GPLUS_NAME, "");
 
-        // Get the new ID from the JSON returned by the server
-        MapID realMapID = null;
-        try {
-            String jsonString = addMapTask.execute().get();
-            JSONObject jsonObject = new JSONObject(jsonString);
-            String realMapIDString = jsonObject.getString("mapId");
-            realMapID = new MapID(realMapIDString);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // Create the map object based on the information the user has given us
-        // TODO: Need to get other information (admins, owner, etc) from server
-        LinkedList<TakObject> taks = new LinkedList<TakObject>();
+        // Create a filler map object that will hold all the information pushed to the server
         MapObject map = new MapObject();
-        map.setName(name);
-        map.setID(realMapID);
-        map.setTaks(taks);
-        map.setIsPublic(!isPrivate);
-        map.setOwner(new UserID("12345", "Fake Owner"));
-        map.setManagers(new ArrayList<UserID>());
+        map.setName(mapName);
+        map.setOwner(new UserID(uid, userName));
 
-        // Add the new map to the local database
-        MapTakDB db = MapTakDB.getDB(getActivity());
-        db.addMap(map);
+        // TODO: Properly set if it is public or not
+        map.setIsPublic(false);
+
+        // Create and execute the task which adds the map to the database and the server
+        CreateMapTask task = new CreateMapTask(getActivity(), map);
+        task.execute();
 
         // Close the dialog and re-inflate the side drawer to refresh the map list
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();

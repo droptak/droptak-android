@@ -146,19 +146,6 @@ public class MapTakDB extends SQLiteOpenHelper {
 
         if (db != null) {
             db.insert(TABLE_MAPS, null, valuesMaps);
-        }
-
-        // Add the managers
-        for (UserID admin : map.getManagers()) {
-            addAdmin(admin, map.getID());
-        }
-
-        // Add the taks
-        for (TakObject t : map.getTaks()) {
-            addTak(t, map.getID());
-        }
-
-        if (db != null) {
             db.close();
         }
 
@@ -181,11 +168,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             getWritableDatabase().insert(TABLE_TAKS, null, values);
-        }
-
-        // Add all of its metadata as well
-        for (TakMetadata t : tak.getMeta().values()) {
-            addTakMetadata(tak.getID(), t);
         }
 
     }
@@ -300,11 +282,13 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
     }
 
-    /** Changes the mapID a given administrator is associated with */
-    public void setMapAdminsMapID(UserID id, MapID newMapID) {
+    /** Changes the MapID for which a given administrator (UserID) is associatd with. Because one user could be associated with multiple
+     *  maps, it also needs the old mapID of the map you are changing. */
+    public void setMapAdminsMapID(UserID admin, MapID oldID, MapID newMapID) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_MAP_ID + "=\"" + newMapID.toString() + "\" WHERE " + MAPADMINS_ID + "=\"" + id.getID() + "\";");
+            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_MAP_ID + "=\"" + newMapID.toString() +
+                    "\" WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\" AND " + MAPADMINS_MAP_ID + "=\"" + oldID + "\";");
         }
     }
 
