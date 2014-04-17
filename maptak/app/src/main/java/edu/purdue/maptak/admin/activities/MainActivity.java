@@ -2,6 +2,7 @@ package edu.purdue.maptak.admin.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import edu.purdue.maptak.admin.R;
 import edu.purdue.maptak.admin.data.MapID;
 import edu.purdue.maptak.admin.data.MapObject;
 import edu.purdue.maptak.admin.data.MapTakDB;
+import edu.purdue.maptak.admin.fragments.AdministratorFragment;
 import edu.purdue.maptak.admin.fragments.DrawerFragment;
 import edu.purdue.maptak.admin.interfaces.OnGPlusLoginListener;
 import edu.purdue.maptak.admin.qrcode.IntentIntegrator;
@@ -104,6 +106,13 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
+
+            case R.id.menu_administrators:
+                MapObject currentMap = getCurrentSelectedMap();
+                FragmentManager fm = getFragmentManager();
+                Fragment newFrame = new AdministratorFragment(currentMap);
+                fm.beginTransaction().replace(R.id.mainview, newFrame).commit();
+
         }
 
         return super.onOptionsItemSelected(item);

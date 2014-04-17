@@ -7,4 +7,10 @@
         android:title="@string/menu_settings_label"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_administrators"
+        android:title="Administrators"
+        android:showAsAction="never" />
+
+
 </menu>
