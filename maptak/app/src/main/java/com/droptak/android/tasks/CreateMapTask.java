@@ -7,6 +7,7 @@ import android.content.Context;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.data.UserID;
+import com.droptak.android.interfaces.OnMapIDUpdateListener;
 
 /** Task which takes in a map object, adds it to the local database, pushes it to the server,
  *  then updates the local database with all the information is gets back from the server.
@@ -34,10 +36,12 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
 
     private MapObject mapToPush;
     private Context c;
+    private OnMapIDUpdateListener listener;
 
-    public CreateMapTask(Context c, MapObject toPush) {
+    public CreateMapTask(Context c, MapObject toPush, OnMapIDUpdateListener listener) {
         this.c = c;
         this.mapToPush = toPush;
+        this.listener = listener;
     }
 
     @Override
@@ -76,7 +80,7 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
 
         // Create the http client we use to post to the server
         HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(url);
+        HttpPost get = new HttpPost(url);
 
         // Do the post and get the JSON as a response
         String responseString = null;
@@ -117,6 +121,11 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
         String curMap = prefs.getString(MainActivity.PREF_CURRENT_MAP, "");
         if (curMap.equals(mapToPush.getID().toString())) {
             prefs.edit().putString(MainActivity.PREF_CURRENT_MAP, newMapID.toString()).commit();
+        }
+
+        // Alert the listeners that the MapID has been updated
+        if (listener != null) {
+            listener.onMapIDUpdate(mapToPush.getID(), newMapID);
         }
 
         return null;

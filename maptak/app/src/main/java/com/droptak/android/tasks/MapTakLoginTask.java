@@ -34,13 +34,13 @@ public class MapTakLoginTask extends AsyncTask<Void, Void, Void> {
     public void onPreExecute() {
         // Create a process dialog to tell the user we are logging in
         callingActivity.runOnUiThread(new Runnable() {
-            @Override
             public void run() {
                 progressDialog = new ProgressDialog(callingActivity);
                 progressDialog.setMessage("Logging in to MapTak");
                 progressDialog.show();
             }
         });
+
     }
 
 

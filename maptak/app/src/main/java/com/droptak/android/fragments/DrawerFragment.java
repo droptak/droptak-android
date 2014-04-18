@@ -17,10 +17,13 @@ import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
+import com.droptak.android.data.MapID;
 import com.droptak.android.fragments.dialogs.AddMapSelectionDialog;
+import com.droptak.android.interfaces.OnMapIDUpdateListener;
 import com.droptak.android.widgets.MapListItemAdapter;
 
-public class DrawerFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class DrawerFragment extends Fragment
+        implements View.OnClickListener, AdapterView.OnItemClickListener, OnMapIDUpdateListener {
 
     /** Whether or not the user is logged in */
     private boolean isLoggedIn = false;
@@ -78,4 +81,14 @@ public class DrawerFragment extends Fragment implements View.OnClickListener, Ad
         getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment()).commit();
 
     }
+
+    @Override
+    public void onMapIDUpdate(MapID oldID, MapID newID) {
+        for (MapObject m : maps) {
+            if (m.getID().equals(oldID)) {
+                m.setID(newID);
+            }
+        }
+    }
+
 }

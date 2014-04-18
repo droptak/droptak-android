@@ -77,7 +77,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         String create_table_maps = "CREATE TABLE " + TABLE_MAPS + " (" +
                 MAP_ID + " TEXT, " +
                 MAP_LABEL + " TEXT, " +
-                MAP_ISPUBLIC + " INTEGER " +
+                MAP_ISPUBLIC + " INTEGER, " +
                 MAP_OWNER_ID + " TEXT, " +
                 MAP_OWNER_STR + " TEXT );";
 
@@ -140,7 +140,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         valuesMaps.put(MAP_LABEL, map.getName());
         valuesMaps.put(MAP_ISPUBLIC, map.isPublic());
         valuesMaps.put(MAP_OWNER_ID, map.getOwner().getID());
-        valuesMaps.put(MAP_OWNER_STR, map.getOwner().toString());
+        valuesMaps.put(MAP_OWNER_STR, map.getOwner().getName());
 
         if (db != null) {
             db.insert(TABLE_MAPS, null, valuesMaps);

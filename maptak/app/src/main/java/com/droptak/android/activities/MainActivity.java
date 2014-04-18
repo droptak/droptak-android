@@ -50,15 +50,17 @@ public class MainActivity extends Activity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
+    /** Object which handles G+ login */
+    private GPlusLoginTask gplusLogin;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Set main content view and log
-        Log.d(LOG_TAG, "MapActivity.onCreate() called.");
+        // Set main content view
         setContentView(R.layout.activity_main);
 
         // Attempt to sign the user into google plus and maptak
-        new GPlusLoginTask(this, new OnGPlusLoginListener() {
+        gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
             public void onGooglePlusLogin() {
                 new MapTakLoginTask(MainActivity.this).execute();
             }
@@ -131,6 +133,15 @@ public class MainActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+
+            case GPlusLoginTask.RC_SIGN_IN:
+                gplusLogin.connect();
+                break;
+
+        }
+
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         TextView url = (TextView) findViewById(R.id.QRCodeTitle);
         if ( scanResult != null ){
