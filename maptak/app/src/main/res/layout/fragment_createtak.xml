@@ -36,6 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:inputType="number"
             android:hint="Latitude"/>
 
         <EditText
@@ -43,12 +44,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:inputType="number"
             android:hint="Longitude" />
-
-        <Button
-            android:id="@+id/addtak_bu_selectlocation"
-            android:layout_width="40dp"
-            android:layout_height="40dp" />
 
     </LinearLayout>
 

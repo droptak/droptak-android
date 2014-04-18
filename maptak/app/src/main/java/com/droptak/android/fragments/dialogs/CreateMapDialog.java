@@ -82,11 +82,12 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
         String uid = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "");
         String userName = prefs.getString(MainActivity.PREF_USER_GPLUS_NAME, "");
+        String userEmail = prefs.getString(MainActivity.PREF_USER_GPLUS_EMAIL, "");
 
         // Create a filler map object that will hold all the information pushed to the server
         MapObject map = new MapObject();
         map.setName(mapName);
-        map.setOwner(new UserID(uid, userName));
+        map.setOwner(new UserID(uid, userName, userEmail));
 
         // TODO: Properly set if it is public or not
         map.setIsPublic(false);

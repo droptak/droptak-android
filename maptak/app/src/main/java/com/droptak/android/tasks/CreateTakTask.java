@@ -10,6 +10,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -101,18 +103,20 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
         }
 
         // Parse the new ID out of the JSON
-        // TODO: Do the actual parsing lol
-        String newIDStr = "1234";
-        TakID newID = new TakID(newIDStr);
+        TakID id = null;
+        try {
+            JSONObject j = new JSONObject(responseString);
+            String newIDStr = j.getString("takId");
+            id = new TakID(newIDStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // Update the database with the new ID
         MapTakDB db = MapTakDB.getDB(c);
-        db.setTakID(tak.getID(), newID);
+        db.setTakID(tak.getID(), id);
 
-        // Update any metadata that might have changed during the async push with this new ID
-        for (TakMetadata m : db.getTakMetadata(tak.getID()).values()) {
-            // TODO: Update tak metadata here after discussing how IDs will be handled with nick
-        }
+        // TODO: Update any metadata pairs the user might have added
 
 
         return null;
