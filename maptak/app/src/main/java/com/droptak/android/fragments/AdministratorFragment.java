@@ -34,7 +34,6 @@ public class AdministratorFragment extends Fragment {
     private MapObject currentMap;
     private ListView adminList;
     private ListAdapter listAdapter;
-    private MapTakDB mapTakDB;
 
     public AdministratorFragment(MapObject currentMap) {
         this.currentMap = currentMap;
@@ -42,7 +41,6 @@ public class AdministratorFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mapTakDB = MapTakDB.getDB(getActivity());
         View v = inflater.inflate(R.layout.fragment_administrator, container, false);
         adminList = (ListView) v.findViewById(R.id.admin_listview);
         currentMap.addManager(new UserID("mhockerman@gmail.com", "Michael Hockerman"));
