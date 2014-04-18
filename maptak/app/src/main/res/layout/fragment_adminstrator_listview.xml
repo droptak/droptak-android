@@ -8,6 +8,7 @@
 
     <TextView
         android:id="@+id/admin_et_name"
+        android:gravity="center"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -15,6 +16,7 @@
 
     <TextView
         android:id="@+id/admin_et_email"
+        android:gravity="center"
         android:layout_below="@id/admin_et_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

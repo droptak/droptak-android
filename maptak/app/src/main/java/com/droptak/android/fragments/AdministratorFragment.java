@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
+import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.UserID;
 
 import java.util.List;
@@ -30,26 +31,29 @@ import java.util.List;
  */
 public class AdministratorFragment extends Fragment {
 
-    MapObject currentMap;
-    ListView adminList;
-    ListAdapter listAdapter;
+    private MapObject currentMap;
+    private ListView adminList;
+    private ListAdapter listAdapter;
+    private MapTakDB mapTakDB;
 
-    public AdministratorFragment(MapObject inMap) {
-        this.currentMap = inMap;
+    public AdministratorFragment(MapObject currentMap) {
+        this.currentMap = currentMap;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        adminList = (ListView) getActivity().findViewById(R.id.fragment_maplist_listview);
-        if ( currentMap.getManagers() == null ){
-            Log.d(MainActivity.LOG_TAG, "The thingy is null");
-        }
+        mapTakDB = MapTakDB.getDB(getActivity());
+        View v = inflater.inflate(R.layout.fragment_administrator, container, false);
+        adminList = (ListView) v.findViewById(R.id.admin_listview);
+        currentMap.addManager(new UserID("mhockerman@gmail.com", "Michael Hockerman"));
+        currentMap.addManager(new UserID("tylorgarrett@gmail.com", "Tylor Garrett"));
         listAdapter = new ListViewAdapter<UserID>(getActivity(), android.R.layout.simple_list_item_1, currentMap.getManagers());
         adminList.setAdapter(listAdapter);
-        return inflater.inflate(R.layout.fragment_administrator, container, false);
+        return v;
     }
 
-    public class ListViewAdapter<UserID> extends ArrayAdapter {
+
+    public class ListViewAdapter<E> extends ArrayAdapter {
         private Context mContext;
         private int id;
         private List<UserID> mAdmins;
@@ -63,6 +67,9 @@ public class AdministratorFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
+            UserID currentUser = mAdmins.get(position);
+            String name = currentUser.getName();
+            String id = currentUser.getID();
             View row = convertView;
             AdminData temp = null;
             if ( row == null ){
@@ -75,8 +82,9 @@ public class AdministratorFragment extends Fragment {
             } else {
                 temp = (AdminData)row.getTag();
             }
-            temp.name.setText("Tylor Garrett");
-            temp.email.setText("tylorgarrett@gmail.com");
+
+            temp.name.setText(name);
+            temp.email.setText(id);
             return row;
         }
 

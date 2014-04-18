@@ -5,19 +5,31 @@
     android:padding="20dp"
     tools:context="com.droptak.android.fragments.AdministratorFragment">
 
+
     <EditText
         android:id="@+id/admin_et_adminemail"
+        android:gravity="center"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Administrator Email" />
 
     <Button
         android:id="@+id/admin_bu_addadmin"
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/admin_et_adminemail"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Administrator" />
 
-
+    <ListView
+        android:id="@+id/admin_listview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/admin_bu_addadmin">
+    </ListView>
 
 </RelativeLayout>
+
+
+
+
