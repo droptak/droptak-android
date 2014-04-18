@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,7 +30,7 @@ import java.util.List;
  * create an instance of this fragment.
  *
  */
-public class AdministratorFragment extends Fragment {
+public class AdministratorFragment extends Fragment implements View.OnClickListener{
 
     private MapObject currentMap;
     private ListView adminList;
@@ -42,12 +43,25 @@ public class AdministratorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_administrator, container, false);
+        Button addAdministrator = (Button) v.findViewById(R.id.admin_bu_addadmin);
+        addAdministrator.setOnClickListener(this);
         adminList = (ListView) v.findViewById(R.id.admin_listview);
-        currentMap.addManager(new UserID("mhockerman@gmail.com", "Michael Hockerman"));
-        currentMap.addManager(new UserID("tylorgarrett@gmail.com", "Tylor Garrett"));
+        currentMap.addManager(new UserID("0571", "Michael Hockerman", "mhockerman@gmail.com"));
+        currentMap.addManager(new UserID("0129", "Tylor Garrett", "tylorgarrett@gmail.com"));
         listAdapter = new ListViewAdapter<UserID>(getActivity(), android.R.layout.simple_list_item_1, currentMap.getManagers());
         adminList.setAdapter(listAdapter);
         return v;
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+            case R.id.admin_bu_addadmin:
+                break;
+
+        }
+
     }
 
 
@@ -67,7 +81,7 @@ public class AdministratorFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent){
             UserID currentUser = mAdmins.get(position);
             String name = currentUser.getName();
-            String id = currentUser.getID();
+            String email = currentUser.getEmail();
             View row = convertView;
             AdminData temp = null;
             if ( row == null ){
@@ -82,7 +96,7 @@ public class AdministratorFragment extends Fragment {
             }
 
             temp.name.setText(name);
-            temp.email.setText(id);
+            temp.email.setText(email);
             return row;
         }
 
