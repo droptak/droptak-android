@@ -312,12 +312,11 @@ public class MapTakDB extends SQLiteOpenHelper {
     }
 
     /** Deletes an administrator with the given ID from the local database */
-    public void deleteAdmin(User admin) {
-        Log.d(MainActivity.LOG_TAG, "Deleting administartor " + admin.getName() + " from the local database");
-
+    public void deleteAdmin(User admin, MapID map) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("DELETE FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\"");
+            db.execSQL("DELETE FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + admin.getID() +
+                    "\" AND " + MAPADMINS_MAP_ID + "=\"" + map.toString() + "\";");
         }
     }
 

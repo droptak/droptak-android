@@ -3,6 +3,7 @@ package com.droptak.android.tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapID;
@@ -29,6 +30,12 @@ public class GetMapTask extends AsyncTask<Void, Void, Void> {
 
     public GetMapTask(Context c, MapID id) {
         this.mapToGet = id;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        Toast.makeText(c, "Downloading Map...", Toast.LENGTH_LONG).show();
     }
 
     @Override
