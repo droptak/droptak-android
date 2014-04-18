@@ -33,7 +33,7 @@ public class DummyData {
         obj.setID(new MapID(id));
         obj.setTaks(taks);
         obj.setIsPublic(false);
-        obj.setOwner(new UserID("Fake Owner ID", "Fake Owner Name"));
+        obj.setOwner(new UserID("Fake Owner ID", "Fake Owner Name", "fake@email.com"));
         obj.setManagers(new ArrayList<UserID>());
 
         return obj;

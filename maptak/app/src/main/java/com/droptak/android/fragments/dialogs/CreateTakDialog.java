@@ -11,18 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-
 import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapID;
-import com.droptak.android.data.MapTakDB;
-import com.droptak.android.data.TakID;
-import com.droptak.android.data.TakMetadata;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.interfaces.OnLocationReadyListener;
 import com.droptak.android.managers.UserLocationManager;
@@ -32,7 +23,6 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
 
     private UserLocationManager manager;
     private EditText etTakName, etTakDesc, etLat, etLng;
-    private Button buSelectLoc;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -45,7 +35,7 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
 
         // Set the main content view
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.fragment_addtak, null);
+        View v = inflater.inflate(R.layout.fragment_createtak, null);
         builder.setView(v);
 
         // Set positive and negative buttons
@@ -57,15 +47,13 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
         etTakDesc = (EditText) v.findViewById(R.id.addtak_et_description);
         etLat = (EditText) v.findViewById(R.id.addtak_et_lat);
         etLng = (EditText) v.findViewById(R.id.addtak_et_lng);
-        buSelectLoc = (Button) v.findViewById(R.id.addtak_bu_selectlocation);
-        buSelectLoc.setOnClickListener(this);
 
         // Create our location client
         manager = new UserLocationManager(getActivity());
         manager.setOnLocationReadyListener(new OnLocationReadyListener() {
             public void onLocationReady() {
-                etLat.setText(("" + manager.getLat()).substring(0,9));
-                etLng.setText(("" + manager.getLng()).substring(0,9));
+                etLat.setText(("" + manager.getLat()).substring(0,10));
+                etLng.setText(("" + manager.getLng()).substring(0,10));
             }
         });
 

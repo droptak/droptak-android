@@ -56,7 +56,7 @@ public class MapInfoDialog extends DialogFragment {
 
         // Set up the owner
         tvOwner = (TextView) v.findViewById(R.id.mapinfo_tv_owner);
-        tvOwner.setText(map.getOwner().toString());
+        tvOwner.setText(map.getOwner().getName());
 
         // Get button on the view and wire it up
         Button buEditAdmins = (Button) v.findViewById(R.id.mapinfo_bu_editadmins);

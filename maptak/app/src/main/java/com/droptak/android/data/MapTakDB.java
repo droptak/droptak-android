@@ -33,11 +33,11 @@ public class MapTakDB extends SQLiteOpenHelper {
     public static final String MAP_LABEL = "map_label";
     public static final String MAP_ISPUBLIC = "map_ispublic";
     public static final String MAP_OWNER_ID = "map_owner_id";
-    public static final String MAP_OWNER_STR = "map_owner_string";
 
     /** Columns - TABLE_MAPS_ADMINS */
     public static final String MAPADMINS_ID = "_id";
     public static final String MAPADMINS_NAME = "name";
+    public static final String MAPADMINS_EMAIL = "email";
     public static final String MAPADMINS_MAP_ID = "map_id";
 
     /** Columns - TABLE_TAKS */
@@ -78,12 +78,12 @@ public class MapTakDB extends SQLiteOpenHelper {
                 MAP_ID + " TEXT, " +
                 MAP_LABEL + " TEXT, " +
                 MAP_ISPUBLIC + " INTEGER, " +
-                MAP_OWNER_ID + " TEXT, " +
-                MAP_OWNER_STR + " TEXT );";
+                MAP_OWNER_ID + " TEXT );";
 
         String create_table_maps_admins = "CREATE TABLE " + TABLE_MAPS_ADMINS + " (" +
                 MAPADMINS_ID + " TEXT, " +
                 MAPADMINS_MAP_ID + " TEXT, " +
+                MAPADMINS_EMAIL + " TEXT, " +
                 MAPADMINS_NAME + " TEXT );";
 
         String create_table_taks = "CREATE TABLE " + TABLE_TAKS + " ( " +
@@ -140,7 +140,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         valuesMaps.put(MAP_LABEL, map.getName());
         valuesMaps.put(MAP_ISPUBLIC, map.isPublic());
         valuesMaps.put(MAP_OWNER_ID, map.getOwner().getID());
-        valuesMaps.put(MAP_OWNER_STR, map.getOwner().getName());
 
         if (db != null) {
             db.insert(TABLE_MAPS, null, valuesMaps);
@@ -178,6 +177,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         values.put(MAPADMINS_ID, admin.getID());
         values.put(MAPADMINS_MAP_ID, map.toString());
         values.put(MAPADMINS_NAME, admin.getName());
+        values.put(MAPADMINS_EMAIL, admin.getEmail());
 
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
@@ -234,7 +234,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_OWNER_ID + "=\"" + user.getID() + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
-            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_OWNER_STR + "=\"" + user.getName() + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
         }
     }
 
@@ -271,12 +270,13 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
     }
 
-    /** Changes the name and ID associated with oldID's user-id to the data in newID */
+    /** Changes the name, ID, and email associated with oldID's user-id to the data in newID */
     public void setMapAdminsUser(UserID oldID, UserID newID) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_ID + "=\"" + newID.getID() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
             db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_NAME + "=\"" + newID.getName() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
+            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_EMAIL + "=\"" + newID.getEmail() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\"");
         }
     }
 
@@ -351,10 +351,9 @@ public class MapTakDB extends SQLiteOpenHelper {
                 // Get the taks for the map
                 List<TakObject> taks = getTaks(mapID);
 
-                // Get the owner information
+                // Get the owner information by querying admins table
                 String ownerID = c.getString(c.getColumnIndex(MAP_OWNER_ID));
-                String ownerNm = c.getString(c.getColumnIndex(MAP_OWNER_STR));
-                UserID owner = new UserID(ownerID, ownerNm);
+                UserID owner = getAdmin(new UserID(ownerID, null, null));
 
                 // Get administrator information
                 List<UserID> admins = getAdmins(mapID);
@@ -396,8 +395,7 @@ public class MapTakDB extends SQLiteOpenHelper {
 
                 // Get owner
                 String ownerID = c.getString(c.getColumnIndex(MAP_OWNER_ID));
-                String ownerNm = c.getString(c.getColumnIndex(MAP_OWNER_ID));
-                UserID owner = new UserID(ownerID, ownerNm);
+                UserID owner = getAdmin(new UserID(ownerID, null, null));
 
                 // Get the administrators
                 List<UserID> admins = getAdmins(mapID);
@@ -521,7 +519,8 @@ public class MapTakDB extends SQLiteOpenHelper {
                 do {
                     String userID = c.getString(c.getColumnIndex(MAPADMINS_ID));
                     String userName = c.getString(c.getColumnIndex(MAPADMINS_NAME));
-                    UserID uid = new UserID(userID, userName);
+                    String userEmail = c.getString(c.getColumnIndex(MAPADMINS_EMAIL));
+                    UserID uid = new UserID(userID, userName, userEmail);
                     results.add(uid);
                 } while (c.moveToNext());
             }
@@ -531,6 +530,32 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
 
         return null;
+    }
+
+    /** Returns a complete UserID object from an incomplete one passed in which contains only the ID field */
+    public UserID getAdmin(UserID user) {
+
+        if (user == null || user.getID() == null) {
+            return null;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            // This would technically return all of the instances of when a user admins a map
+            // but we dont care because all we're getting is their email/name, and that's constant given a userID.
+            Cursor c = db.rawQuery(
+                    "SELECT * FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_ID + "=\"" + user.getID() + "\";", null);
+            if (c.moveToFirst()) {
+                String name = c.getString(c.getColumnIndex(MAPADMINS_NAME));
+                String email = c.getString(c.getColumnIndex(MAPADMINS_EMAIL));
+                user.setName(name);
+                user.setEmail(email);
+                return user;
+            }
+        }
+
+        return null;
+
     }
 
     /** Returns a map of all the metadata associated with a given tak */
