@@ -117,36 +117,7 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
         oldtak.setMetadata(null);
 
         // Pass it to the CreateTakTask and start it up
-        CreateTakTask task = new CreateTakTask(getActivity(), oldtak, mapID);
-        String json = null;
-        try {
-            task.execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        // Create a json object from that string and extract the new takid
-        String takID = null;
-        try {
-            JSONObject jObj = new JSONObject(json);
-            takID = jObj.getString("takId");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // Create the TakID object and the new TakObject
-        TakObject newtak = new TakObject();
-        newtak.setID(new TakID(takID));
-        newtak.setName(name);
-        newtak.setLat(lat);
-        newtak.setLng(lng);
-        newtak.setMetadata(new HashMap<String, TakMetadata>());
-
-        // Add it to the database
-        MapTakDB db = MapTakDB.getDB(getActivity());
-        db.addTak(newtak, mapID);
+        new CreateTakTask(getActivity(), oldtak, mapID).execute();
 
         // Close the dialog box
         getDialog().cancel();
