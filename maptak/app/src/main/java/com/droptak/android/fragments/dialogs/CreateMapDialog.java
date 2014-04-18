@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
-import com.droptak.android.data.UserID;
+import com.droptak.android.data.User;
 import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.tasks.CreateMapTask;
 
@@ -87,7 +87,7 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         // Create a filler map object that will hold all the information pushed to the server
         MapObject map = new MapObject();
         map.setName(mapName);
-        map.setOwner(new UserID(uid, userName, userEmail));
+        map.setOwner(new User(uid, userName, userEmail));
 
         // TODO: Properly set if it is public or not
         map.setIsPublic(false);

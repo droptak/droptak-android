@@ -11,7 +11,7 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.TakID;
 import com.droptak.android.data.TakMetadata;
 import com.droptak.android.data.TakObject;
-import com.droptak.android.data.UserID;
+import com.droptak.android.data.User;
 
 /** Statically generates dummy data which can be used for testing elsewhere in the app */
 public class DummyData {
@@ -33,8 +33,8 @@ public class DummyData {
         obj.setID(new MapID(id));
         obj.setTaks(taks);
         obj.setIsPublic(false);
-        obj.setOwner(new UserID("Fake Owner ID", "Fake Owner Name", "fake@email.com"));
-        obj.setManagers(new ArrayList<UserID>());
+        obj.setOwner(new User("Fake Owner ID", "Fake Owner Name", "fake@email.com"));
+        obj.setManagers(new ArrayList<User>());
 
         return obj;
 

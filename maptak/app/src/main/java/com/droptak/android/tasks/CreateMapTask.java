@@ -6,7 +6,6 @@ import android.content.Context;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -21,7 +20,7 @@ import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakObject;
-import com.droptak.android.data.UserID;
+import com.droptak.android.data.User;
 import com.droptak.android.interfaces.OnMapIDUpdateListener;
 
 /** Task which takes in a map object, adds it to the local database, pushes it to the server,
@@ -113,7 +112,7 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
 
         // Update administrators added during the push with the new ID
         // TODO: Update the server as well
-        for (UserID uid : db.getAdmins(mapToPush.getID())) {
+        for (User uid : db.getAdmins(mapToPush.getID())) {
             db.setMapAdminsMapID(uid, mapToPush.getID(), newMapID);
         }
 

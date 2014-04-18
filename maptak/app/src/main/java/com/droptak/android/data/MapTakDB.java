@@ -170,7 +170,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     }
 
     /** Adds an administrator ID to be associated with a given map */
-    public void addAdmin(UserID admin, MapID map) {
+    public void addAdmin(User admin, MapID map) {
         Log.d(MainActivity.LOG_TAG, "Adding administrator " + admin.getName() + " to the db.");
 
         ContentValues values = new ContentValues();
@@ -230,7 +230,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     }
 
     /** Changes the owner id and owner name of a given map to the given user ID */
-    public void setMapOwner(MapID id, UserID user) {
+    public void setMapOwner(MapID id, User user) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_OWNER_ID + "=\"" + user.getID() + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
@@ -271,7 +271,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     }
 
     /** Changes the name, ID, and email associated with oldID's user-id to the data in newID */
-    public void setMapAdminsUser(UserID oldID, UserID newID) {
+    public void setMapAdminsUser(User oldID, User newID) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_ID + "=\"" + newID.getID() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
@@ -280,9 +280,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         }
     }
 
-    /** Changes the MapID for which a given administrator (UserID) is associatd with. Because one user could be associated with multiple
+    /** Changes the MapID for which a given administrator (User) is associatd with. Because one user could be associated with multiple
      *  maps, it also needs the old mapID of the map you are changing. */
-    public void setMapAdminsMapID(UserID admin, MapID oldID, MapID newMapID) {
+    public void setMapAdminsMapID(User admin, MapID oldID, MapID newMapID) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_MAP_ID + "=\"" + newMapID.toString() +
@@ -312,7 +312,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     }
 
     /** Deletes an administrator with the given ID from the local database */
-    public void deleteAdmin(UserID admin) {
+    public void deleteAdmin(User admin) {
         Log.d(MainActivity.LOG_TAG, "Deleting administartor " + admin.getName() + " from the local database");
 
         SQLiteDatabase db = getWritableDatabase();
@@ -353,10 +353,10 @@ public class MapTakDB extends SQLiteOpenHelper {
 
                 // Get the owner information by querying admins table
                 String ownerID = c.getString(c.getColumnIndex(MAP_OWNER_ID));
-                UserID owner = getAdmin(new UserID(ownerID, null, null));
+                User owner = getAdmin(new User(ownerID, null, null));
 
                 // Get administrator information
-                List<UserID> admins = getAdmins(mapID);
+                List<User> admins = getAdmins(mapID);
 
                 // Get public/private information
                 int isP = c.getInt(c.getColumnIndex(MAP_ISPUBLIC));
@@ -395,10 +395,10 @@ public class MapTakDB extends SQLiteOpenHelper {
 
                 // Get owner
                 String ownerID = c.getString(c.getColumnIndex(MAP_OWNER_ID));
-                UserID owner = getAdmin(new UserID(ownerID, null, null));
+                User owner = getAdmin(new User(ownerID, null, null));
 
                 // Get the administrators
-                List<UserID> admins = getAdmins(mapID);
+                List<User> admins = getAdmins(mapID);
 
                 // Get public information
                 int isPub = c.getInt(c.getColumnIndex(MAP_ISPUBLIC));
@@ -507,20 +507,20 @@ public class MapTakDB extends SQLiteOpenHelper {
 
     /** Returns all of the administrators associated with a given map.
      *  Returns null if a grevious error has occured. Returns an empty list if no admins exist. */
-    public List<UserID> getAdmins(MapID mapID) {
+    public List<User> getAdmins(MapID mapID) {
 
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor c = db.rawQuery(
                     "SELECT * FROM " + TABLE_MAPS_ADMINS + " WHERE " + MAPADMINS_MAP_ID + "=\"" + mapID.toString() + "\";", null);
 
-            List<UserID> results = new LinkedList<UserID>();
+            List<User> results = new LinkedList<User>();
             if (c.moveToFirst()) {
                 do {
                     String userID = c.getString(c.getColumnIndex(MAPADMINS_ID));
                     String userName = c.getString(c.getColumnIndex(MAPADMINS_NAME));
                     String userEmail = c.getString(c.getColumnIndex(MAPADMINS_EMAIL));
-                    UserID uid = new UserID(userID, userName, userEmail);
+                    User uid = new User(userID, userName, userEmail);
                     results.add(uid);
                 } while (c.moveToNext());
             }
@@ -532,8 +532,8 @@ public class MapTakDB extends SQLiteOpenHelper {
         return null;
     }
 
-    /** Returns a complete UserID object from an incomplete one passed in which contains only the ID field */
-    public UserID getAdmin(UserID user) {
+    /** Returns a complete User object from an incomplete one passed in which contains only the ID field */
+    public User getAdmin(User user) {
 
         if (user == null || user.getID() == null) {
             return null;
