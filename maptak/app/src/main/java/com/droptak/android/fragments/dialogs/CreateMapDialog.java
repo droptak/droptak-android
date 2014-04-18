@@ -91,12 +91,15 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         // TODO: Properly set if it is public or not
         map.setIsPublic(false);
 
+        // Create the drawerfragment that will be inflated later
+        DrawerFragment drawerF = new DrawerFragment();
+
         // Create and execute the task which adds the map to the database and the server
-        CreateMapTask task = new CreateMapTask(getActivity(), map);
+        CreateMapTask task = new CreateMapTask(getActivity(), map, drawerF);
         task.execute();
 
         // Close the dialog and re-inflate the side drawer to refresh the map list
-        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerF).commit();
         getDialog().cancel();
     }
 

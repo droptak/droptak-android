@@ -2,6 +2,7 @@ package com.droptak.android.tasks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,9 @@ import com.droptak.android.interfaces.OnGPlusLoginListener;
 
 public class GPlusLoginTask
         implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+
+    /** Constant which indicates the request code that starts a sign-in activity */
+    public static final int RC_SIGN_IN = 32356;
 
     /** Static method that logs the user out. Technically. */
     public static void logout(Context c) {
@@ -53,6 +57,13 @@ public class GPlusLoginTask
     /** Sets an OnGPLusLoginListener to call when the login has completed */
     public void setOnGPlusLoginListener(OnGPlusLoginListener listener) {
         this.listener = listener;
+    }
+
+    /** Connects the client */
+    public void connect() {
+        if (apiClient != null) {
+            apiClient.connect();
+        }
     }
 
     /** Disconnects the client. The only way to recreate it is to create a new GPlusLoginTask */
@@ -104,6 +115,7 @@ public class GPlusLoginTask
                     // Note that this might cause future problems because it is being called on a worker thread
                     // Be aware.
                     if (listener != null) {
+                        Log.d(MainActivity.LOG_TAG, "Google+ signin complete.");
                         listener.onGooglePlusLogin();
                     }
 
@@ -138,7 +150,7 @@ public class GPlusLoginTask
         prefs.edit().putString(MainActivity.PREF_USER_GPLUS_ID, gplusID).commit();
 
         // Get the user's oauth token and put it in the shared preferences
-        Log.d(MainActivity.LOG_TAG, "Basic information parsed. Beginning OAUTH request");
+        Log.d(MainActivity.LOG_TAG, "Basic information parsed. Requesting OAUTH id.");
         setOAUTHToken();
     }
 
@@ -149,6 +161,16 @@ public class GPlusLoginTask
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.d(MainActivity.LOG_TAG, "Google+ connection failed. Attempting to resolve.");
+        if (connectionResult.hasResolution()) {
+            try {
+                activity.startIntentSenderForResult(connectionResult.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
+            } catch (IntentSender.SendIntentException e) {
+                // The intent was canceled before it was sent.  Return to the default
+                // state and attempt to connect to get an updated ConnectionResult.
+                apiClient.connect();
+            }
+        }
     }
+
 }

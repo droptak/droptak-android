@@ -3,6 +3,7 @@ package com.droptak.android.fragments;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,6 +45,7 @@ public class TakMapFragment extends MapFragment {
             centerCameraOnUser();
         } else {
             MapID mapID = new MapID(mapIDStr);
+            Log.d(MainActivity.LOG_TAG, "map pinning: " + mapIDStr);
             MapObject mo = MapTakDB.getDB(getActivity()).getMap(mapID);
             addTaksToGMap(mo);
         }
