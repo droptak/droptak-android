@@ -12,7 +12,7 @@
     <string name="title_activity_add_tak_task">AddTakTask</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="linebreak">\n</string>
     <string name="drawer_text_open">Open</string>
     <string name="drawer_text_closed">Closed</string>
 

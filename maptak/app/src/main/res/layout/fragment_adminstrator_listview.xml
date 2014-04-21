@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+
+    <TextView
+        android:id="@+id/admin_et_name"
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Tylor Garrett" />
+
+    <TextView
+        android:id="@+id/admin_et_email"
+        android:gravity="center"
+        android:layout_below="@id/admin_et_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="tylorgarrett@gmail.com"/>
+</RelativeLayout>
