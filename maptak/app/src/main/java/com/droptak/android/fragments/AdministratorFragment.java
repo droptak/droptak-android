@@ -58,8 +58,9 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
 
         switch (view.getId()) {
             case R.id.admin_bu_addadmin:
+                //get whats in the box and convert it to a UserID
+                //add the map to the MapObject.listOfAdmins()
                 break;
-
         }
 
     }
