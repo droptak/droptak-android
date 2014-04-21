@@ -39,7 +39,7 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
     public CreateTakTask(Context c, TakObject tak, MapID mapID) {
         this.c = c;
         this.tak = tak;
-        this.mapID = mapID;;
+        this.mapID = mapID;
     }
 
     @Override
