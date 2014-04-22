@@ -3,6 +3,7 @@ package com.droptak.android.tasks;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.content.Context;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,7 +32,7 @@ import com.droptak.android.interfaces.OnMapIDUpdateListener;
 
 public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
 
-    private static String BASE_URL = "http://mapitapps.appspot.com/api/map";
+    private static String BASE_URL = "http://mapitapps.appspot.com/api/v1/map/";
 
     private MapObject mapToPush;
     private Context c;
@@ -66,6 +67,7 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
 
         // Get information about the map we are adding
         String mapName = mapToPush.getName();
+        String isPublic = ""+mapToPush.isPublic();
 
         // Sanitize the strings
         userName = userName.replaceAll("\\s", "%20");
@@ -73,9 +75,9 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
 
         // Construct the url we are going to post to
         String url = BASE_URL +
-                "?userId=" + userID +
-                "&username=" + userName +
-                "&mapname=" + mapName;
+                "?owner=" + userID +
+                "&name=" + mapName +
+                "&isPublic=" + isPublic;
 
         // Create the http client we use to post to the server
         HttpClient client = new DefaultHttpClient();
@@ -93,8 +95,9 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
         // Parse the returned JSON to get the new MapID
         MapID newMapID = null;
         try {
+            Log.d("debug","addMapResponse="+responseString);
             JSONObject j = new JSONObject(responseString);
-            String realMapIDString = j.getString("mapId");
+            String realMapIDString = ""+j.getLong("id");
             newMapID = new MapID(realMapIDString);
         } catch (JSONException e) {
             e.printStackTrace();

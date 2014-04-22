@@ -90,7 +90,7 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         map.setOwner(new User(uid, userName, userEmail));
 
         // TODO: Properly set if it is public or not
-        map.setIsPublic(false);
+        map.setIsPublic(isPrivate);
 
         // Create the drawerfragment that will be inflated later
         DrawerFragment drawerF = new DrawerFragment();
