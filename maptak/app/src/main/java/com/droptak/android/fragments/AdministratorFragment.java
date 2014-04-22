@@ -17,7 +17,7 @@ import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
-import com.droptak.android.data.UserID;
+import com.droptak.android.data.User;
 
 import java.util.List;
 
@@ -46,9 +46,9 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
         Button addAdministrator = (Button) v.findViewById(R.id.admin_bu_addadmin);
         addAdministrator.setOnClickListener(this);
         adminList = (ListView) v.findViewById(R.id.admin_listview);
-        currentMap.addManager(new UserID("0571", "Michael Hockerman", "mhockerman@gmail.com"));
-        currentMap.addManager(new UserID("0129", "Tylor Garrett", "tylorgarrett@gmail.com"));
-        listAdapter = new ListViewAdapter<UserID>(getActivity(), android.R.layout.simple_list_item_1, currentMap.getManagers());
+        currentMap.addManager(new User("0571", "Michael Hockerman", "mhockerman@gmail.com"));
+        currentMap.addManager(new User("0129", "Tylor Garrett", "tylorgarrett@gmail.com"));
+        listAdapter = new ListViewAdapter<User>(getActivity(), android.R.layout.simple_list_item_1, currentMap.getManagers());
         adminList.setAdapter(listAdapter);
         return v;
     }
@@ -67,9 +67,9 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
     public class ListViewAdapter<E> extends ArrayAdapter {
         private Context mContext;
         private int id;
-        private List<UserID> mAdmins;
+        private List<User> mAdmins;
 
-        public ListViewAdapter(Context context, int textViewResourceId, List<UserID> admins){
+        public ListViewAdapter(Context context, int textViewResourceId, List<User> admins){
             super(context, textViewResourceId, admins);
             mContext = context;
             id = textViewResourceId;
@@ -78,7 +78,7 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            UserID currentUser = mAdmins.get(position);
+            User currentUser = mAdmins.get(position);
             String name = currentUser.getName();
             String email = currentUser.getEmail();
             View row = convertView;

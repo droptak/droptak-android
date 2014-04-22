@@ -26,10 +26,9 @@ import com.droptak.android.interfaces.OnGPlusLoginListener;
 import com.droptak.android.qrcode.IntentIntegrator;
 import com.droptak.android.qrcode.IntentResult;
 import com.droptak.android.tasks.GPlusLoginTask;
+import com.droptak.android.tasks.GetMapTask;
 import com.droptak.android.tasks.MapTakLoginTask;
 import com.droptak.android.data.TakObject;
-import com.droptak.android.tasks.GetQRMapTask;
-import com.droptak.android.tasks.GetQRTaksTask;
 
 public class MainActivity extends Activity {
 
@@ -154,36 +153,18 @@ public class MainActivity extends Activity {
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         TextView url = (TextView) findViewById(R.id.QRCodeTitle);
         if ( scanResult != null ){
-            FragmentManager fm = getFragmentManager();
-            //Fragment newFrame = QRCodeFragment.newInstance(scanResult.getContents());
-            //fm.beginTransaction().replace(R.id.activity_map_mapview, newFrame).commit();
-            MapObject map = null;
-            GetQRMapTask getQRMapTask = new GetQRMapTask(scanResult.getContents(),this);
-            try {
-                map = getQRMapTask.execute().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-            Log.d("debug","mapName="+map.getName());
-            GetQRTaksTask task = new GetQRTaksTask(this,map.getName(),Long.parseLong(map.getID().toString()));
-            List<TakObject> taks = null;
-            try {
-                taks = task.execute().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-            Log.d("deubg","call");
-            map.setTaks(taks);
-            MapTakDB db = MapTakDB.getDB(this);
-            db.addMap(map);
-            //TakFragmentManager.switchToQRCode(this, scanResult.getContents());
-        } else {
-            Log.d(MainActivity.LOG_TAG, "There was an error");
+
+            // Parse out the ID
+            String idurl = scanResult.getContents();
+            idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
+            idurl = idurl.replace("/", "");
+
+            // Execute the get map task
+            GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl));
+            getMapTask.execute();
+
         }
+
     }
 
 
