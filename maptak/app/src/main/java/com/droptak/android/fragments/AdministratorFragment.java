@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.User;
+import com.droptak.android.tasks.AddAdminTask;
 
 import java.util.List;
 
@@ -57,6 +59,10 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.admin_bu_addadmin:
+                EditText adminEmailText = (EditText)getActivity().findViewById(R.id.admin_et_adminemail);
+                String email = adminEmailText.getText().toString();
+                AddAdminTask addAdminTask = new AddAdminTask(getActivity(),email,currentMap.getID());
+                addAdminTask.execute();
                 //get whats in the box and convert it to a UserID
                 //add the map to the MapObject.listOfAdmins()
                 break;

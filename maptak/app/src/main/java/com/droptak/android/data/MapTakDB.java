@@ -288,7 +288,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_MAP_ID + "=\"" + newMapID.toString() +
                     "\" WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\" AND " + MAPADMINS_MAP_ID + "=\"" + oldID + "\";");
+
         }
+
     }
 
     /** Deletes a map associated with a given map ID from the local database.
