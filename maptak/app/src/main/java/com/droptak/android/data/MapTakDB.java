@@ -239,6 +239,7 @@ public class MapTakDB extends SQLiteOpenHelper {
 
     /** Changes the TakID of a given tak from the old takID to the new takID */
     public void setTakID(TakID oldTak, TakID newTak) {
+        Log.d(MainActivity.LOG_TAG, "Modifying takID from " + oldTak.toString() + " to " + newTak.toString());
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_TAKS + " SET " + TAK_ID + "=\"" + newTak + "\" WHERE " + TAK_ID + " = \"" + oldTak + "\";");

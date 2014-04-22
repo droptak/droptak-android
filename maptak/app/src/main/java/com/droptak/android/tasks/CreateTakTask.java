@@ -30,7 +30,7 @@ import com.droptak.android.data.TakObject;
 
 public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
 
-    private static final String BASE_URL = "http://mapitapps.appspot.com/api/tak";
+    private static final String BASE_URL = "http://mapitapps.appspot.com/api/v1/tak/";
 
     private Context c;
     private TakObject tak;
@@ -82,10 +82,9 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
 
         // Create the URL we will post to
         String url = BASE_URL +
-                "?name=" + userName +
-                "&id=" + userID +
-                "&mapId=" + mapID.toString() +
-                "&title=" + takName +
+                "?userid=" + userID +
+                "&mapid=" + mapID.toString() +
+                "&name=" + takName +
                 "&lat=" + takLat +
                 "&lng=" + takLng;
 
@@ -106,7 +105,7 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
         TakID id = null;
         try {
             JSONObject j = new JSONObject(responseString);
-            String newIDStr = j.getString("takId");
+            String newIDStr = ""+j.getLong("id");
             id = new TakID(newIDStr);
         } catch (JSONException e) {
             e.printStackTrace();
