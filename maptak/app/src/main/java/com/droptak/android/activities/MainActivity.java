@@ -44,7 +44,6 @@ public class MainActivity extends Activity {
     public static final String PREF_USER_MAPTAK_TOKEN = "maptak_token";
 
     /** Class variables related to the drawer */
-    private DrawerFragment drawerFragment;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
@@ -66,8 +65,7 @@ public class MainActivity extends Activity {
         DBTests.backupDatabase();
 
         // Inflate the sidebar and main screen fragments
-        drawerFragment = new DrawerFragment();
-        getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
 
         // Make the drawer layout openable with the app icon
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -109,8 +107,7 @@ public class MainActivity extends Activity {
             case R.id.menu_refresh:
                 GetUsersMapsTask task = new GetUsersMapsTask(this, new OnMapsRefreshListener() {
                     public void onMapsRefresh() {
-                        drawerFragment = new DrawerFragment();
-                        getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
+                        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
                     }
                 });
                 task.execute();
@@ -176,8 +173,7 @@ public class MainActivity extends Activity {
                     GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl), new OnMapsRefreshListener() {
                         public void onMapsRefresh() {
                             // Refresh drawer layout
-                            drawerFragment = new DrawerFragment();
-                            getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
+                            getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
                         }
                     });
                     getMapTask.execute();

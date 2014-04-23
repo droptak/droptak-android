@@ -3,6 +3,7 @@ package com.droptak.android.fragments.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import java.util.List;
 import com.droptak.android.R;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
+import com.droptak.android.interfaces.OnMapSearchResultListener;
+import com.droptak.android.tasks.SearchMapsTask;
 
 public class SearchDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -71,25 +74,20 @@ public class SearchDialog extends DialogFragment implements DialogInterface.OnCl
         // Lower-case the query
         query = query.toLowerCase();
 
-        // Get the database and iterate over local maps
-        MapTakDB db = MapTakDB.getDB(getActivity());
-        List<MapObject> maps = db.getUsersMaps();
+        // Store the fragment manager for later use
+        final FragmentManager manager = getFragmentManager();
 
-        // Assemble a list of possible results
-        List<MapObject> results = new ArrayList<MapObject>();
+        // Do the search
+        SearchMapsTask task = new SearchMapsTask(query, new OnMapSearchResultListener() {
+            public void onSearchResult(List<MapObject> results) {
 
-        for (MapObject map : maps) {
-            String name = map.getName();
-            if (name.contains(query)) {
-                results.add(map);
+                // Create the results dialog
+                SearchResultsDialog d = new SearchResultsDialog(results);
+                d.show(manager, "search-results-dialog");
+
             }
-        }
-
-        // Create the search results dialog and display it.
-        getDialog().cancel();
-        SearchResultsDialog d = new SearchResultsDialog(results);
-        d.show(getFragmentManager(), "search_results_dialog");
-
+        });
+        task.execute();
 
     }
 
