@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.droptak.android.R;
 import com.droptak.android.data.MapID;
@@ -20,6 +21,7 @@ import com.droptak.android.qrcode.IntentIntegrator;
 import com.droptak.android.qrcode.IntentResult;
 import com.droptak.android.tasks.GPlusLoginTask;
 import com.droptak.android.tasks.GetMapTask;
+import com.droptak.android.tasks.GetUsersMapsTask;
 import com.droptak.android.tasks.MapTakLoginTask;
 import com.droptak.android.test.DBTests;
 
@@ -92,19 +94,29 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handler for the action bar icon to toggle the drawer
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
+        // Handler for every other icon
         switch (item.getItemId()) {
+
+            case R.id.menu_refresh:
+                GetUsersMapsTask task = new GetUsersMapsTask(this);
+                task.execute();
+                Toast.makeText(this, "Polling DropTak for maps.", Toast.LENGTH_SHORT).show();
+                break;
+
             case R.id.menu_settings:
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
-                return true;
+                break;
 
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     /** Enabled the "up" button on the action bar app icon, which will take the user back to
