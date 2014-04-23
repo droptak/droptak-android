@@ -23,6 +23,7 @@ import com.droptak.android.data.TakID;
 import com.droptak.android.data.TakMetadata;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnAdminIDUpdateListener;
 
 
 /** Task which handles everything involved in attaching a new user as an admin to a map. */
@@ -33,19 +34,21 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
     private Context c;
     private User user;
     private MapID mapID;
+    private OnAdminIDUpdateListener listener;
 
     /** The tempUser passed in can have a null ID and name. The only thing important is the email */
-    public AddAdminTask(Context c, User tempUser, MapID mapID) {
+    public AddAdminTask(Context c, User tempUser, MapID mapID, OnAdminIDUpdateListener listener) {
         this.c = c;
         this.user = tempUser;
         this.mapID = mapID;
+        this.listener = listener;
     }
 
     @Override
     protected void onPreExecute() {
 
         // Create a temporary id for the tak we are adding
-        user.setID("TEMPID-" + UUID.randomUUID().toString().substring(0,15));
+        user.setID("TEMPID-" + UUID.randomUUID().toString().substring(0, 15));
         user.setName("Downloading Data....");
 
         // Add the user to the database with this temporary ID
@@ -66,7 +69,7 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
         String userID = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "ERROR");
 
         if (userName.equals("ERROR") || userEmail.equals("ERROR") || userID.equals("ERROR")) {
-            Log.d(MainActivity.LOG_TAG, "Error sending admin. Not logged in.");
+            Log.d(MainActivity.LOG_TAG, "Error sending admin. Not logged in. " + userName + userEmail + userID);
             return null;
         }
 
@@ -101,6 +104,11 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
         // Update the database with the new ID
         MapTakDB db = MapTakDB.getDB(c);
         db.setMapAdminsUser(user, newUser);
+
+        // Call the listener
+        if (listener != null) {
+            listener.onAdminIDUpdate(newUser, mapID);
+        }
 
         return null;
     }

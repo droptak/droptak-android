@@ -1,5 +1,6 @@
 package com.droptak.android.fragments.dialogs;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -20,6 +21,7 @@ import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnAdminIDUpdateListener;
 import com.droptak.android.tasks.AddAdminTask;
 import com.droptak.android.widgets.AdminListItemAdapter;
 
@@ -34,7 +36,8 @@ import java.util.List;
  * create an instance of this fragment.
  *
  */
-public class AdminDialog extends DialogFragment implements View.OnClickListener{
+public class AdminDialog extends DialogFragment
+        implements View.OnClickListener, OnAdminIDUpdateListener {
 
     private ListView lvAdmins;
     private EditText etAdminEmail;
@@ -84,6 +87,7 @@ public class AdminDialog extends DialogFragment implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+
             case R.id.admin_bu_addadmin:
 
                 // Get the email the user entered
@@ -91,7 +95,7 @@ public class AdminDialog extends DialogFragment implements View.OnClickListener{
 
                 // Execute task with this email
                 User u = new User("", "", email);
-                AddAdminTask addAdminTask = new AddAdminTask(getActivity(), u, id);
+                AddAdminTask addAdminTask = new AddAdminTask(getActivity(), u, id, this);
                 addAdminTask.execute();
 
                 // Update the list view with the temporary admin
@@ -100,7 +104,24 @@ public class AdminDialog extends DialogFragment implements View.OnClickListener{
                 lvAdmins.setAdapter(new AdminListItemAdapter(getActivity(), map.getManagers()));
 
                 break;
+
         }
     }
 
+    @Override
+    public void onAdminIDUpdate(User newAdmin, MapID mapID) {
+
+        // Refresh the list view
+        Activity a = getActivity();
+        if (a != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    MapTakDB db = MapTakDB.getDB(getActivity());
+                    MapObject map = db.getMap(id);
+                    lvAdmins.setAdapter(new AdminListItemAdapter(getActivity(), map.getManagers()));
+                }
+            });
+        }
+
+    }
 }

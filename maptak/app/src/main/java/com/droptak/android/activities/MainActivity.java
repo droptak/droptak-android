@@ -31,6 +31,7 @@ import com.droptak.android.tasks.GPlusLoginTask;
 import com.droptak.android.tasks.GetMapTask;
 import com.droptak.android.tasks.MapTakLoginTask;
 import com.droptak.android.data.TakObject;
+import com.droptak.android.test.DBTests;
 
 public class MainActivity extends Activity {
 
@@ -68,6 +69,7 @@ public class MainActivity extends Activity {
                 new MapTakLoginTask(MainActivity.this).execute();
             }
         });
+        DBTests.backupDatabase();
 
         // Inflate the sidebar and main screen fragments
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();

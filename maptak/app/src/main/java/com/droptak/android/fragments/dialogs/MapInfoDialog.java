@@ -22,6 +22,8 @@ public class MapInfoDialog extends DialogFragment {
     private EditText etMapName, etMapDesc;
     private TextView tvOwner, tvID;
 
+    public MapInfoDialog() {}
+
     public MapInfoDialog(MapObject mo) {
         this.map = mo;
     }
