@@ -17,6 +17,7 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
+import com.droptak.android.interfaces.OnMapsRefreshListener;
 import com.droptak.android.qrcode.IntentIntegrator;
 import com.droptak.android.qrcode.IntentResult;
 import com.droptak.android.tasks.GPlusLoginTask;
@@ -43,6 +44,7 @@ public class MainActivity extends Activity {
     public static final String PREF_USER_MAPTAK_TOKEN = "maptak_token";
 
     /** Class variables related to the drawer */
+    private DrawerFragment drawerFragment;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
@@ -64,7 +66,8 @@ public class MainActivity extends Activity {
         DBTests.backupDatabase();
 
         // Inflate the sidebar and main screen fragments
-        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+        drawerFragment = new DrawerFragment();
+        getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
 
         // Make the drawer layout openable with the app icon
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -104,7 +107,12 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
 
             case R.id.menu_refresh:
-                GetUsersMapsTask task = new GetUsersMapsTask(this);
+                GetUsersMapsTask task = new GetUsersMapsTask(this, new OnMapsRefreshListener() {
+                    public void onMapsRefresh() {
+                        drawerFragment = new DrawerFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
+                    }
+                });
                 task.execute();
                 Toast.makeText(this, "Polling DropTak for maps.", Toast.LENGTH_SHORT).show();
                 break;

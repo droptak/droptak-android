@@ -12,6 +12,7 @@ import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakMetadata;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnMapsRefreshListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -33,9 +34,11 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
     private static final String BASE_URL = "http://mapitapps.appspot.com/api/v1/user/";
 
     private Context c;
+    private OnMapsRefreshListener listener;
 
-    public GetUsersMapsTask(Context c) {
+    public GetUsersMapsTask(Context c, OnMapsRefreshListener listener) {
         this.c = c;
+        this.listener = listener;
     }
 
     @Override
@@ -130,6 +133,11 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
                 }
             }
 
+        }
+
+        // Alert the listeners that we've finished
+        if (listener != null) {
+            listener.onMapsRefresh();
         }
 
         return null;

@@ -30,6 +30,7 @@ public class DrawerFragment extends Fragment
 
     /** Drawer Layout */
     private DrawerLayout drawer;
+    private ListView lvMaps;
 
     /** THe backing list of maps we are displaying in the drawer list view */
     private List<MapObject> maps;
@@ -42,7 +43,7 @@ public class DrawerFragment extends Fragment
         drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         Button buCreateMap = (Button) v.findViewById(R.id.drawer_bu_createmap);
         buCreateMap.setOnClickListener(this);
-        ListView lvMaps = (ListView) v.findViewById(R.id.drawer_lv_maplist);
+        lvMaps = (ListView) v.findViewById(R.id.drawer_lv_maplist);
         lvMaps.setOnItemClickListener(this);
 
         // Get user's stored maps
