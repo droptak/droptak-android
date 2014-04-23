@@ -72,6 +72,10 @@ public class MapInfoDialog extends DialogFragment {
         buEditAdmins.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
+                // Create an admin dialog and create it
+                AdminDialog d = new AdminDialog(map.getID());
+                d.show(getFragmentManager(), "admin-edit-dialog");
+
             }
         });
 

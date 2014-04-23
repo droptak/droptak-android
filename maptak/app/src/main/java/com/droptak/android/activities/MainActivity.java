@@ -22,7 +22,6 @@ import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakMetadata;
-import com.droptak.android.fragments.AdministratorFragment;
 import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.fragments.dialogs.TakMetadataDialog;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
@@ -110,14 +109,6 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
-
-            case R.id.menu_administrators:
-                MapObject currentMap = getCurrentSelectedMap();
-                FragmentManager fm = getFragmentManager();
-                Fragment newFrame = new AdministratorFragment(currentMap);
-                fm.beginTransaction().replace(R.id.mainview, newFrame).commit();
-                break;
-
 
         }
 

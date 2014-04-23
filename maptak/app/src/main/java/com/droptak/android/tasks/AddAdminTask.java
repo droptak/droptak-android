@@ -25,43 +25,32 @@ import com.droptak.android.data.TakObject;
 import com.droptak.android.data.User;
 
 
-/** Task which handles everything involved in creating a new tak. This will add the tak
- *  to the local database with a temporary ID, push the map to the maptak servers, get a new
- *  ID from the maptak servers, and finally update the local database with this new ID */
-
+/** Task which handles everything involved in attaching a new user as an admin to a map. */
 public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
 
     private static final String BASE_URL = "http://mapitapps.appspot.com/api/v1/map/";
 
     private Context c;
-    private String email;
+    private User user;
     private MapID mapID;
-    private String tempID;
-    private User tempUser;
 
-    public AddAdminTask(Context c, String email, MapID mapID) {
+    /** The tempUser passed in can have a null ID and name. The only thing important is the email */
+    public AddAdminTask(Context c, User tempUser, MapID mapID) {
         this.c = c;
-        this.email = email;
+        this.user = tempUser;
         this.mapID = mapID;
     }
 
     @Override
     protected void onPreExecute() {
-        SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME,0);
 
         // Create a temporary id for the tak we are adding
-         tempID = "TEMPID-" + UUID.randomUUID().toString().substring(0,15);
-        String userName = "TEMPUSERNAME";
-         tempUser = new User(tempID,userName,email);
+        user.setID("TEMPID-" + UUID.randomUUID().toString().substring(0,15));
+        user.setName("Downloading Data....");
 
-
-
-
-        // Add the tak to the database with this temporary ID
+        // Add the user to the database with this temporary ID
         MapTakDB db = MapTakDB.getDB(c);
-        db.addAdmin(tempUser,mapID);
-
-
+        db.addAdmin(user, mapID);
 
     }
 
@@ -77,13 +66,12 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
         String userID = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "ERROR");
 
         if (userName.equals("ERROR") || userEmail.equals("ERROR") || userID.equals("ERROR")) {
-            Log.d(MainActivity.LOG_TAG, "Error sending tak. Not logged in.");
+            Log.d(MainActivity.LOG_TAG, "Error sending admin. Not logged in.");
             return null;
         }
 
-
         // Create the URL we will post to
-        String url = BASE_URL + mapID.toString() + "/admin/" + email + "/";
+        String url = BASE_URL + mapID.toString() + "/admin/" + user.getEmail() + "/";
 
         // Create our asynchronous http client and issue a post request to a given URL
         HttpClient client = new DefaultHttpClient();
@@ -98,27 +86,21 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
             e.printStackTrace();
         }
 
-        // Parse the new ID out of the JSON
-        User admin = null;
+        // Parse the new ID and name out of the JSON
+        User newUser = null;
         try {
-            Log.d("debug","addAdminResponse="+responseString);
             JSONObject j = new JSONObject(responseString);
-            String newIDStr = ""+j.getLong("id");
+            String newIDStr = "" + j.getLong("id");
             String newName = j.getString("name");
             String newEmail = j.getString("email");
-            admin = new User(newIDStr,newName,newEmail);
+            newUser = new User(newIDStr, newName, newEmail);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         // Update the database with the new ID
         MapTakDB db = MapTakDB.getDB(c);
-       // db.setTakID(tak.getID(), id);
-        db.setMapAdminsUser(tempUser,admin);
-
-
-        // TODO: Update any metadata pairs the user might have added
-
+        db.setMapAdminsUser(user, newUser);
 
         return null;
     }

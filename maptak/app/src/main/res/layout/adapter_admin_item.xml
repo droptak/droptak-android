@@ -7,18 +7,17 @@
 
 
     <TextView
-        android:id="@+id/admin_et_name"
-        android:gravity="center"
+        android:id="@+id/admin_list_tv_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Tylor Garrett" />
 
     <TextView
-        android:id="@+id/admin_et_email"
-        android:gravity="center"
-        android:layout_below="@id/admin_et_name"
+        android:id="@+id/admin_list_tv_email"
+        android:layout_below="@id/admin_list_tv_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="tylorgarrett@gmail.com"/>
+
 </RelativeLayout>
