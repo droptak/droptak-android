@@ -49,13 +49,19 @@ public class TakMetadataDialog extends DialogFragment implements View.OnClickLis
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        //set up Alert Dialog
         dataList = new AlertDialog.Builder(getActivity());
         dataList.setTitle("Tak MetaData");
         LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_tak_metadata_dialog, null);
         dataList.setView(v);
+
+        //database instance
         db = MapTakDB.getDB(getActivity());
+
+        //set up View and Adapters
         button = (Button) v.findViewById(R.id.takmetadata_btn_add);
         button.setOnClickListener(this);
         key = (EditText) v.findViewById(R.id.takmetadata_et_key);
@@ -107,16 +113,16 @@ public class TakMetadataDialog extends DialogFragment implements View.OnClickLis
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             final View result;
-
+            Map.Entry<String, TakMetadata> item = getItem(position);
             if ( convertView == null ){
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 result = inflater.inflate(R.layout.fragment_tak_metdata_listview, parent, false);
-                ((TextView) result.findViewById(R.id.takmetadata_lv_et_key)).setText("Temp Text");
-                ((TextView) result.findViewById(R.id.takmetadata_lv_et_value)).setText("Temp Value");
+                ((TextView) result.findViewById(R.id.takmetadata_lv_et_key)).setText(item.getKey());
+                ((TextView) result.findViewById(R.id.takmetadata_lv_et_value)).setText(item.getValue().getValue());
             } else {
                 result = convertView;
             }
-            Map.Entry<String, TakMetadata> item = getItem(position);
+
 
             return result;
         }
