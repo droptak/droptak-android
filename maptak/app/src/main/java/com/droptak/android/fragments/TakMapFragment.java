@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.droptak.android.fragments.dialogs.CreateTakDialog;
 import com.droptak.android.interfaces.OnLocationReadyListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,6 +65,14 @@ public class TakMapFragment extends MapFragment {
                 addTaksToGMap(mo);
             }
         }
+
+        // Set an on long press listener to add a tak as a specific location
+        getMap().setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            public void onMapLongClick(LatLng latLng) {
+                // Create the add tak fragment
+                new CreateTakDialog(latLng).show(getFragmentManager(), "create-tak-dialog-user-selected-location");
+            }
+        });
 
         // Alert listeners that the gmap is loaded
         if (loadedListener != null) {

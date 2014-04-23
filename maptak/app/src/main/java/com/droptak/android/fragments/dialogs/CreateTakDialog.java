@@ -15,14 +15,22 @@ import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapID;
 import com.droptak.android.data.TakObject;
+import com.droptak.android.fragments.MapViewFragment;
 import com.droptak.android.interfaces.OnLocationReadyListener;
 import com.droptak.android.managers.UserLocationManager;
 import com.droptak.android.tasks.CreateTakTask;
+import com.google.android.gms.maps.model.LatLng;
 
-public class CreateTakDialog extends DialogFragment implements View.OnClickListener, DialogInterface.OnClickListener {
+public class CreateTakDialog extends DialogFragment
+        implements DialogInterface.OnClickListener {
 
+    private LatLng loc;
     private UserLocationManager manager;
     private EditText etTakName, etTakDesc, etLat, etLng;
+
+    public CreateTakDialog(LatLng loc) {
+        this.loc = loc;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -48,21 +56,11 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
         etLat = (EditText) v.findViewById(R.id.addtak_et_lat);
         etLng = (EditText) v.findViewById(R.id.addtak_et_lng);
 
-        // Create our location client
-        manager = new UserLocationManager(getActivity());
-        manager.setOnLocationReadyListener(new OnLocationReadyListener() {
-            public void onLocationReady() {
-                etLat.setText(("" + manager.getLat()).substring(0,10));
-                etLng.setText(("" + manager.getLng()).substring(0,10));
-            }
-        });
+        // Add location passed in to the edit texts
+        etLat.setText("" + loc.latitude);
+        etLng.setText("" + loc.longitude);
 
         return builder.create();
-
-    }
-
-    @Override
-    public void onClick(View view) {
 
     }
 
@@ -107,6 +105,9 @@ public class CreateTakDialog extends DialogFragment implements View.OnClickListe
         // Pass it to the CreateTakTask and start it up
         new CreateTakTask(getActivity(), oldtak, mapID).execute();
 
+        // Refresh the main view with the new tak
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment()).commit();
+        
         // Close the dialog box
         getDialog().cancel();
 
