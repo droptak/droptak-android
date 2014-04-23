@@ -50,7 +50,7 @@ public class DrawerFragment extends Fragment
         maps = db.getUsersMaps();
 
         // Set it on the list view
-        lvMaps.setAdapter(new MapListItemAdapter(getActivity(), maps));
+        lvMaps.setAdapter(new MapListItemAdapter(getActivity(), maps, drawer));
 
         return v;
     }

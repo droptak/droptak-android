@@ -2,6 +2,7 @@ package com.droptak.android.widgets;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,19 @@ import java.util.List;
 
 import com.droptak.android.R;
 import com.droptak.android.data.MapObject;
+import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.fragments.dialogs.MapInfoDialog;
 
 public class MapListItemAdapter extends BaseAdapter {
 
     private Activity c;
     private List<MapObject> maps;
+    private DrawerLayout drawer;
 
-    public MapListItemAdapter(Activity c, List<MapObject> maps) {
+    public MapListItemAdapter(Activity c, List<MapObject> maps, DrawerLayout containingDrawer) {
         this.c = c;
         this.maps = maps;
+        this.drawer = containingDrawer;
     }
 
     public int getCount() {
@@ -49,6 +53,7 @@ public class MapListItemAdapter extends BaseAdapter {
         Button buInfo = (Button) v.findViewById(R.id.maplistadapter_bu_info);
         buInfo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                drawer.closeDrawers();
                 MapInfoDialog d = new MapInfoDialog(maps.get(i));
                 d.show(c.getFragmentManager(), "map_info_dialog");
             }
