@@ -3,6 +3,7 @@ package com.droptak.android.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -55,6 +56,9 @@ public class MainActivity extends Activity {
 
         // Set main content view
         setContentView(R.layout.activity_main);
+
+        // Set splash
+        getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
 
         // Attempt to sign the user into google plus and maptak
         gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
@@ -115,8 +119,11 @@ public class MainActivity extends Activity {
                 break;
 
             case R.id.menu_settings:
-                Intent i = new Intent(this, SettingsActivity.class);
-                startActivity(i);
+                // Clear out background
+                getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+
+                // Create preference fragment
+                getFragmentManager().beginTransaction().replace(R.id.mainview, new SettingsFragment()).commit();
                 break;
 
         }

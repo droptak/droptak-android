@@ -98,7 +98,6 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
         // Parse the returned JSON to get the new MapID
         MapID newMapID = null;
         try {
-            Log.d("debug","addMapResponse="+responseString);
             JSONObject j = new JSONObject(responseString);
             String realMapIDString = ""+j.getLong("id");
             newMapID = new MapID(realMapIDString);
