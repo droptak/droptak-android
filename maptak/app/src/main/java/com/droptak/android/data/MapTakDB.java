@@ -125,7 +125,7 @@ public class MapTakDB extends SQLiteOpenHelper {
     }
 
     /** Adds a map and all of its metadata to the database.
-     *  This includes: Map name, map ID, whether it is public or private, and all of its administrators. */
+     *  This includes: Map name, map ID, its owner, and whether it is public or private */
     public void addMap(MapObject map) {
         // Add the map to the local database
         Log.d(MainActivity.LOG_TAG, "Adding map to database.");

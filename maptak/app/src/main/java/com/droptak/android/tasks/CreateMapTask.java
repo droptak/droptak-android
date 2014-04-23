@@ -55,6 +55,9 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
         MapTakDB db = MapTakDB.getDB(c);
         db.addMap(mapToPush);
 
+        // And add its owner as an administrator in the table
+        db.addAdmin(mapToPush.getOwner(), mapToPush.getID());
+
     }
 
     @Override
