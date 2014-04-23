@@ -18,6 +18,7 @@ import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.fragments.DrawerFragment;
+import com.droptak.android.fragments.SplashFragment;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
 import com.droptak.android.interfaces.OnMapsRefreshListener;
 import com.droptak.android.qrcode.IntentIntegrator;
@@ -50,7 +51,6 @@ public class MainActivity extends Activity {
     private ActionBarDrawerToggle drawerToggle;
 
     /** Currently inflated fragment */
-    SettingsFragment settings;
     private boolean isInPrefs = false;
 
     /** Object which handles G+ login */
@@ -62,15 +62,18 @@ public class MainActivity extends Activity {
         // Set main content view
         setContentView(R.layout.activity_main);
 
-        // Set splash
-        getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
-
         // Attempt to sign the user into google plus and maptak
         gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
             public void onGooglePlusLogin() {
                 new MapTakLoginTask(MainActivity.this).execute();
             }
         });
+
+        // Set the background to a green color.
+        getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
+
+        // Inflate the splash screen
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
 
         // Inflate the sidebar and main screen fragments
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
@@ -123,13 +126,13 @@ public class MainActivity extends Activity {
                 break;
 
             case R.id.menu_settings:
-                // Clear out background
+
+                // Clear out background just to be safe
                 getWindow().getDecorView().setBackgroundColor(Color.WHITE);
 
                 // Create preference fragment
                 isInPrefs = true;
-                settings = new SettingsFragment();
-                getFragmentManager().beginTransaction().replace(R.id.mainview, settings).commit();
+                getFragmentManager().beginTransaction().replace(R.id.mainview, new SettingsFragment()).commit();
                 break;
 
         }
@@ -141,7 +144,7 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (isInPrefs) {
             isInPrefs = false;
-            getFragmentManager().beginTransaction().detach(settings).commit();
+            getFragmentManager().beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
             getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
         } else {
             super.onBackPressed();
