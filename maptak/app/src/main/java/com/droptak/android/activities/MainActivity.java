@@ -169,7 +169,13 @@ public class MainActivity extends Activity {
                     idurl = idurl.replace("/", "");
 
                     // Execute the get map task
-                    GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl));
+                    GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl), new OnMapsRefreshListener() {
+                        public void onMapsRefresh() {
+                            // Refresh drawer layout
+                            drawerFragment = new DrawerFragment();
+                            getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerFragment).commit();
+                        }
+                    });
                     getMapTask.execute();
 
                 }
