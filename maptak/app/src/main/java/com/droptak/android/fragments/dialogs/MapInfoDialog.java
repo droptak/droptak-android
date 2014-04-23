@@ -10,9 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.droptak.android.R;
 import com.droptak.android.data.MapObject;
+import com.droptak.android.data.MapTakDB;
+import com.droptak.android.fragments.DrawerFragment;
+import com.droptak.android.tasks.DeleteMapTask;
 
 public class MapInfoDialog extends DialogFragment {
 
@@ -21,6 +25,7 @@ public class MapInfoDialog extends DialogFragment {
     /** Views */
     private EditText etMapName, etMapDesc;
     private TextView tvOwner, tvID;
+    private Dialog mapInfoDialog;
 
     public MapInfoDialog() {}
 
@@ -32,6 +37,8 @@ public class MapInfoDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
 
         // Set title
         builder.setTitle("Edit Your Map");
@@ -71,6 +78,7 @@ public class MapInfoDialog extends DialogFragment {
 
         // Get button on the view and wire it up
         Button buEditAdmins = (Button) v.findViewById(R.id.mapinfo_bu_editadmins);
+        Button deleteButton= (Button)v.findViewById(R.id.deleteMap);
         buEditAdmins.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
@@ -81,6 +89,48 @@ public class MapInfoDialog extends DialogFragment {
             }
         });
 
-        return builder.create();
+        // start proccess for deleting a map, creator a dialog to confirm
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirm");
+                builder.setMessage("Are you sure you want to delete this map?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    // delete the map from the db, and close the dialogs
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        dialog.dismiss();
+                        mapInfoDialog.dismiss();
+                        DeleteMapTask deleteMapTask = new DeleteMapTask(getActivity(),map);
+                        deleteMapTask.execute();
+                        MapTakDB db =  MapTakDB.getDB(getActivity());
+                        db.deleteMap(map.getID());
+                        getFragmentManager().beginTransaction().replace(R.id.left_drawer,new DrawerFragment()).commit();
+                    }
+
+                });
+
+                // bring user back to MapInfoDialog
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+
+        });
+
+
+        mapInfoDialog = builder.create();
+        return mapInfoDialog;
     }
 }
