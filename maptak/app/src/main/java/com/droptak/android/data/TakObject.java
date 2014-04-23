@@ -108,5 +108,4 @@ public class TakObject {
 
     public void setMetadata(Map<String, TakMetadata> meta) { this.metadata = meta; }
 
-
 }

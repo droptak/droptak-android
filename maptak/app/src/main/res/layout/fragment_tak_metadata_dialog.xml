@@ -8,6 +8,7 @@
     android:id="@+id/takmetadata_linearlayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <EditText
         android:id="@+id/takmetadata_et_key"
         android:layout_width="0dp"
@@ -35,7 +36,7 @@
         android:id="@+id/takmetadata_listview"
         android:layout_below="@id/takmetadata_linearlayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="fill_parent">
     </ListView>
 
 

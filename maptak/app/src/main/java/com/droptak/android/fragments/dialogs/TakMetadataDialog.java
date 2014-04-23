@@ -35,11 +35,13 @@ import java.util.Map;
 public class TakMetadataDialog extends DialogFragment implements View.OnClickListener {
 
     ListView listView;
+    MapTakDB db;
     MyAdapter myAdapter;
     TakID takID;
     Button button;
     EditText key;
     EditText value;
+    AlertDialog.Builder dataList;
 
     public TakMetadataDialog(TakID takID) {
         this.takID = takID;
@@ -48,14 +50,34 @@ public class TakMetadataDialog extends DialogFragment implements View.OnClickLis
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        AlertDialog.Builder dataList= new AlertDialog.Builder(getActivity());
+        dataList = new AlertDialog.Builder(getActivity());
         dataList.setTitle("Tak MetaData");
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View v = inflater.inflate(R.layout.fragment_tak_metadata_dialog, null);
+        dataList.setView(v);
+        db = MapTakDB.getDB(getActivity());
+        button = (Button) v.findViewById(R.id.takmetadata_btn_add);
+        button.setOnClickListener(this);
+        key = (EditText) v.findViewById(R.id.takmetadata_et_key);
+        value = (EditText) v.findViewById(R.id.takmetadata_et_value);
+        listView = (ListView) v.findViewById(R.id.takmetadata_listview);
+        myAdapter = new MyAdapter(db.getTakMetadata(takID));
+        listView.setAdapter(myAdapter);
         return dataList.create();
     }
 
     @Override
     public void onClick(View view) {
-        //add the metadata to the TakObject and refresh the
+        //add the metadata to the TakObject and refresh the page
+        String mapKey = key.getText().toString();
+        String mapTakID = takID.toString();
+        String mapValue = value.getText().toString();
+        if ( mapKey != null && mapValue != null ){
+            // add to the database
+            TakMetadata newData = new TakMetadata(mapTakID, mapKey, mapValue);
+            db.addTakMetadata(takID, newData);
+        }
+        getDialog().cancel();
     }
 
     public class MyAdapter extends BaseAdapter{
@@ -87,14 +109,14 @@ public class TakMetadataDialog extends DialogFragment implements View.OnClickLis
             final View result;
 
             if ( convertView == null ){
-                result = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_tak_metadata_dialog, parent, false);
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                result = inflater.inflate(R.layout.fragment_tak_metdata_listview, parent, false);
+                ((TextView) result.findViewById(R.id.takmetadata_lv_et_key)).setText("Temp Text");
+                ((TextView) result.findViewById(R.id.takmetadata_lv_et_value)).setText("Temp Value");
             } else {
                 result = convertView;
             }
             Map.Entry<String, TakMetadata> item = getItem(position);
-            //TODO replace findViewByID by ViewHolder
-            ((TextView) result.findViewById(R.id.takmetadata_lv_et_name)).setText(item.getKey());
-            ((TextView) result.findViewById(R.id.takmetadata_lv_et_email)).setText(item.getValue().toString());
 
             return result;
         }
