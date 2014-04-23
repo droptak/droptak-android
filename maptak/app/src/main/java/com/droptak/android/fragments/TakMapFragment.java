@@ -93,7 +93,9 @@ public class TakMapFragment extends MapFragment {
 
                 // Center the map to that position
                 CameraUpdate moveCam = CameraUpdateFactory.newLatLngZoom(userLatLng, 14.5f);
-                getMap().moveCamera(moveCam);
+                if (getMap() != null) {
+                    getMap().moveCamera(moveCam);
+                }
             }
         });
     }
