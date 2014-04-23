@@ -165,6 +165,10 @@ public class MainActivity extends Activity {
 
                     // Parse out the ID
                     String idurl = scanResult.getContents();
+                    if (idurl == null) {
+                        return;
+                    }
+
                     idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
                     idurl = idurl.replace("/", "");
 
