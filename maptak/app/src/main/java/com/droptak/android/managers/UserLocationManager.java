@@ -21,7 +21,7 @@ public class UserLocationManager
     private LocationClient userLocation;
 
     /** Whether or not the location is currently good */
-    private boolean isAvailable;
+    private boolean isAvailable = false;
 
     /** Listener for callbacks when location is ready */
     private OnLocationReadyListener listener;

@@ -23,7 +23,7 @@ public class MapTakLoginTask extends AsyncTask<Void, Void, Void> {
 
     private Activity callingActivity;
     private ProgressDialog progressDialog;
-    private static String BASE_LOGIN_URL = "http://mapitapps.appspot.com/api/login";
+    private static String BASE_LOGIN_URL = "http://mapitapps.appspot.com/api/v1/login";
 
     /** Constructor. Pass in the calling activity and a connected Google API Client */
     public MapTakLoginTask(Activity activity) {
@@ -67,10 +67,10 @@ public class MapTakLoginTask extends AsyncTask<Void, Void, Void> {
 
         // Construct the URL we will hit to log in
         String url = BASE_LOGIN_URL +
-                "?storeToken=" + oauth +
+                "?oauth=" + oauth +
                 "&name=" + name +
                 "&email=" + email +
-                "&sid=" + gplusID;
+                "&gplusid=" + gplusID;
 
         // Create our asynchronous http client and issue a post request to a given URL
         HttpClient client = new DefaultHttpClient();
@@ -88,6 +88,7 @@ public class MapTakLoginTask extends AsyncTask<Void, Void, Void> {
         // Parse the response into a JSON Object and get the id
         String id = null;
         try {
+            Log.d("debug","responseString="+responseString);
             JSONObject jobj = new JSONObject(responseString);
             id = jobj.getString("uuid");
         } catch (JSONException e) {

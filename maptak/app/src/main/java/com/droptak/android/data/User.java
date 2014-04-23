@@ -1,6 +1,34 @@
 package com.droptak.android.data;
 
-public class UserID {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class User {
+
+    /** Creates a new User object from a JSON String */
+    public static User createFromJSON(String jsonStr) {
+
+        User u = null;
+        try {
+
+            JSONObject j = new JSONObject(jsonStr);
+
+            // Parse id, name, and email
+            String id = j.getString("id");
+            String name = j.getString("name");
+            String email = j.getString("email");
+
+            // Create user object
+            u = new User(id, name, email);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return u;
+
+    }
+
 
     /** Unique ID of the user */
     private String id;
@@ -12,7 +40,7 @@ public class UserID {
     private String email;
 
     /** Constructor */
-    public UserID(String id, String name, String email) {
+    public User(String id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;

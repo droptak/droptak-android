@@ -53,7 +53,7 @@ public class SearchResultsDialog extends DialogFragment implements DialogInterfa
         p.edit().putString(MainActivity.PREF_CURRENT_MAP, selected.getID().toString()).commit();
 
         // Close the dialog and inflate the map view
-        getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment(true)).commit();
         getDialog().cancel();
     }
 }

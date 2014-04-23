@@ -20,7 +20,7 @@ public class MapInfoDialog extends DialogFragment {
 
     /** Views */
     private EditText etMapName, etMapDesc;
-    private TextView tvOwner;
+    private TextView tvOwner, tvID;
 
     public MapInfoDialog(MapObject mo) {
         this.map = mo;
@@ -32,7 +32,7 @@ public class MapInfoDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Set title
-        builder.setTitle(map.getName());
+        builder.setTitle("Edit Your Map");
 
         // Set the main content view
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -40,29 +40,38 @@ public class MapInfoDialog extends DialogFragment {
         builder.setView(v);
 
         // Set positive and negative buttons
-        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogInterface, int i) {
                 getDialog().cancel();
             }
         });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                getDialog().cancel();
+            }
+        });
 
-        // Set the owner of the map
+        // Set the name of the map to be editable
         etMapName = (EditText) v.findViewById(R.id.mapinfo_et_mapname);
         etMapName.setText(map.getName());
 
-        // Set the administrators of the map
+        // Set the description of the map to be editable
         etMapDesc = (EditText) v.findViewById(R.id.mapinfo_et_mapdescription);
         //etMapDesc.setText(map.getDescription());
 
         // Set up the owner
         tvOwner = (TextView) v.findViewById(R.id.mapinfo_tv_owner);
-        tvOwner.setText(map.getOwner().getName());
+        tvOwner.setText("Owned by " + map.getOwner().getName());
+
+        // Set the ID
+        tvID = (TextView) v.findViewById(R.id.mapinfo_tv_mapid);
+        tvID.setText("ID: " + map.getID().toString());
 
         // Get button on the view and wire it up
         Button buEditAdmins = (Button) v.findViewById(R.id.mapinfo_bu_editadmins);
         buEditAdmins.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                //getDialog().setContentView();
+
             }
         });
 

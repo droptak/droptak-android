@@ -17,10 +17,23 @@ import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.fragments.dialogs.CreateTakDialog;
 import com.droptak.android.fragments.dialogs.TakListDialog;
+import com.droptak.android.interfaces.OnLocationReadyListener;
+import com.droptak.android.managers.UserLocationManager;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MapViewFragment extends Fragment implements View.OnClickListener {
 
+    private boolean animateCamera;
     private TakMapFragment mapFragment;
+
+    public MapViewFragment() {
+        animateCamera = false;
+    }
+
+    public MapViewFragment(boolean animate) {
+        this.animateCamera = animate;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +55,7 @@ public class MapViewFragment extends Fragment implements View.OnClickListener {
 
         // Add the google map to the screen
         // This is done here because layout_mainview isn't inflated until after onCreateView
-        mapFragment = new TakMapFragment();
+        mapFragment = new TakMapFragment(animateCamera);
         getFragmentManager().beginTransaction().replace(R.id.takmapview_layout_mainview, mapFragment).commit();
     }
 
@@ -59,11 +72,19 @@ public class MapViewFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.takmapview_bu_addtak:
 
-                // Show the dialog box for creating a new tak
-                new CreateTakDialog().show(getFragmentManager(), "create_tak_dialog");
+                // Get the user's location
+                final UserLocationManager manager = new UserLocationManager(getActivity());
+                manager.setOnLocationReadyListener(new OnLocationReadyListener() {
+                    public void onLocationReady() {
+                        // Get location
+                        LatLng loc = new LatLng(manager.getLat(), manager.getLng());
 
-                // Update the map with the new tak we just added
-                mapFragment.addTaksToGMap(db.getMap(id));
+                        // Show the dialog box for creating a new tak
+                        new CreateTakDialog(loc).show(getFragmentManager(), "create_tak_dialog");
+                    }
+                });
+
+
 
                 break;
 

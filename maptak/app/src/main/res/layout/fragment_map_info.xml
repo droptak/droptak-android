@@ -3,7 +3,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:padding="5dp" >
 
     <EditText
         android:id="@+id/mapinfo_et_mapname"
@@ -22,19 +23,33 @@
 
     <TextView
         android:id="@+id/mapinfo_tv_owner"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/mapinfo_et_mapdescription"
-        android:layout_margin="5dp"
-        android:text="Owner: Michael Hockerman"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignLeft="@id/addmap_et_mapname"
+        android:text="Owned by Unknown"/>
+
+    <TextView
+        android:id="@+id/mapinfo_tv_mapid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mapinfo_tv_owner"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignLeft="@id/addmap_et_mapname"
+        android:text="ID: 123456789" />
 
     <Button
         android:id="@+id/mapinfo_bu_editadmins"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/mapinfo_tv_owner"
+        android:layout_below="@id/mapinfo_tv_mapid"
         android:layout_centerHorizontal="true"
-        android:text="Edit Admins"/>
+        android:layout_marginBottom="10dp"
+        android:text="Administrators"/>
 
 
 </RelativeLayout>

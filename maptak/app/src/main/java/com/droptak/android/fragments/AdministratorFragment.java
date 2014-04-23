@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,7 +18,8 @@ import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
-import com.droptak.android.data.UserID;
+import com.droptak.android.data.User;
+import com.droptak.android.tasks.AddAdminTask;
 
 import java.util.List;
 
@@ -46,9 +48,9 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
         Button addAdministrator = (Button) v.findViewById(R.id.admin_bu_addadmin);
         addAdministrator.setOnClickListener(this);
         adminList = (ListView) v.findViewById(R.id.admin_listview);
-        currentMap.addManager(new UserID("0571", "Michael Hockerman", "mhockerman@gmail.com"));
-        currentMap.addManager(new UserID("0129", "Tylor Garrett", "tylorgarrett@gmail.com"));
-        listAdapter = new ListViewAdapter<UserID>(getActivity(), android.R.layout.simple_list_item_1, currentMap.getManagers());
+        currentMap.addManager(new User("0571", "Michael Hockerman", "mhockerman@gmail.com"));
+        currentMap.addManager(new User("0129", "Tylor Garrett", "tylorgarrett@gmail.com"));
+        listAdapter = new ListViewAdapter<User>(getActivity(), android.R.layout.simple_list_item_1, currentMap.getManagers());
         adminList.setAdapter(listAdapter);
         return v;
     }
@@ -57,6 +59,10 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.admin_bu_addadmin:
+                EditText adminEmailText = (EditText)getActivity().findViewById(R.id.admin_et_adminemail);
+                String email = adminEmailText.getText().toString();
+                AddAdminTask addAdminTask = new AddAdminTask(getActivity(),email,currentMap.getID());
+                addAdminTask.execute();
                 //get whats in the box and convert it to a UserID
                 //add the map to the MapObject.listOfAdmins()
                 break;
@@ -67,9 +73,9 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
     public class ListViewAdapter<E> extends ArrayAdapter {
         private Context mContext;
         private int id;
-        private List<UserID> mAdmins;
+        private List<User> mAdmins;
 
-        public ListViewAdapter(Context context, int textViewResourceId, List<UserID> admins){
+        public ListViewAdapter(Context context, int textViewResourceId, List<User> admins){
             super(context, textViewResourceId, admins);
             mContext = context;
             id = textViewResourceId;
@@ -78,7 +84,7 @@ public class AdministratorFragment extends Fragment implements View.OnClickListe
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            UserID currentUser = mAdmins.get(position);
+            User currentUser = mAdmins.get(position);
             String name = currentUser.getName();
             String email = currentUser.getEmail();
             View row = convertView;

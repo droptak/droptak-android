@@ -5,6 +5,8 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.droptak.android.fragments.dialogs.CreateTakDialog;
+import com.droptak.android.interfaces.OnLocationReadyListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,6 +30,16 @@ public class TakMapFragment extends MapFragment {
 
     /** Listener for when the gmap has been fully loaded to the screen */
     private OnGMapLoadedListener loadedListener;
+    private boolean animateCamera;
+
+
+    public TakMapFragment() {
+        this.animateCamera = false;
+    }
+
+    public TakMapFragment(boolean anim) {
+        this.animateCamera = anim;
+    }
 
     /** Called when the fragment has been fully inflated into the activity */
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -45,10 +57,22 @@ public class TakMapFragment extends MapFragment {
             centerCameraOnUser();
         } else {
             MapID mapID = new MapID(mapIDStr);
-            Log.d(MainActivity.LOG_TAG, "map pinning: " + mapIDStr);
             MapObject mo = MapTakDB.getDB(getActivity()).getMap(mapID);
-            addTaksToGMap(mo);
+
+            if (mo.getTaks().size() == 0) {
+                centerCameraOnUser();
+            } else {
+                addTaksToGMap(mo);
+            }
         }
+
+        // Set an on long press listener to add a tak as a specific location
+        getMap().setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            public void onMapLongClick(LatLng latLng) {
+                // Create the add tak fragment
+                new CreateTakDialog(latLng).show(getFragmentManager(), "create-tak-dialog-user-selected-location");
+            }
+        });
 
         // Alert listeners that the gmap is loaded
         if (loadedListener != null) {
@@ -60,17 +84,18 @@ public class TakMapFragment extends MapFragment {
     public void centerCameraOnUser() {
 
         // Get their current location
-        UserLocationManager manager = new UserLocationManager(getActivity());
+        final UserLocationManager manager = new UserLocationManager(getActivity());
+        manager.setOnLocationReadyListener(new OnLocationReadyListener() {
+            public void onLocationReady() {
+                double lat = manager.getLat();
+                double lng = manager.getLng();
+                LatLng userLatLng = new LatLng(lat, lng);
 
-        if (manager.isLocationAvailable()) {
-            double lat = manager.getLat();
-            double lng = manager.getLng();
-            LatLng userLatLng = new LatLng(lat, lng);
-
-            // Center the map to that position
-            CameraUpdate moveCam = CameraUpdateFactory.newLatLngZoom(userLatLng, 14.5f);
-            getMap().moveCamera(moveCam);
-        }
+                // Center the map to that position
+                CameraUpdate moveCam = CameraUpdateFactory.newLatLngZoom(userLatLng, 14.5f);
+                getMap().moveCamera(moveCam);
+            }
+        });
     }
 
     /** Clears all of the current pins off this fragments google map, adds all the pins for a
@@ -100,7 +125,14 @@ public class TakMapFragment extends MapFragment {
         // Animate the camera to include the points we added
         Point p = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(p);
-        gmap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200));
+        CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200);
+
+        if (animateCamera) {
+            gmap.animateCamera(camUpdate);
+        } else {
+            gmap.moveCamera(camUpdate);
+        }
+
     }
 
     /** Sets the fragments onGmapLoadedListener for when the googlemap is fully loaded */
