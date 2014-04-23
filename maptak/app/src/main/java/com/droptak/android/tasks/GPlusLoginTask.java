@@ -39,6 +39,7 @@ public class GPlusLoginTask
         // Set the flag that the user is logged out
         prefs.edit().putBoolean(MainActivity.PREF_USER_GPLUS_ISLOGGEDIN, false).commit();
 
+        // TODO: Log out on server
     }
 
     private Activity activity;

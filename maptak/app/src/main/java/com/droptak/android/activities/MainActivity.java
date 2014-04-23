@@ -48,6 +48,10 @@ public class MainActivity extends Activity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
+    /** Currently inflated fragment */
+    SettingsFragment settings;
+    private boolean isInPrefs = false;
+
     /** Object which handles G+ login */
     private GPlusLoginTask gplusLogin;
 
@@ -123,13 +127,27 @@ public class MainActivity extends Activity {
                 getWindow().getDecorView().setBackgroundColor(Color.WHITE);
 
                 // Create preference fragment
-                getFragmentManager().beginTransaction().replace(R.id.mainview, new SettingsFragment()).commit();
+                isInPrefs = true;
+                settings = new SettingsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.mainview, settings).commit();
                 break;
 
         }
 
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (isInPrefs) {
+            isInPrefs = false;
+            getFragmentManager().beginTransaction().detach(settings).commit();
+            getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     /** Enabled the "up" button on the action bar app icon, which will take the user back to
      *  the map screen. */
