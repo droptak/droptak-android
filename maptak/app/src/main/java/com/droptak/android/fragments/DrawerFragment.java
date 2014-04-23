@@ -78,7 +78,7 @@ public class DrawerFragment extends Fragment
         prefs.edit().putString(MainActivity.PREF_CURRENT_MAP, selected.getID().toString()).commit();
 
         // Inflate a new tak map fragment
-        getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment(true)).commit();
 
     }
 

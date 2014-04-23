@@ -28,6 +28,16 @@ public class TakMapFragment extends MapFragment {
 
     /** Listener for when the gmap has been fully loaded to the screen */
     private OnGMapLoadedListener loadedListener;
+    private boolean animateCamera;
+
+
+    public TakMapFragment() {
+        this.animateCamera = false;
+    }
+
+    public TakMapFragment(boolean anim) {
+        this.animateCamera = anim;
+    }
 
     /** Called when the fragment has been fully inflated into the activity */
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -45,9 +55,13 @@ public class TakMapFragment extends MapFragment {
             centerCameraOnUser();
         } else {
             MapID mapID = new MapID(mapIDStr);
-            Log.d(MainActivity.LOG_TAG, "map pinning: " + mapIDStr);
             MapObject mo = MapTakDB.getDB(getActivity()).getMap(mapID);
-            addTaksToGMap(mo);
+
+            if (mo.getTaks().size() == 0) {
+                centerCameraOnUser();
+            } else {
+                addTaksToGMap(mo);
+            }
         }
 
         // Alert listeners that the gmap is loaded
@@ -100,7 +114,14 @@ public class TakMapFragment extends MapFragment {
         // Animate the camera to include the points we added
         Point p = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(p);
-        gmap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200));
+        CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200);
+        
+        if (animateCamera) {
+            gmap.animateCamera(camUpdate);
+        } else {
+            gmap.moveCamera(camUpdate);
+        }
+
     }
 
     /** Sets the fragments onGmapLoadedListener for when the googlemap is fully loaded */

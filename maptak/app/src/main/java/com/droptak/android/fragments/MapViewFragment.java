@@ -17,10 +17,20 @@ import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.fragments.dialogs.CreateTakDialog;
 import com.droptak.android.fragments.dialogs.TakListDialog;
+import com.google.android.gms.maps.MapView;
 
 public class MapViewFragment extends Fragment implements View.OnClickListener {
 
+    private boolean animateCamera;
     private TakMapFragment mapFragment;
+
+    public MapViewFragment() {
+        animateCamera = false;
+    }
+
+    public MapViewFragment(boolean animate) {
+        this.animateCamera = animate;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +52,7 @@ public class MapViewFragment extends Fragment implements View.OnClickListener {
 
         // Add the google map to the screen
         // This is done here because layout_mainview isn't inflated until after onCreateView
-        mapFragment = new TakMapFragment();
+        mapFragment = new TakMapFragment(animateCamera);
         getFragmentManager().beginTransaction().replace(R.id.takmapview_layout_mainview, mapFragment).commit();
     }
 
