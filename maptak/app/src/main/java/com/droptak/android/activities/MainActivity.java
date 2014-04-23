@@ -22,7 +22,6 @@ import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakMetadata;
-import com.droptak.android.fragments.AdministratorFragment;
 import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.fragments.dialogs.TakMetadataDialog;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
@@ -32,6 +31,7 @@ import com.droptak.android.tasks.GPlusLoginTask;
 import com.droptak.android.tasks.GetMapTask;
 import com.droptak.android.tasks.MapTakLoginTask;
 import com.droptak.android.data.TakObject;
+import com.droptak.android.test.DBTests;
 
 public class MainActivity extends Activity {
 
@@ -69,6 +69,7 @@ public class MainActivity extends Activity {
                 new MapTakLoginTask(MainActivity.this).execute();
             }
         });
+        DBTests.backupDatabase();
 
         // Inflate the sidebar and main screen fragments
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
@@ -110,14 +111,6 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
-
-            case R.id.menu_administrators:
-                MapObject currentMap = getCurrentSelectedMap();
-                FragmentManager fm = getFragmentManager();
-                Fragment newFrame = new AdministratorFragment(currentMap);
-                fm.beginTransaction().replace(R.id.mainview, newFrame).commit();
-                break;
-
 
         }
 

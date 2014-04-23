@@ -22,6 +22,8 @@ public class MapInfoDialog extends DialogFragment {
     private EditText etMapName, etMapDesc;
     private TextView tvOwner, tvID;
 
+    public MapInfoDialog() {}
+
     public MapInfoDialog(MapObject mo) {
         this.map = mo;
     }
@@ -71,6 +73,10 @@ public class MapInfoDialog extends DialogFragment {
         Button buEditAdmins = (Button) v.findViewById(R.id.mapinfo_bu_editadmins);
         buEditAdmins.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+
+                // Create an admin dialog and create it
+                AdminDialog d = new AdminDialog(map.getID());
+                d.show(getFragmentManager(), "admin-edit-dialog");
 
             }
         });

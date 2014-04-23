@@ -104,26 +104,4 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         getDialog().cancel();
     }
 
-    /** Saved this code from kyle's implementation of this functionality */
-    private void backupDatabase() throws FileNotFoundException, IOException {
-        File sd = Environment.getExternalStorageDirectory();
-        File data = Environment.getDataDirectory();
-
-        if (sd.canWrite()) {
-            String currentDBPath = "//data//"+ "edu.purdue.maptak.admin" +"//databases//"+"database_cached_taks";
-            String backupDBPath = "database_cahced_taks";
-            File currentDB = new File(data, currentDBPath);
-            File backupDB = new File(sd, backupDBPath);
-
-            FileChannel src = new FileInputStream(currentDB).getChannel();
-            FileChannel dst = new FileOutputStream(backupDB).getChannel();
-            dst.transferFrom(src, 0, src.size());
-            src.close();
-            dst.close();
-            // Toast.makeText(, backupDB.toString(), Toast.LENGTH_LONG).show();
-            Log.d("debug","sql backupmade");
-
-        }
-    }
-
 }

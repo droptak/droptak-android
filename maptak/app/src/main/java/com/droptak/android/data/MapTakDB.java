@@ -275,9 +275,13 @@ public class MapTakDB extends SQLiteOpenHelper {
     public void setMapAdminsUser(User oldID, User newID) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_ID + "=\"" + newID.getID() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
-            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_NAME + "=\"" + newID.getName() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\";");
-            db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_EMAIL + "=\"" + newID.getEmail() + "\" WHERE " + MAPADMINS_ID + " = \"" + oldID.getID() + "\"");
+
+            ContentValues values = new ContentValues();
+            values.put(MAPADMINS_ID, newID.getID());
+            values.put(MAPADMINS_NAME, newID.getName());
+            values.put(MAPADMINS_EMAIL, newID.getEmail());
+
+            db.update(TABLE_MAPS_ADMINS, values, MAPADMINS_ID + "=\"" + oldID.getID() + "\"", null);
         }
     }
 
@@ -288,9 +292,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("UPDATE " + TABLE_MAPS_ADMINS + " SET " + MAPADMINS_MAP_ID + "=\"" + newMapID.toString() +
                     "\" WHERE " + MAPADMINS_ID + "=\"" + admin.getID() + "\" AND " + MAPADMINS_MAP_ID + "=\"" + oldID + "\";");
-
         }
-
     }
 
     /** Deletes a map associated with a given map ID from the local database.
@@ -311,7 +313,6 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             db.execSQL("DELETE FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "=\"" + tak.toString() + "\";");
         }
-
     }
 
     /** Deletes an administrator with the given ID from the local database */
