@@ -152,28 +152,31 @@ public class MainActivity extends Activity {
 
         switch (requestCode) {
 
+            // Case for G+ signin failure
             case GPlusLoginTask.RC_SIGN_IN:
                 gplusLogin.connect();
                 break;
 
-        }
+            // Case for QR code scanning return
+            case IntentIntegrator.REQUEST_CODE:
+                IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+                TextView url = (TextView) findViewById(R.id.QRCodeTitle);
+                if ( scanResult != null ){
 
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        TextView url = (TextView) findViewById(R.id.QRCodeTitle);
-        if ( scanResult != null ){
+                    // Parse out the ID
+                    String idurl = scanResult.getContents();
+                    idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
+                    idurl = idurl.replace("/", "");
 
-            // Parse out the ID
-            String idurl = scanResult.getContents();
-            idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
-            idurl = idurl.replace("/", "");
+                    // Execute the get map task
+                    GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl));
+                    getMapTask.execute();
 
-            // Execute the get map task
-            GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl));
-            getMapTask.execute();
+                }
+                break;
 
         }
 
     }
-
 
 }
