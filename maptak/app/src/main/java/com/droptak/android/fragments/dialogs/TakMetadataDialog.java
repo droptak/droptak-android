@@ -22,7 +22,6 @@ import com.droptak.android.R;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakID;
 import com.droptak.android.data.TakMetadata;
-import com.droptak.android.data.UserID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
