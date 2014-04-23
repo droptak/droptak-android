@@ -2,35 +2,25 @@ package com.droptak.android.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import com.droptak.android.R;
 import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
-import com.droptak.android.data.TakMetadata;
 import com.droptak.android.fragments.DrawerFragment;
-import com.droptak.android.fragments.dialogs.TakMetadataDialog;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
 import com.droptak.android.qrcode.IntentIntegrator;
 import com.droptak.android.qrcode.IntentResult;
 import com.droptak.android.tasks.GPlusLoginTask;
 import com.droptak.android.tasks.GetMapTask;
 import com.droptak.android.tasks.MapTakLoginTask;
-import com.droptak.android.data.TakObject;
 import com.droptak.android.test.DBTests;
 
 public class MainActivity extends Activity {
@@ -95,7 +85,7 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         int menuRes = -1;
         setUpEnabled(false);
-        menuRes = R.menu.justsettings;
+        menuRes = R.menu.main_menu;
         getMenuInflater().inflate(menuRes, menu);
         return super.onCreateOptionsMenu(menu);
     }
