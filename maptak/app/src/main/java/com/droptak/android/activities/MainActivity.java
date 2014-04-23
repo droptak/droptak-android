@@ -65,19 +65,12 @@ public class MainActivity extends Activity {
         // Set splash
         getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
 
-        // Determine whether the user is already logged in
-        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_NAME, 0);
-        boolean isLoggedIn = prefs.getBoolean(PREF_USER_GPLUS_ISLOGGEDIN, false);
-
         // Attempt to sign the user into google plus and maptak
-        // But only if they aren't already log
-        if (!isLoggedIn) {
-            gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
-                public void onGooglePlusLogin() {
-                    new MapTakLoginTask(MainActivity.this).execute();
-                }
-            });
-        }
+        gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
+            public void onGooglePlusLogin() {
+                new MapTakLoginTask(MainActivity.this).execute();
+            }
+        });
 
         // Inflate the sidebar and main screen fragments
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
