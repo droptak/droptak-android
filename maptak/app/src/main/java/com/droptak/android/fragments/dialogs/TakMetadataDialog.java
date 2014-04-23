@@ -3,6 +3,7 @@ package com.droptak.android.fragments.dialogs;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -31,27 +33,30 @@ import java.util.Map;
  * A simple {@link android.support.v4.app.Fragment} subclass.
  *
  */
-public class TakMetadataDialog extends DialogFragment {
+public class TakMetadataDialog extends DialogFragment implements View.OnClickListener {
 
     ListView listView;
     MyAdapter myAdapter;
     TakID takID;
+    Button button;
+    EditText key;
+    EditText value;
 
     public TakMetadataDialog(TakID takID) {
         this.takID = takID;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_tak_metadata_dialog, container, false);
         AlertDialog.Builder dataList= new AlertDialog.Builder(getActivity());
         dataList.setTitle("Tak MetaData");
-        listView = (ListView) v.findViewById(R.id.takmetadata_listview);
-        MapTakDB db = MapTakDB.getDB(getActivity());
-        myAdapter = new MyAdapter(db.getTakMetadata(takID));
-        listView.setAdapter(myAdapter);
-        return v;
+        return dataList.create();
+    }
+
+    @Override
+    public void onClick(View view) {
+        //add the metadata to the TakObject and refresh the
     }
 
     public class MyAdapter extends BaseAdapter{

@@ -6,8 +6,8 @@
     tools:context="com.droptak.android.fragments.dialogs.TakMetadataDialog">
 <LinearLayout
     android:id="@+id/takmetadata_linearlayout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <EditText
         android:id="@+id/takmetadata_et_key"
         android:layout_width="0dp"
@@ -23,7 +23,7 @@
         android:hint="Value" />
 
     <Button
-        android:id="@+id/takmetadaata_btn_add"
+        android:id="@+id/takmetadata_btn_add"
         android:text="Add"
         android:layout_width="0dp"
         android:layout_weight="1"

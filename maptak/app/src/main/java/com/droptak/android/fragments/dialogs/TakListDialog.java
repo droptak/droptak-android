@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.droptak.android.data.TakObject;
 
-public class TakListDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class TakListDialog extends DialogFragment implements DialogInterface.OnClickListener{
 
     private List<TakObject> taks;
 
@@ -40,6 +40,8 @@ public class TakListDialog extends DialogFragment implements DialogInterface.OnC
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
-
+        this.getDialog().cancel();
+        TakMetadataDialog tmdd = new TakMetadataDialog(taks.get(i).getID());
+        tmdd.show(getFragmentManager(), "something");
     }
 }
