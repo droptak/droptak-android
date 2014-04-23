@@ -33,12 +33,6 @@ public class GetMapTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        Toast.makeText(c, "Downloading Map...", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     protected Void doInBackground(Void... params) {
 
         // Construct the URL
