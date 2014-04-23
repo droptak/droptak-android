@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.droptak.android.interfaces.OnLocationReadyListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -74,17 +75,18 @@ public class TakMapFragment extends MapFragment {
     public void centerCameraOnUser() {
 
         // Get their current location
-        UserLocationManager manager = new UserLocationManager(getActivity());
+        final UserLocationManager manager = new UserLocationManager(getActivity());
+        manager.setOnLocationReadyListener(new OnLocationReadyListener() {
+            public void onLocationReady() {
+                double lat = manager.getLat();
+                double lng = manager.getLng();
+                LatLng userLatLng = new LatLng(lat, lng);
 
-        if (manager.isLocationAvailable()) {
-            double lat = manager.getLat();
-            double lng = manager.getLng();
-            LatLng userLatLng = new LatLng(lat, lng);
-
-            // Center the map to that position
-            CameraUpdate moveCam = CameraUpdateFactory.newLatLngZoom(userLatLng, 14.5f);
-            getMap().moveCamera(moveCam);
-        }
+                // Center the map to that position
+                CameraUpdate moveCam = CameraUpdateFactory.newLatLngZoom(userLatLng, 14.5f);
+                getMap().moveCamera(moveCam);
+            }
+        });
     }
 
     /** Clears all of the current pins off this fragments google map, adds all the pins for a
@@ -115,7 +117,7 @@ public class TakMapFragment extends MapFragment {
         Point p = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(p);
         CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200);
-        
+
         if (animateCamera) {
             gmap.animateCamera(camUpdate);
         } else {
