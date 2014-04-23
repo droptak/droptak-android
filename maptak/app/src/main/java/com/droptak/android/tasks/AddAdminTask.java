@@ -1,9 +1,11 @@
 package com.droptak.android.tasks;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,13 +33,13 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
 
     private static final String BASE_URL = "http://mapitapps.appspot.com/api/v1/map/";
 
-    private Context c;
+    Activity c;
     private User user;
     private MapID mapID;
     private OnAdminIDUpdateListener listener;
 
     /** The tempUser passed in can have a null ID and name. The only thing important is the email */
-    public AddAdminTask(Context c, User tempUser, MapID mapID, OnAdminIDUpdateListener listener) {
+    public AddAdminTask(Activity c, User tempUser, MapID mapID, OnAdminIDUpdateListener listener) {
         this.c = c;
         this.user = tempUser;
         this.mapID = mapID;
@@ -98,7 +100,12 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
             String newEmail = j.getString("email");
             newUser = new User(newIDStr, newName, newEmail);
         } catch (JSONException e) {
-            e.printStackTrace();
+            c.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(c, "We don't recognize that email.", Toast.LENGTH_LONG).show();
+                }
+            });
+            return null;
         }
 
         // Update the database with the new ID

@@ -15,7 +15,7 @@
             android:id="@+id/takmapview_bu_taklist"
             android:layout_width="60dp"
             android:layout_height="50dp"
-            android:drawableTop="@drawable/ic_pin_dark" />
+            android:drawableTop="@drawable/ic_pin" />
 
         <Button
             android:id="@+id/takmapview_bu_addtak"
@@ -25,7 +25,8 @@
             android:layout_alignBottom="@id/takmapview_bu_taklist"
             android:layout_toRightOf="@id/takmapview_bu_taklist"
             android:layout_alignParentRight="true"
-            android:text="Pin Tak" />
+            android:text="Pin Tak"
+            android:textColor="@android:color/white"/>
 
     </RelativeLayout>
 

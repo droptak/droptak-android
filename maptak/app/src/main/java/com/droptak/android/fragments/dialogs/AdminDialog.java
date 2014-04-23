@@ -98,11 +98,6 @@ public class AdminDialog extends DialogFragment
                 AddAdminTask addAdminTask = new AddAdminTask(getActivity(), u, id, this);
                 addAdminTask.execute();
 
-                // Update the list view with the temporary admin
-                MapTakDB db = MapTakDB.getDB(getActivity());
-                MapObject map = db.getMap(id);
-                lvAdmins.setAdapter(new AdminListItemAdapter(getActivity(), map.getManagers()));
-
                 break;
 
         }
