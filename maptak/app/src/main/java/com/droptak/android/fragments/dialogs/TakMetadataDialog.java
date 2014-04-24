@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.droptak.android.R;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakID;
 import com.droptak.android.data.TakMetadata;
+import com.droptak.android.data.TakObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +52,9 @@ public class TakMetadataDialog extends DialogFragment implements View.OnClickLis
         // Inflate the layout for this fragment
         AlertDialog.Builder dataList= new AlertDialog.Builder(getActivity());
         dataList.setTitle("Tak MetaData");
+        MapTakDB db = MapTakDB.getDB(getActivity());
+        TakObject tak = db.getTak(takID);
+        Log.d("debug","name="+tak.getName());
         return dataList.create();
     }
 
