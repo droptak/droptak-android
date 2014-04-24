@@ -104,10 +104,13 @@ public class MapInfoDialog extends DialogFragment {
                         // Do nothing but close the dialog
                         dialog.dismiss();
                         mapInfoDialog.dismiss();
+                        // Delete map from web
                         DeleteMapTask deleteMapTask = new DeleteMapTask(getActivity(),map);
                         deleteMapTask.execute();
+                        // Delete map from local db
                         MapTakDB db =  MapTakDB.getDB(getActivity());
                         db.deleteMap(map.getID());
+                        // Refresh the drawer
                         getFragmentManager().beginTransaction().replace(R.id.left_drawer,new DrawerFragment()).commit();
                     }
 

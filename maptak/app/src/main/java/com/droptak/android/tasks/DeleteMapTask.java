@@ -60,46 +60,24 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
 
     private MapObject mapToPush;
     private Context c;
-    private OnMapIDUpdateListener listener;
 
     public DeleteMapTask(Context c, MapObject toPush) {
         this.c = c;
         this.mapToPush = toPush;
-        this.listener = listener;
     }
 
-    @Override
-    protected void onPreExecute() {
-
-        // Assign the map a temporary ID while it is being pushed to the server
-        String tempID = "TEMPID-" + UUID.randomUUID().toString().substring(0,15);
-    }
 
     @Override
     protected Void doInBackground(Void... voids) {
-
-        // Get user's personal information from the shared preferences
-        SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
-        String userName = prefs.getString(MainActivity.PREF_USER_GPLUS_NAME, "");
-        String userID = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "");
-
-        // Get information about the map we are adding
-        String mapName = mapToPush.getName();
-        String isPublic = ""+mapToPush.isPublic();
-
-        // Sanitize the strings
-        userName = userName.replaceAll("\\s", "%20");
-        mapName = mapName.replaceAll("\\s", "%20");
-
         // Construct the url we are going to post to
         String url = BASE_URL +
                 mapToPush.getID().toString()+"/";
 
-        // Create the http client we use to post to the server
+        // Create the http client we use to delete to the server
         HttpClient client = new DefaultHttpClient();
         HttpDelete delete = new HttpDelete(url);
 
-        // Do the post and get the JSON as a response
+        // Do the delete and get the JSON as a response
         String responseString = null;
         try {
             HttpResponse response = client.execute(delete);
@@ -107,16 +85,6 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Parse the returned JSON to get the new MapID
-        try {
-            Log.d("debug","response="+responseString);
-            JSONObject j = new JSONObject(responseString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
         return null;
     }
 
