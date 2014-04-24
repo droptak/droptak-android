@@ -206,7 +206,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         Log.d(MainActivity.LOG_TAG, "Modifying mapID from " + oldID + " to " + newID);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ID + " = \"" + newID + "\" WHERE " + MAP_ID + " = \"" + oldID + "\";");
+            ContentValues values = new ContentValues();
+            values.put(MAP_ID, newID.toString());
+            db.update(TABLE_MAPS, values, MAP_ID + "=\"" + oldID.toString() + "\"", null);
         }
 
     }
@@ -215,7 +217,9 @@ public class MapTakDB extends SQLiteOpenHelper {
     public void setMapName(MapID id, String newName) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_LABEL + "=\"" + newName + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+            ContentValues values = new ContentValues();
+            values.put(MAP_LABEL, newName);
+            db.update(TABLE_MAPS, values, MAP_ID + "=\"" + id.toString() + "\"", null);
         }
     }
 
@@ -225,7 +229,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         if (db != null) {
             int isPub = -1;
             isPub = isPublic ? 1 : 0;
-            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_ISPUBLIC + "=\"" + isPub + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+            ContentValues values = new ContentValues();
+            values.put(MAP_ISPUBLIC, isPub);
+            db.update(TABLE_MAPS, values, MAP_ID + "=\"" + id.toString() + "\"", null);
         }
     }
 
@@ -233,7 +239,9 @@ public class MapTakDB extends SQLiteOpenHelper {
     public void setMapOwner(MapID id, User user) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_MAPS + " SET " + MAP_OWNER_ID + "=\"" + user.getID() + "\" WHERE " + MAP_ID + " = \"" + id + "\";");
+            ContentValues values = new ContentValues();
+            values.put(MAP_OWNER_ID, user.getID());
+            db.update(TABLE_MAPS, values, MAP_ID + "=\"" + id.toString() + "\"", null);
         }
     }
 
@@ -242,7 +250,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         Log.d(MainActivity.LOG_TAG, "Modifying takID from " + oldTak.toString() + " to " + newTak.toString());
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
-            db.execSQL("UPDATE " + TABLE_TAKS + " SET " + TAK_ID + "=\"" + newTak + "\" WHERE " + TAK_ID + " = \"" + oldTak + "\";");
+            ContentValues values = new ContentValues();
+            values.put(TAK_ID, newTak.toString());
+            db.update(TABLE_TAKS, values, TAK_ID + "=\"" + oldTak.toString() + "\"", null);
         }
     }
 
