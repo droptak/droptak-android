@@ -55,18 +55,16 @@ import com.droptak.android.interfaces.OnMapIDUpdateListener;
  *  This task assumes that the map passed in has no taks associated with it. If it does, you
  *  need to manually call the CreateTakTask on each tak. */
 
-public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
+public class DeleteTakTask extends AsyncTask<Void, Void, Void> {
 
-    private static String BASE_URL = "http://mapitapps.appspot.com/api/v1/map/";
+    private static String BASE_URL = "http://mapitapps.appspot.com/api/v1/tak/";
 
-    private MapObject mapToPush;
+    private TakObject tak;
     private Context c;
-    private OnMapDeletedListener listener;
 
-    public DeleteMapTask(Context c, MapObject toPush, OnMapDeletedListener listener) {
+    public DeleteTakTask(Context c, TakObject tak) {
         this.c = c;
-        this.mapToPush = toPush;
-        this.listener = listener;
+        this.tak = tak;
     }
 
     @Override
@@ -75,14 +73,14 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
 
         // Delete from the database
         MapTakDB db = MapTakDB.getDB(c);
-        db.deleteMap(mapToPush.getID());
+        db.deleteTak(tak.getID());
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
         // Construct the url we are going to post to
         String url = BASE_URL +
-                mapToPush.getID().toString()+"/";
+                tak.getID().toString()+"/";
 
         // Create the http client we use to delete to the server
         HttpClient client = new DefaultHttpClient();
@@ -95,23 +93,6 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
             responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        // Get the current selected map
-        SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
-        String id = prefs.getString(MainActivity.PREF_CURRENT_MAP, "");
-        if (id.equals("")) {
-            return null;
-        }
-        prefs.edit().putString(MainActivity.PREF_CURRENT_MAP, "").commit();
-
-        // If that id is equal to the id we're deleting, remove it from the UI
-        if (listener != null) {
-            if (id.equals(mapToPush.getID().toString())) {
-                listener.onMapDeleted(true);
-            } else {
-                listener.onMapDeleted(false);
-            }
         }
 
         return null;

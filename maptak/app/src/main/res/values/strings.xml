@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MapTak</string>
+    <string name="app_name">DropTak</string>
     <string name="menu_maplist_label">Map List</string>
     <string name="menu_settings_label">Settings</string>
     <string name="menu_createmap_label">Create Map</string>
