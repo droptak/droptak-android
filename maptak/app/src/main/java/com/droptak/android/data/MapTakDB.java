@@ -489,7 +489,7 @@ public class MapTakDB extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor c = db.rawQuery(
-                    "SELECT * FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "\"" + takID.toString() + "\";", null);
+                    "SELECT * FROM " + TABLE_TAKS + " WHERE " + TAK_ID + "=\"" + takID.toString() + "\";", null);
 
             if (c.moveToFirst()) {
 

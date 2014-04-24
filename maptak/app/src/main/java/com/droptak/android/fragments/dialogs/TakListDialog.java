@@ -41,7 +41,7 @@ public class TakListDialog extends DialogFragment implements DialogInterface.OnC
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         this.getDialog().cancel();
-        TakMetadataDialog tmdd = new TakMetadataDialog(taks.get(i).getID());
-        tmdd.show(getFragmentManager(), "something");
+        TakInfoDialog takInfoDialog = new TakInfoDialog(taks.get(i).getID());
+        takInfoDialog.show(getFragmentManager(), "something");
     }
 }
