@@ -132,11 +132,11 @@ public class TakMapFragment extends MapFragment {
         CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200);
 
         if (animateCamera) {
-            //gmap.animateCamera(camUpdate);
-            zoomIn();
+            gmap.animateCamera(camUpdate);
+            //zoomIn();
         } else {
-            //gmap.moveCamera(camUpdate);
-            zoomIn();
+            gmap.moveCamera(camUpdate);
+            //zoomIn();
         }
 
     }
