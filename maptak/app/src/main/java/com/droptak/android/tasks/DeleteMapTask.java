@@ -10,6 +10,7 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnMapDeletedListener;
 import com.droptak.android.interfaces.OnMapIDUpdateListener;
 
 import org.apache.http.HttpResponse;
@@ -60,12 +61,22 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
 
     private MapObject mapToPush;
     private Context c;
+    private OnMapDeletedListener listener;
 
-    public DeleteMapTask(Context c, MapObject toPush) {
+    public DeleteMapTask(Context c, MapObject toPush, OnMapDeletedListener listener) {
         this.c = c;
         this.mapToPush = toPush;
+        this.listener = listener;
     }
 
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+        // Delete from the database
+        MapTakDB db = MapTakDB.getDB(c);
+        db.deleteMap(mapToPush.getID());
+    }
 
     @Override
     protected Void doInBackground(Void... voids) {
@@ -85,6 +96,23 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Get the current selected map
+        SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+        String id = prefs.getString(MainActivity.PREF_CURRENT_MAP, "");
+        if (id.equals("")) {
+            return null;
+        }
+
+        // If that id is equal to the id we're deleting, remove it from the UI
+        if (listener != null) {
+            if (id.equals(mapToPush.getID().toString())) {
+                listener.onMapDeleted(true);
+            } else {
+                listener.onMapDeleted(false);
+            }
+        }
+
         return null;
     }
 

@@ -3,6 +3,8 @@ package com.droptak.android.fragments;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.droptak.android.fragments.dialogs.CreateTakDialog;
@@ -130,9 +132,11 @@ public class TakMapFragment extends MapFragment {
         CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200);
 
         if (animateCamera) {
-            gmap.animateCamera(camUpdate);
+            //gmap.animateCamera(camUpdate);
+            zoomIn();
         } else {
-            gmap.moveCamera(camUpdate);
+            //gmap.moveCamera(camUpdate);
+            zoomIn();
         }
 
     }
@@ -140,6 +144,27 @@ public class TakMapFragment extends MapFragment {
     /** Sets the fragments onGmapLoadedListener for when the googlemap is fully loaded */
     public void setOnGMapLoadedListener(OnGMapLoadedListener listener) {
         this.loadedListener = listener;
+    }
+
+    /** Animates zooming in on the current point. A lot smoother and cooler than the stock
+     *  Google zoom. */
+    private void zoomIn() {
+
+        float zoomLevel = getMap().getCameraPosition().zoom;
+        float targetZoomLevel = 14;
+
+        long delay = 0;
+        final float zoomStep = 0.05f;
+
+        while ((zoomLevel += zoomStep) < targetZoomLevel) {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                public void run() {
+                    getMap().moveCamera(CameraUpdateFactory.zoomBy(zoomStep));
+                }
+            }, delay);
+
+            delay += 10;
+        }
     }
 
 }
