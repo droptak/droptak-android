@@ -7,11 +7,11 @@
         android:key="pref_category_account_management" >
 
         <Preference
-            android:title="Manually Log In To G+ and MapTak"
+            android:title="Manually Log In To G+ and DropTak"
             android:key="pref_account_login" />
 
         <Preference
-            android:title="Log out of MapTak"
+            android:title="Log out of DropTak"
             android:key="pref_account_logout" />
 
     </PreferenceCategory>

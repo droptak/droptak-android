@@ -20,6 +20,11 @@ import java.io.IOException;
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 public class GPlusLoginTask
         implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
@@ -29,15 +34,34 @@ public class GPlusLoginTask
     /** Static method that logs the user out. Technically. */
     public static void logout(Context c) {
 
-        // Make the app forget about their OAUTH token and personal information
         SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+
+        // Get the user's ID
+        final String id = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "");
+        if (id.equals("")) {
+            return;
+        }
+
+        // Make the app forget about their OAUTH token and personal information
         prefs.edit().putString(MainActivity.PREF_USER_GPLUS_NAME, "").commit();
         prefs.edit().putString(MainActivity.PREF_USER_GPLUS_EMAIL, "").commit();
         prefs.edit().putString(MainActivity.PREF_USER_GPLUS_ID, "").commit();
         prefs.edit().putString(MainActivity.PREF_USER_GPLUS_TOKEN, "").commit();
+        prefs.edit().putString(MainActivity.PREF_USER_MAPTAK_TOKEN, "").commit();
 
         // Set the flag that the user is logged out
         prefs.edit().putBoolean(MainActivity.PREF_USER_GPLUS_ISLOGGEDIN, false).commit();
+
+        // Log out from the droptak server
+        new Thread(new Runnable() {
+            public void run() {
+                String url = "http://mapitapps.appspot.com/api/v1/logout/" + id;
+                HttpClient c = new DefaultHttpClient();
+                try {
+                    c.execute(new HttpPost(url));
+                } catch (IOException e) {}
+            }
+        }).start();
 
     }
 

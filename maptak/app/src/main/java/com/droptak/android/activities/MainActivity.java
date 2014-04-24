@@ -2,35 +2,31 @@ package com.droptak.android.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import android.widget.Toast;
 
 import com.droptak.android.R;
 import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
-import com.droptak.android.data.TakMetadata;
 import com.droptak.android.fragments.DrawerFragment;
-import com.droptak.android.fragments.dialogs.TakMetadataDialog;
+import com.droptak.android.fragments.SplashFragment;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
+import com.droptak.android.interfaces.OnMapsRefreshListener;
 import com.droptak.android.qrcode.IntentIntegrator;
 import com.droptak.android.qrcode.IntentResult;
 import com.droptak.android.tasks.GPlusLoginTask;
 import com.droptak.android.tasks.GetMapTask;
+import com.droptak.android.tasks.GetUsersMapsTask;
 import com.droptak.android.tasks.MapTakLoginTask;
-import com.droptak.android.data.TakObject;
 import com.droptak.android.test.DBTests;
 
 public class MainActivity extends Activity {
@@ -54,6 +50,9 @@ public class MainActivity extends Activity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
+    /** Currently inflated fragment */
+    private boolean isInPrefs = false;
+
     /** Object which handles G+ login */
     private GPlusLoginTask gplusLogin;
 
@@ -69,7 +68,12 @@ public class MainActivity extends Activity {
                 new MapTakLoginTask(MainActivity.this).execute();
             }
         });
-        DBTests.backupDatabase();
+
+        // Set the background to a green color.
+        getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
+
+        // Inflate the splash screen
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
 
         // Inflate the sidebar and main screen fragments
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
@@ -95,27 +99,58 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         int menuRes = -1;
         setUpEnabled(false);
-        menuRes = R.menu.justsettings;
+        menuRes = R.menu.main_menu;
         getMenuInflater().inflate(menuRes, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handler for the action bar icon to toggle the drawer
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
+        // Handler for every other icon
         switch (item.getItemId()) {
+
+            case R.id.menu_refresh:
+                GetUsersMapsTask task = new GetUsersMapsTask(this, new OnMapsRefreshListener() {
+                    public void onMapsRefresh() {
+                        getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+                    }
+                });
+                task.execute();
+                Toast.makeText(this, "Polling DropTak for maps.", Toast.LENGTH_SHORT).show();
+                break;
+
             case R.id.menu_settings:
-                Intent i = new Intent(this, SettingsActivity.class);
-                startActivity(i);
-                return true;
+
+                // Clear out background just to be safe
+                getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+
+                // Create preference fragment
+                isInPrefs = true;
+                getFragmentManager().beginTransaction().replace(R.id.mainview, new SettingsFragment()).commit();
+                break;
 
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (isInPrefs) {
+            isInPrefs = false;
+            getFragmentManager().beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
+            getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     /** Enabled the "up" button on the action bar app icon, which will take the user back to
      *  the map screen. */
@@ -142,28 +177,40 @@ public class MainActivity extends Activity {
 
         switch (requestCode) {
 
+            // Case for G+ signin failure
             case GPlusLoginTask.RC_SIGN_IN:
                 gplusLogin.connect();
                 break;
 
-        }
+            // Case for QR code scanning return
+            case IntentIntegrator.REQUEST_CODE:
+                IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+                TextView url = (TextView) findViewById(R.id.QRCodeTitle);
+                if ( scanResult != null ){
 
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        TextView url = (TextView) findViewById(R.id.QRCodeTitle);
-        if ( scanResult != null ){
+                    // Parse out the ID
+                    String idurl = scanResult.getContents();
+                    if (idurl == null) {
+                        return;
+                    }
 
-            // Parse out the ID
-            String idurl = scanResult.getContents();
-            idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
-            idurl = idurl.replace("/", "");
+                    idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
+                    idurl = idurl.replace("/", "");
 
-            // Execute the get map task
-            GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl));
-            getMapTask.execute();
+                    // Execute the get map task
+                    GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl), new OnMapsRefreshListener() {
+                        public void onMapsRefresh() {
+                            // Refresh drawer layout
+                            getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+                        }
+                    });
+                    getMapTask.execute();
+
+                }
+                break;
 
         }
 
     }
-
 
 }

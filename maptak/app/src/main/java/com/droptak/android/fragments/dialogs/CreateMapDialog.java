@@ -25,6 +25,7 @@ import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.User;
 import com.droptak.android.fragments.DrawerFragment;
+import com.droptak.android.fragments.MapViewFragment;
 import com.droptak.android.tasks.CreateMapTask;
 
 
@@ -98,6 +99,11 @@ public class CreateMapDialog extends DialogFragment implements DialogInterface.O
         // Create and execute the task which adds the map to the database and the server
         CreateMapTask task = new CreateMapTask(getActivity(), map, drawerF);
         task.execute();
+
+        // Inflate the map as the current selected map
+        // Note that the ID field is set (to a temporary value) in task.execute(), so this is alright to run.
+        prefs.edit().putString(MainActivity.PREF_CURRENT_MAP, map.getID().toString()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.mainview, new MapViewFragment(true)).commit();
 
         // Close the dialog and re-inflate the side drawer to refresh the map list
         getFragmentManager().beginTransaction().replace(R.id.left_drawer, drawerF).commit();

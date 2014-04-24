@@ -11,6 +11,7 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnMapsRefreshListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -27,15 +28,12 @@ public class GetMapTask extends AsyncTask<Void, Void, Void> {
 
     private Context c;
     private MapID mapToGet;
+    private OnMapsRefreshListener listener;
 
-    public GetMapTask(Context c, MapID id) {
+    public GetMapTask(Context c, MapID id, OnMapsRefreshListener listener) {
+        this.c = c;
         this.mapToGet = id;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        Toast.makeText(c, "Downloading Map...", Toast.LENGTH_LONG).show();
+        this.listener = listener;
     }
 
     @Override
@@ -73,6 +71,10 @@ public class GetMapTask extends AsyncTask<Void, Void, Void> {
 
         Log.d(MainActivity.LOG_TAG, "Map " + map.getName() + " successfully added from server.");
 
+        // Alert listeners
+        if (listener != null) {
+            listener.onMapsRefresh();
+        }
 
         return null;
     }

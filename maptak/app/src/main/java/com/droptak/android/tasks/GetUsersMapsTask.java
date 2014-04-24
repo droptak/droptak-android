@@ -3,6 +3,7 @@ package com.droptak.android.tasks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.droptak.android.activities.MainActivity;
@@ -11,6 +12,7 @@ import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakMetadata;
 import com.droptak.android.data.TakObject;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnMapsRefreshListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -32,9 +34,11 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
     private static final String BASE_URL = "http://mapitapps.appspot.com/api/v1/user/";
 
     private Context c;
+    private OnMapsRefreshListener listener;
 
-    public GetUsersMapsTask(Context c) {
+    public GetUsersMapsTask(Context c, OnMapsRefreshListener listener) {
         this.c = c;
+        this.listener = listener;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
         SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
         String userID = prefs.getString(MainActivity.PREF_USER_MAPTAK_TOKEN, "");
         if (userID.equals("")) {
-            Toast.makeText(c, "Error downloading maps. Not signed in.", Toast.LENGTH_SHORT).show();
+            Log.d(MainActivity.LOG_TAG, "Error refreshing local DB. User not signed in");
             return null;
         }
         String url = BASE_URL + userID + "/maps";
@@ -86,15 +90,20 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
             // Get the old version of the map in the event data is updated
             MapObject oldMap = db.getMap(map.getID());
 
-            // Delete the map from the database
-            db.deleteMap(oldMap.getID());
+            // If the old map exists in the database
+            if (oldMap != null) {
+                // Delete it
+                db.deleteMap(oldMap.getID());
+            }
 
             // And re-add it
             db.addMap(map);
 
             // Delete its admins and re-add them
-            for (User u : oldMap.getManagers()) {
-                db.deleteAdmin(u, oldMap.getID());
+            if (oldMap != null) {
+                for (User u : oldMap.getManagers()) {
+                    db.deleteAdmin(u, oldMap.getID());
+                }
             }
 
             // Re-add them
@@ -103,16 +112,18 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
             }
 
             // Delete its taks
-            for (TakObject t : oldMap.getTaks()) {
-                db.deleteTak(t.getID());
+            if (oldMap != null) {
+                for (TakObject t : oldMap.getTaks()) {
+                    db.deleteTak(t.getID());
 
-                // Delete its metadata
-                for (TakMetadata m : t.getMeta().values()) {
-                    db.deleteTakMetadata(m);
+                    // Delete its metadata
+                    for (TakMetadata m : t.getMeta().values()) {
+                        db.deleteTakMetadata(m);
+                    }
                 }
             }
 
-            // Re-add htem
+            // Re-add them
             for (TakObject t : map.getTaks()) {
                 db.addTak(t, map.getID());
 
@@ -124,7 +135,10 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
 
         }
 
-
+        // Alert the listeners that we've finished
+        if (listener != null) {
+            listener.onMapsRefresh();
+        }
 
         return null;
     }

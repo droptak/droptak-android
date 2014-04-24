@@ -31,7 +31,7 @@ public class MapObject {
 
             // Parse is public or private
             String mapIsPublic = j.getString("public");
-            map.setIsPublic(mapIsPublic.equals("true") ? true : false);
+            map.setIsPublic(mapIsPublic.equals("true") || mapIsPublic.equals("True") ? true : false);
 
             // Parse out other objects and owners
             JSONObject mapOwner = j.getJSONObject("owner");
