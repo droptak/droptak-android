@@ -1,5 +1,6 @@
 package com.droptak.android.activities;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -24,6 +25,8 @@ public class SettingsFragment extends PreferenceFragment
         findPreference("pref_account_login").setOnPreferenceClickListener(this);
         findPreference("pref_account_logout").setOnPreferenceClickListener(this);
         findPreference("pref_debug_clearcache").setOnPreferenceClickListener(this);
+        findPreference("pref_info_help").setOnPreferenceClickListener(this);
+        findPreference("pref_info_aboutus").setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -51,7 +54,22 @@ public class SettingsFragment extends PreferenceFragment
 
             // Re-create side bar
             getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+
+        } else if (id.equals("pref_info_help")) {
+
+
+        } else if (id.equals("pref_info_aboutus")) {
+
+            // Create an about us dialog
+            AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+            b.setTitle("About Us");
+            b.setPositiveButton("Thanks!", null);
+            b.setView(getActivity().getLayoutInflater().inflate(R.layout.fragment_aboutus, null));
+            b.create().show();
+
         }
+
+
 
         return true;
     }

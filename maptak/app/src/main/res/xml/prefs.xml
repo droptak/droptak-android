@@ -26,6 +26,20 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="Information"
+        android:key="pref_category_information" >
+
+        <Preference
+            android:title="Help"
+            android:key="pref_info_help" />
+
+        <Preference
+            android:title="About Us"
+            android:key="pref_info_aboutus" />
+
+    </PreferenceCategory>
+
 
 
 </PreferenceScreen>
