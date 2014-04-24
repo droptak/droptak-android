@@ -57,7 +57,7 @@
             android:text="Administrators" />
 
         <Button
-            android:id="@+id/deleteMap"
+            android:id="@+id/mapinfo_bu_deletemap"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:text="Delete"

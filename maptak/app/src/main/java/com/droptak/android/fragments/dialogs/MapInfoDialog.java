@@ -23,9 +23,10 @@ import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.fragments.SplashFragment;
 import com.droptak.android.interfaces.OnMapDeletedListener;
 import com.droptak.android.tasks.DeleteMapTask;
+import com.droptak.android.tasks.EditMapTask;
 
 public class MapInfoDialog extends DialogFragment
-        implements View.OnClickListener {
+        implements View.OnClickListener, DialogInterface.OnClickListener {
 
     private MapObject map;
 
@@ -54,16 +55,8 @@ public class MapInfoDialog extends DialogFragment
         builder.setView(v);
 
         // Set positive and negative buttons
-        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                getDialog().cancel();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                getDialog().cancel();
-            }
-        });
+        builder.setPositiveButton("Submit", this);
+        builder.setNegativeButton("Cancel", this);
 
         // Set the name of the map to be editable
         etMapName = (EditText) v.findViewById(R.id.mapinfo_et_mapname);
@@ -83,16 +76,9 @@ public class MapInfoDialog extends DialogFragment
 
         // Get button on the view and wire it up
         Button buEditAdmins = (Button) v.findViewById(R.id.mapinfo_bu_editadmins);
-        Button deleteButton= (Button)v.findViewById(R.id.deleteMap);
-        buEditAdmins.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-
-                // Create an admin dialog and create it
-                AdminDialog d = new AdminDialog(map.getID());
-                d.show(getFragmentManager(), "admin-edit-dialog");
-
-            }
-        });
+        Button deleteButton = (Button) v.findViewById(R.id.mapinfo_bu_deletemap);
+        buEditAdmins.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
 
         // start proccess for deleting a map, creator a dialog to confirm
         deleteButton.setOnClickListener(this);
@@ -103,47 +89,53 @@ public class MapInfoDialog extends DialogFragment
 
     @Override
     public void onClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure you want to delete this map?");
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        switch (v.getId()) {
 
-            // delete the map from the db, and close the dialogs
-            public void onClick(DialogInterface dialog, int which) {
+            case R.id.mapinfo_bu_editadmins:
 
-                // Close the dialogs
-                dialog.dismiss();
-                mapInfoDialog.dismiss();
+                // Create an admin dialog and create it
+                AdminDialog d = new AdminDialog(map.getID());
+                d.show(getFragmentManager(), "admin-edit-dialog");
 
-                // Start the delete task
-                final FragmentManager manager = getFragmentManager();
-                DeleteMapTask deleteMapTask = new DeleteMapTask(getActivity(), map, null);
-                deleteMapTask.execute();
+                break;
 
-                // Refresh the drawer
-                getFragmentManager().beginTransaction().replace(R.id.left_drawer,new DrawerFragment()).commit();
+            case R.id.mapinfo_bu_deletemap:
 
-                // If the map we're deleting is the one selected, clear the main view
-                SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
-                String activeID = prefs.getString(MainActivity.PREF_CURRENT_MAP, "");
-                if (activeID.equals(map.getID().toString())) {
-                    getFragmentManager().beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
-                }
+                // Create a delete map confirm dialog
+                new DeleteMapConfirmationDialog(this.getDialog(), map).show(getFragmentManager(), "asdf");
 
-            }
+                break;
 
-        });
+        }
 
-        // Bring user back to MapInfoDialog
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+
+        switch (which) {
+
+            case DialogInterface.BUTTON_POSITIVE:
+
+                // Get the new name
+                String name = etMapName.getText().toString();
+                map.setName(name);
+
+                // Submit the new name to the server
+                EditMapTask task = new EditMapTask(getActivity(), map, null);
+                task.execute();
+
+                break;
+
+            case DialogInterface.BUTTON_NEGATIVE:
+
+                // Close the dialog
+                getDialog().cancel();
+
+                break;
+
+        }
+
+    }
 }
