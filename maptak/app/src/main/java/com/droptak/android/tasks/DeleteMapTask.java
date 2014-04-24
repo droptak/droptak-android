@@ -104,7 +104,7 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
             return null;
         }
         prefs.edit().putString(MainActivity.PREF_CURRENT_MAP, "").commit();
-        
+
         // If that id is equal to the id we're deleting, remove it from the UI
         if (listener != null) {
             if (id.equals(mapToPush.getID().toString())) {

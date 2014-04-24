@@ -70,13 +70,13 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
         }
 
         // Parse the JSON array into a list of maps
-        List<MapObject> maps = new ArrayList<MapObject>();
+        List<MapObject> newMaps = new ArrayList<MapObject>();
         for (int i = 0; i < jsonArray.length(); i++) {
 
             try {
                 JSONObject obj = jsonArray.getJSONObject(i);
                 MapObject m = MapObject.createFromJSON(obj.toString());
-                maps.add(m);
+                newMaps.add(m);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -85,34 +85,19 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
 
         // Add each map to the database
         MapTakDB db = MapTakDB.getDB(c);
-        for (MapObject map : maps) {
+        for (MapObject map : newMaps) {
 
             // Get the old version of the map in the event data is updated
             MapObject oldMap = db.getMap(map.getID());
 
-            // If the old map exists in the database
+            // If the old map exists, delete all of its information
             if (oldMap != null) {
-                // Delete it
                 db.deleteMap(oldMap.getID());
-            }
 
-            // And re-add it
-            db.addMap(map);
-
-            // Delete its admins and re-add them
-            if (oldMap != null) {
                 for (User u : oldMap.getManagers()) {
                     db.deleteAdmin(u, oldMap.getID());
                 }
-            }
 
-            // Re-add them
-            for (User u : map.getManagers()) {
-                db.addAdmin(u, map.getID());
-            }
-
-            // Delete its taks
-            if (oldMap != null) {
                 for (TakObject t : oldMap.getTaks()) {
                     db.deleteTak(t.getID());
 
@@ -123,16 +108,46 @@ public class GetUsersMapsTask extends AsyncTask<Void, Void, Void> {
                 }
             }
 
-            // Re-add them
+            // And then add the new map
+            db.addMap(map);
+
+            for (User u : map.getManagers()) {
+                db.addAdmin(u, map.getID());
+            }
+
             for (TakObject t : map.getTaks()) {
                 db.addTak(t, map.getID());
 
-                // Add the metadata for each tak
                 for (TakMetadata m : t.getMeta().values()) {
                     db.addTakMetadata(t.getID(), m);
                 }
             }
 
+        }
+
+        // Get a list of the user's current maps
+        List<MapObject> curMaps = db.getUsersMaps();
+
+        // Iterate over them
+        for (MapObject map : curMaps) {
+
+            if (map.getOwner().getID().equals(userID)) {
+
+                // Check if it wasn't just added
+                boolean added = false;
+                for (MapObject newMap : newMaps) {
+                    if (newMap.getID().toString().equals(map.getID().toString())) {
+                        added = true;
+                        break;
+                    }
+                }
+
+                // Remove ze map
+                if (!added) {
+                    db.deleteMap(map.getID());
+                }
+
+            }
         }
 
         // Alert the listeners that we've finished

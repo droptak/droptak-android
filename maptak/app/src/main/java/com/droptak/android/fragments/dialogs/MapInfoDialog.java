@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.droptak.android.R;
+import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.fragments.DrawerFragment;
@@ -116,17 +118,18 @@ public class MapInfoDialog extends DialogFragment
 
                 // Start the delete task
                 final FragmentManager manager = getFragmentManager();
-                DeleteMapTask deleteMapTask = new DeleteMapTask(getActivity(), map, new OnMapDeletedListener() {
-                    public void onMapDeleted(boolean isActive) {
-                        if (isActive) {
-                            manager.beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
-                        }
-                    }
-                });
+                DeleteMapTask deleteMapTask = new DeleteMapTask(getActivity(), map, null);
                 deleteMapTask.execute();
 
                 // Refresh the drawer
                 getFragmentManager().beginTransaction().replace(R.id.left_drawer,new DrawerFragment()).commit();
+
+                // If the map we're deleting is the one selected, clear the main view
+                SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+                String activeID = prefs.getString(MainActivity.PREF_CURRENT_MAP, "");
+                if (activeID.equals(map.getID().toString())) {
+                    getFragmentManager().beginTransaction().replace(R.id.mainview, new SplashFragment()).commit();
+                }
 
             }
 

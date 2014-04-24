@@ -57,10 +57,10 @@
             android:text="Administrators" />
 
         <Button
+            android:id="@+id/deleteMap"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:text="Delete"
-            android:id="@+id/deleteMap"
             android:layout_below="@+id/linearLayout"
             android:layout_centerHorizontal="true" />
 
