@@ -19,6 +19,7 @@
     <string name="authors_col_1">Kyle Potts\nTylor Garrett\nTravis Coria</string>
     <string name="authors_col_2">Nick Stanish\nMike Hockerman\nTrevor Coria</string>
 
-    <string name="icon_attribution">Our app icon was created by X and licensed under a Y license.</string>
+    <string name="icon_attribution">Our app icon was designed by Diego Naive from the Noun Project\n
+                        and licensed under CC-BY-3.0.</string>
 
 </resources>
