@@ -17,11 +17,13 @@ import android.widget.VideoView;
 
 import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
+import com.droptak.android.data.MapID;
 import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.fragments.SplashFragment;
 import com.droptak.android.interfaces.OnMapDeletedListener;
+import com.droptak.android.interfaces.OnMapUpdateListener;
 import com.droptak.android.tasks.DeleteMapTask;
 import com.droptak.android.tasks.EditMapTask;
 
@@ -123,7 +125,13 @@ public class MapInfoDialog extends DialogFragment
                 map.setName(name);
 
                 // Submit the new name to the server
-                EditMapTask task = new EditMapTask(getActivity(), map, null);
+                final FragmentManager manager = getFragmentManager();
+                EditMapTask task = new EditMapTask(getActivity(), map, new OnMapUpdateListener() {
+                    public void onMapUpdate(MapID id) {
+                        // Update the drawer fragment
+                        manager.beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
+                    }
+                });
                 task.execute();
 
                 break;
