@@ -2,9 +2,14 @@ package com.droptak.android.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -62,12 +67,18 @@ public class MainActivity extends Activity {
         // Set main content view
         setContentView(R.layout.activity_main);
 
-        // Attempt to sign the user into google plus and maptak
-        gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
-            public void onGooglePlusLogin() {
-                new MapTakLoginTask(MainActivity.this).execute();
-            }
-        });
+        // Check if the user has internet. If not, exit the app.
+        boolean isConnected = isInternetConnected();
+        if (!isConnected) {
+            presentConnectivityErrorDialog();
+        } else {
+            // Attempt to sign the user into google plus and maptak
+            gplusLogin = new GPlusLoginTask(this, new OnGPlusLoginListener() {
+                public void onGooglePlusLogin() {
+                    new MapTakLoginTask(MainActivity.this).execute();
+                }
+            });
+        }
 
         // Set the background to a green color.
         getWindow().getDecorView().setBackgroundResource(R.drawable.splash);
@@ -211,6 +222,35 @@ public class MainActivity extends Activity {
 
         }
 
+    }
+
+    private void presentConnectivityErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Error");
+        builder.setMessage("DropTak requires an active internet connection to function. It appears you're off the grid.");
+        builder.setPositiveButton("Sorry :(", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            public void onDismiss(DialogInterface dialog) {
+                finish();
+            }
+        });
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                finish();
+            }
+        });
+        builder.create().show();
+    }
+
+    private boolean isInternetConnected() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }
