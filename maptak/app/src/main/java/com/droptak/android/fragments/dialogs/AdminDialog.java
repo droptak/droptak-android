@@ -22,6 +22,7 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.User;
 import com.droptak.android.interfaces.OnAdminIDUpdateListener;
+import com.droptak.android.interfaces.OnAdminRevokedListener;
 import com.droptak.android.tasks.AddAdminTask;
 import com.droptak.android.widgets.AdminListItemAdapter;
 
@@ -74,14 +75,44 @@ public class AdminDialog extends DialogFragment
         lvAdmins = (ListView) v.findViewById(R.id.admin_listview);
 
         // Get the list of admins to fill the listview
-        MapTakDB db = MapTakDB.getDB(getActivity());
+        final MapTakDB db = MapTakDB.getDB(getActivity());
         MapObject map = db.getMap(id);
-        lvAdmins.setAdapter(new AdminListItemAdapter(getActivity(), map.getManagers()));
+
+        // Set the list adapter
+        refresh();
 
         // Set a listener for the button
         addAdmin.setOnClickListener(this);
 
         return builder.create();
+    }
+
+    private void refresh() {
+
+        Activity a = getActivity();
+        if (a != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    // Get the list of maps
+                    MapTakDB db = MapTakDB.getDB(getActivity());
+                    MapObject m = db.getMap(id);
+
+                    // Create the listener
+                    OnAdminRevokedListener listener = new OnAdminRevokedListener() {
+                        public void onAdminRevoked(MapID id, User user) {
+                            refresh();
+                        }
+                    };
+
+                    // Create the adapter
+                    AdminListItemAdapter adapter = new AdminListItemAdapter(getActivity(), id, m.getManagers(), listener);
+
+                    // Add it to the list view
+                    lvAdmins.setAdapter(adapter);
+                }
+            });
+        }
+
     }
 
     @Override
@@ -98,6 +129,9 @@ public class AdminDialog extends DialogFragment
                 AddAdminTask addAdminTask = new AddAdminTask(getActivity(), u, id, this);
                 addAdminTask.execute();
 
+                // Clear out the edit text
+                etAdminEmail.setText("");
+
                 break;
 
         }
@@ -111,9 +145,7 @@ public class AdminDialog extends DialogFragment
         if (a != null) {
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    MapTakDB db = MapTakDB.getDB(getActivity());
-                    MapObject map = db.getMap(id);
-                    lvAdmins.setAdapter(new AdminListItemAdapter(getActivity(), map.getManagers()));
+                    refresh();
                 }
             });
         }

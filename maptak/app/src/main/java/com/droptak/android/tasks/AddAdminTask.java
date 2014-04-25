@@ -47,19 +47,6 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
     }
 
     @Override
-    protected void onPreExecute() {
-
-        // Create a temporary id for the tak we are adding
-        user.setID("TEMPID-" + UUID.randomUUID().toString().substring(0, 15));
-        user.setName("Downloading Data....");
-
-        // Add the user to the database with this temporary ID
-        MapTakDB db = MapTakDB.getDB(c);
-        db.addAdmin(user, mapID);
-
-    }
-
-    @Override
     protected Void doInBackground(Void... voids) {
 
         // Get access to the shared preferences
@@ -108,9 +95,9 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
             return null;
         }
 
-        // Update the database with the new ID
+        // Add teh user to the database
         MapTakDB db = MapTakDB.getDB(c);
-        db.setMapAdminsUser(user, newUser);
+        db.addAdmin(newUser, mapID);
 
         // Call the listener
         if (listener != null) {

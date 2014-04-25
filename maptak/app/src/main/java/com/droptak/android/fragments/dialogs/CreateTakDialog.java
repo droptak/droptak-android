@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.droptak.android.R;
 import com.droptak.android.activities.MainActivity;
@@ -93,6 +94,12 @@ public class CreateTakDialog extends DialogFragment
         String desc = etTakDesc.getText().toString();
         double lat = Double.parseDouble(etLat.getText().toString());
         double lng = Double.parseDouble(etLng.getText().toString());
+
+        // If the name is empty, make them enter one
+        if (name.equals("")) {
+            Toast.makeText(getActivity(), "Enter a name for your tak!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Create the first tak object
         TakObject oldtak = new TakObject();

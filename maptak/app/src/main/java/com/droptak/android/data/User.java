@@ -46,6 +46,14 @@ public class User {
         this.email = email;
     }
 
+    /** Compares two User objects by ID */
+    public boolean equals(User u) {
+        if (this.getID().equals(u.getID())) {
+            return true;
+        }
+        return false;
+    }
+
     /** Gets the unique ID of the user */
     public String getID() {
         return this.id;

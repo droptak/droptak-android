@@ -8,18 +8,26 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.droptak.android.R;
+import com.droptak.android.data.MapID;
 import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnAdminIDUpdateListener;
+import com.droptak.android.interfaces.OnAdminRevokedListener;
+import com.droptak.android.tasks.RevokeAdminTask;
 
 import java.util.List;
 
 public class AdminListItemAdapter extends BaseAdapter {
 
     private Context c;
+    private MapID id;
     private List<User> admins;
+    private OnAdminRevokedListener listener;
 
-    public AdminListItemAdapter(Context c, List<User> adminsToDisplay) {
+    public AdminListItemAdapter(Context c, MapID id, List<User> adminsToDisplay, OnAdminRevokedListener listener) {
         this.c = c;
+        this.id = id;
         this.admins = adminsToDisplay;
+        this.listener = listener;
     }
 
     @Override
@@ -38,7 +46,7 @@ public class AdminListItemAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         // Get admin's name and email
         String name = admins.get(position).getName();
@@ -56,7 +64,8 @@ public class AdminListItemAdapter extends BaseAdapter {
         // Set a listener on the button
         buDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                RevokeAdminTask task = new RevokeAdminTask(c, id, admins.get(position), listener);
+                task.execute();
             }
         });
 
