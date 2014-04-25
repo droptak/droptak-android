@@ -21,7 +21,7 @@
         android:layout_width="55dp"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
-        android:drawableTop="@drawable/ic_action_edit"
+        android:drawableTop="@drawable/ic_action_edit_light"
         android:focusable="false" />
 
 </RelativeLayout>

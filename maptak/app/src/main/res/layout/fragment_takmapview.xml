@@ -15,7 +15,7 @@
             android:id="@+id/takmapview_bu_taklist"
             android:layout_width="60dp"
             android:layout_height="50dp"
-            android:drawableTop="@drawable/ic_pin" />
+            android:drawableTop="@drawable/ic_pin_light" />
 
         <Button
             android:id="@+id/takmapview_bu_addtak"

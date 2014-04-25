@@ -23,7 +23,7 @@
         android:id="@+id/adminlist_tvasbu_delete"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:drawableTop="@drawable/ic_action_delete"
+        android:drawableTop="@drawable/ic_action_delete_dark"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true" />
 

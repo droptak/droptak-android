@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_refresh"
         android:title="Refresh From DropTak"
-        android:icon="@drawable/ic_action_refresh"
+        android:icon="@drawable/ic_action_refresh_light"
         android:showAsAction="always" />
 
     <item
