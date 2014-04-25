@@ -15,7 +15,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.droptak.android.R;
@@ -24,15 +24,13 @@ import com.droptak.android.data.MapObject;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.fragments.DrawerFragment;
 import com.droptak.android.fragments.SplashFragment;
+import com.droptak.android.fragments.dialogs.AddMapSelectionDialog;
 import com.droptak.android.interfaces.OnGPlusLoginListener;
 import com.droptak.android.interfaces.OnMapsRefreshListener;
-import com.droptak.android.qrcode.IntentIntegrator;
-import com.droptak.android.qrcode.IntentResult;
 import com.droptak.android.tasks.GPlusLoginTask;
 import com.droptak.android.tasks.GetMapTask;
 import com.droptak.android.tasks.GetUsersMapsTask;
 import com.droptak.android.tasks.MapTakLoginTask;
-import com.droptak.android.test.DBTests;
 
 public class MainActivity extends Activity {
 
@@ -54,6 +52,9 @@ public class MainActivity extends Activity {
     /** Class variables related to the drawer */
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+
+    /** Share provider for the share button */
+    private ShareActionProvider shareProvider;
 
     /** Currently inflated fragment */
     private boolean isInPrefs = false;
@@ -112,7 +113,11 @@ public class MainActivity extends Activity {
         setUpEnabled(false);
         menuRes = R.menu.main_menu;
         getMenuInflater().inflate(menuRes, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        // Create the share action provider
+        shareProvider = (ShareActionProvider) menu.findItem(R.id.menu_share).getActionProvider();
+
+        return true;
     }
 
     @Override
@@ -186,30 +191,25 @@ public class MainActivity extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
 
-            // Case for G+ signin failure
-            case GPlusLoginTask.RC_SIGN_IN:
-                gplusLogin.connect();
-                break;
+                // Case for G+ signin failure
+                case GPlusLoginTask.RC_SIGN_IN:
+                    gplusLogin.connect();
+                    break;
 
-            // Case for QR code scanning return
-            case IntentIntegrator.REQUEST_CODE:
-                IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-                TextView url = (TextView) findViewById(R.id.QRCodeTitle);
-                if ( scanResult != null ){
+                // Case for QR code scanning return
+                case AddMapSelectionDialog.RC_QR_SCANNED:
+
+                    String contents = data.getStringExtra("SCAN_RESULT");
 
                     // Parse out the ID
-                    String idurl = scanResult.getContents();
-                    if (idurl == null) {
-                        return;
-                    }
-
-                    idurl = idurl.replace("http://mapitapps.appspot.com/maps/", "");
-                    idurl = idurl.replace("/", "");
+                    contents = contents.replace("http://mapitapps.appspot.com/maps/", "");
+                    contents = contents.replace("/", "");
 
                     // Execute the get map task
-                    GetMapTask getMapTask = new GetMapTask(this, new MapID(idurl), new OnMapsRefreshListener() {
+                    GetMapTask getMapTask = new GetMapTask(this, new MapID(contents), new OnMapsRefreshListener() {
                         public void onMapsRefresh() {
                             // Refresh drawer layout
                             getFragmentManager().beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();
@@ -217,11 +217,17 @@ public class MainActivity extends Activity {
                     });
                     getMapTask.execute();
 
-                }
-                break;
+                    break;
 
+            }
         }
 
+    }
+
+    private void setShareIntent(Intent shareIntent) {
+        if (shareProvider != null) {
+            shareProvider.setShareIntent(shareIntent);
+        }
     }
 
     /** Creates an error dialog which, when dismissed in any way, exits the application. It tells the user that
