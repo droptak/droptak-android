@@ -9,6 +9,13 @@
         android:showAsAction="always" />
 
     <item
+        android:id="@+id/menu_share"
+        android:showAsAction="ifRoom"
+        android:title="Share"
+        android:icon="@drawable/ic_action_share_light"
+        android:actionProviderClass="android.widget.ShareActionProvider" />
+
+    <item
         android:id="@+id/menu_settings"
         android:title="@string/menu_settings_label"
         android:showAsAction="never" />

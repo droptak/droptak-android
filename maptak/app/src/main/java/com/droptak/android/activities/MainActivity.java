@@ -224,6 +224,8 @@ public class MainActivity extends Activity {
 
     }
 
+    /** Creates an error dialog which, when dismissed in any way, exits the application. It tells the user that
+     *  they need internet in order for the app to function. */
     private void presentConnectivityErrorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Error");
@@ -254,3 +256,4 @@ public class MainActivity extends Activity {
     }
 
 }
+
