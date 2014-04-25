@@ -49,8 +49,16 @@ public class AdminListItemAdapter extends BaseAdapter {
         View row = inflater.inflate(R.layout.adapter_admin_item, parent, false);
 
         // Get elements in the view
-        TextView tvName = (TextView) row.findViewById(R.id.admin_list_tv_name);
-        TextView tvEmail = (TextView) row.findViewById(R.id.admin_list_tv_email);
+        TextView tvName = (TextView) row.findViewById(R.id.adminlist_tv_name);
+        TextView tvEmail = (TextView) row.findViewById(R.id.adminlist_tv_email);
+        TextView buDelete = (TextView) row.findViewById(R.id.adminlist_tvasbu_delete);
+
+        // Set a listener on the button
+        buDelete.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
 
         // Set the name and email
         tvName.setText(name);

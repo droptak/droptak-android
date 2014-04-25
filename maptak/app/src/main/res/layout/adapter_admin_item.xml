@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
-
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/admin_list_tv_name"
-        android:layout_width="fill_parent"
+        android:id="@+id/adminlist_tv_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Tylor Garrett" />
+        android:text="Name" />
 
     <TextView
-        android:id="@+id/admin_list_tv_email"
-        android:layout_below="@id/admin_list_tv_name"
-        android:layout_width="fill_parent"
+        android:id="@+id/adminlist_tv_email"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="tylorgarrett@gmail.com"/>
+        android:layout_below="@id/adminlist_tv_name"
+        android:text="email@domain.com" />
+
+    <TextView
+        android:id="@+id/adminlist_tvasbu_delete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:drawableTop="@drawable/ic_action_delete"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
