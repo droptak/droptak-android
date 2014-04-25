@@ -25,7 +25,7 @@
             android:layout_alignBottom="@id/takmapview_bu_taklist"
             android:layout_toRightOf="@id/takmapview_bu_taklist"
             android:layout_alignParentRight="true"
-            android:text="Pin Tak"
+            android:text="Drop Tak on Current Location"
             android:textColor="@android:color/white"/>
 
     </RelativeLayout>
