@@ -44,4 +44,5 @@ public class TakListDialog extends DialogFragment implements DialogInterface.OnC
         TakInfoDialog takInfoDialog = new TakInfoDialog(taks.get(i).getID());
         takInfoDialog.show(getFragmentManager(), "something");
     }
+
 }

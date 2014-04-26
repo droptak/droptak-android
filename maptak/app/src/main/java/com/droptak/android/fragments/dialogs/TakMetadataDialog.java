@@ -5,45 +5,26 @@ package com.droptak.android.fragments.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.droptak.android.R;
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakID;
 import com.droptak.android.data.TakMetadata;
 import com.droptak.android.data.TakObject;
+import com.droptak.android.tasks.AddMetadataTask;
+import com.droptak.android.widgets.TakMetaListItemAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- *
- */
 public class TakMetadataDialog extends DialogFragment implements View.OnClickListener {
 
-    ListView listView;
-    MapTakDB db;
-    MyAdapter myAdapter;
-    TakID takID;
-    Button button;
-    EditText key;
-    EditText value;
-    AlertDialog.Builder dataList;
+    private EditText etKey, etValue;
+    private ListView lvMetadata;
+    private TakID takID;
 
     public TakMetadataDialog(TakID takID) {
         this.takID = takID;
@@ -51,86 +32,62 @@ public class TakMetadataDialog extends DialogFragment implements View.OnClickLis
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //set up Alert Dialog
-        dataList = new AlertDialog.Builder(getActivity());
-        dataList.setTitle("Tak MetaData");
-        LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_tak_metadata_dialog, null);
-        dataList.setView(v);
-
-        //database instance
-        db = MapTakDB.getDB(getActivity());
-
-        //set up View and Adapters
-        button = (Button) v.findViewById(R.id.takmetadata_btn_add);
-        button.setOnClickListener(this);
-        key = (EditText) v.findViewById(R.id.takmetadata_et_key);
-        value = (EditText) v.findViewById(R.id.takmetadata_et_value);
-        listView = (ListView) v.findViewById(R.id.takmetadata_listview);
-        myAdapter = new MyAdapter(db.getTakMetadata(takID));
-        listView.setAdapter(myAdapter);
+        // Get the tak object passed in
+        MapTakDB db = MapTakDB.getDB(getActivity());
         TakObject tak = db.getTak(takID);
-        Log.d("debug","name="+tak.getName());
-        return dataList.create();
+
+        // Create the builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(tak.getName() + " Metadata");
+
+        // Inflate a layout
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View v = inflater.inflate(R.layout.fragment_tak_metadata, null, false);
+        builder.setView(v);
+
+        // Set up widgets on the screen
+        Button buAdd = (Button) v.findViewById(R.id.takmetadata_btn_add);
+        etKey = (EditText) v.findViewById(R.id.takmetadata_et_key);
+        etValue = (EditText) v.findViewById(R.id.takmetadata_et_value);
+        lvMetadata = (ListView) v.findViewById(R.id.takmetadata_listview);
+
+        // Set listeners
+        buAdd.setOnClickListener(this);
+
+        // Inflate initial tak metadata
+        TakMetaListItemAdapter adapter = new TakMetaListItemAdapter(getActivity(), tak.getMeta().values());
+        lvMetadata.setAdapter(adapter);
+
+        return builder.create();
     }
 
     @Override
     public void onClick(View view) {
-        //add the metadata to the TakObject and refresh the page
-        String mapKey = key.getText().toString();
-        String mapTakID = takID.toString();
-        String mapValue = value.getText().toString();
-        if ( mapKey != null && mapValue != null ){
-            // add to the database
-            TakMetadata newData = new TakMetadata(mapTakID, mapKey, mapValue);
-            db.addTakMetadata(takID, newData);
+
+        switch (view.getId()) {
+
+            case R.id.takmetadata_btn_add:
+
+                // Get the key and value
+                String key = etKey.getText().toString();
+                String value = etValue.getText().toString();
+
+                // Execute the task
+                AddMetadataTask task = new AddMetadataTask(getActivity(), takID, new TakMetadata(null, key, value));
+                task.execute();
+
+                // Update the list view
+                TakObject tak = MapTakDB.getDB(getActivity()).getTak(takID);
+                lvMetadata.setAdapter(new TakMetaListItemAdapter(getActivity(), tak.getMeta().values()));
+
+                // Clear out the edit texts
+                etKey.setText("");
+                etValue.setText("");
+
+                break;
+
         }
-        getDialog().cancel();
-    }
-
-    public class MyAdapter extends BaseAdapter{
-        private final ArrayList mData;
-
-        public MyAdapter(Map<String, TakMetadata> map){
-            mData = new ArrayList();
-            mData.addAll(map.entrySet());
-        }
-
-        @Override
-        public int getCount(){
-            return mData.size();
-        }
-
-        @Override
-        public Map.Entry<String, TakMetadata> getItem(int position){
-            return (Map.Entry) mData.get(position);
-        }
-
-        @Override
-        public long getItemId(int position){
-            // TODO: implement with your own logic with ID
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent){
-            final View result;
-            Map.Entry<String, TakMetadata> item = getItem(position);
-            if ( convertView == null ){
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                result = inflater.inflate(R.layout.fragment_tak_metdata_listview, parent, false);
-                ((TextView) result.findViewById(R.id.takmetadata_lv_et_key)).setText(item.getKey());
-                ((TextView) result.findViewById(R.id.takmetadata_lv_et_value)).setText(item.getValue().getValue());
-            } else {
-                result = convertView;
-            }
-
-
-            return result;
-        }
-
     }
 
 }

@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    tools:context="com.droptak.android.fragments.dialogs.TakMetadataDialog">
+
+    <LinearLayout
+        android:id="@+id/takmetadata_linearlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/takmetadata_et_key"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="Key"/>
+
+        <EditText
+            android:id="@+id/takmetadata_et_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="Value" />
+
+        <Button
+            android:id="@+id/takmetadata_btn_add"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_action_add_dark" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/takmetadata_listview"
+        android:layout_below="@id/takmetadata_linearlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </ListView>
+
+
+</RelativeLayout>

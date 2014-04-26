@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.droptak.android.activities.MainActivity;
 
@@ -186,11 +187,18 @@ public class MapTakDB extends SQLiteOpenHelper {
 
     }
 
-    /** Adds a piece of tak metadata to the database */
-    public void addTakMetadata(TakID takID, TakMetadata metadata) {
+    /** Adds a piece of tak metadata to the database.
+     *  Note that this method generates an ID for the piece of metadata considering the server
+     *  does not generate unique IDs for metadata. This ID is added to both the object
+     *  passed in and as a return variable. */
+    public String addTakMetadata(TakID takID, TakMetadata metadata) {
+
+        // Generate an ID for the piece of metadata
+        String id = UUID.randomUUID().toString().substring(1,20);
+        metadata.setID(id);
 
         ContentValues values = new ContentValues();
-        values.put(TAK_METADATA_ID, "1");
+        values.put(TAK_METADATA_ID, id);
         values.put(TAK_METADATA_TAKID, takID.toString());
         values.put(TAK_METADATA_KEY, metadata.getKey());
         values.put(TAK_METADATA_VALUE, metadata.getValue());
@@ -198,7 +206,9 @@ public class MapTakDB extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.insert(TABLE_TAK_METADATA, null, values);
+            return id;
         }
+        return null;
     }
 
     /** Changes the ID of a map associated with "oldID" to "newID" */
