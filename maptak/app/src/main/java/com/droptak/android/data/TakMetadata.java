@@ -3,6 +3,8 @@ package com.droptak.android.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 public class TakMetadata {
 
     /** Creates a TakMetadata object from a JSON string */
@@ -14,11 +16,11 @@ public class TakMetadata {
             JSONObject j = new JSONObject(jsonStr);
 
             // Get id, key, and value
-            String id = j.getString("id");
+            //String id = j.getString("id");
             String key = j.getString("key");
             String value = j.getString("value");
 
-            metadata = new TakMetadata(id, key, value);
+            metadata = new TakMetadata(null, key, value);
 
         } catch (JSONException e) {
             e.printStackTrace();

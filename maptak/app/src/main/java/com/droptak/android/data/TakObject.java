@@ -15,7 +15,7 @@ public class TakObject {
 
     /** Parses JSON from the server and returns a map object */
     public static TakObject createFromJSON(String jsonStr) {
-
+        Log.d("debug","tak jsonStr="+jsonStr);
         TakObject takO = new TakObject();
         try {
             JSONObject tak = new JSONObject(jsonStr);
