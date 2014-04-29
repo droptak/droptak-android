@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.content.Context;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,6 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.UUID;
 
 import com.droptak.android.activities.MainActivity;
@@ -72,19 +77,22 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
         String mapName = mapToPush.getName();
         String isPublic = ""+mapToPush.isPublic();
 
-        // Sanitize the strings
-        userName = userName.replaceAll("\\s", "%20");
-        mapName = mapName.replaceAll("\\s", "%20");
-
         // Construct the url we are going to post to
-        String url = BASE_URL +
+        String urlStr = BASE_URL +
                 "?owner=" + userID +
                 "&name=" + mapName +
                 "&isPublic=" + isPublic;
 
+        // Sanitize the URL
+        urlStr = urlStr.replace(" ", "%20");
+
+        if (!URLUtil.isValidUrl(urlStr)) {
+            return null;
+        }
+
         // Create the http client we use to post to the server
         HttpClient client = new DefaultHttpClient();
-        HttpPost get = new HttpPost(url);
+        HttpPost get = new HttpPost(urlStr);
 
         // Do the post and get the JSON as a response
         String responseString = null;

@@ -80,6 +80,7 @@ public class DeleteMapTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
+
         // Construct the url we are going to post to
         String url = BASE_URL +
                 mapToPush.getID().toString()+"/";

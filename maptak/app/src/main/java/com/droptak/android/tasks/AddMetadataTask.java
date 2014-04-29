@@ -2,6 +2,7 @@ package com.droptak.android.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.webkit.URLUtil;
 
 import com.droptak.android.data.MapTakDB;
 import com.droptak.android.data.TakID;
@@ -16,6 +17,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class AddMetadataTask extends AsyncTask<Void, Void, Void> {
 
@@ -48,13 +53,20 @@ public class AddMetadataTask extends AsyncTask<Void, Void, Void> {
         String value = metadata.getValue();
 
         // Generate the URL
-        String url = BASE_URL + id.toString() + "/metadata/" +
+        String urlStr = BASE_URL + id.toString() + "/metadata/" +
                 "?key=" + key +
                 "&value=" + value;
 
+        // Sanitize it
+        urlStr = urlStr.replace(" ", "%20");
+
+        if (!URLUtil.isValidUrl(urlStr)) {
+            return null;
+        }
+
         // Create the http client
         HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost(url);
+        HttpPost post = new HttpPost(urlStr);
 
         // Execute it
         String result = null;

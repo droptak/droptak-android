@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.content.Context;
 import android.util.Log;
+import android.webkit.URLUtil;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,6 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.UUID;
 
 import com.droptak.android.activities.MainActivity;
@@ -60,6 +66,7 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
 
         // Get access to the shared preferences
         SharedPreferences prefs = c.getSharedPreferences(MainActivity.SHARED_PREFS_NAME, 0);
+        MapTakDB db = MapTakDB.getDB(c);
 
         // Get user information from the preferences
         String userName = prefs.getString(MainActivity.PREF_USER_GPLUS_NAME, "ERROR");
@@ -81,16 +88,23 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
         takName = takName.replaceAll(" ", "%20");
 
         // Create the URL we will post to
-        String url = BASE_URL +
-                "?userid=" + userID +
-                "&mapid=" + mapID.toString() +
-                "&name=" + takName +
-                "&lat=" + takLat +
-                "&lng=" + takLng;
+        String urlStr = BASE_URL +
+                    "?userid=" + userID +
+                    "&mapid=" + mapID.toString() +
+                    "&name=" + takName +
+                    "&lat=" + takLat +
+                    "&lng=" + takLng;
+
+        // Vaidate it
+        urlStr = urlStr.replace(" ", "%20");
+
+        if (!URLUtil.isValidUrl(urlStr)) {
+            return null;
+        }
 
         // Create our asynchronous http client and issue a post request to a given URL
         HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost(url);
+        HttpPost post = new HttpPost(urlStr);
 
         // Make the post and get the response as a JSON string
         String responseString = null;
@@ -112,7 +126,6 @@ public class CreateTakTask extends AsyncTask<Void, Void, Void>  {
         }
 
         // Update the database with the new ID
-        MapTakDB db = MapTakDB.getDB(c);
         db.setTakID(tak.getID(), id);
 
         // TODO: Update any metadata pairs the user might have added

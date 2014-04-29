@@ -53,6 +53,7 @@ public class GetMapTask extends AsyncTask<Void, Void, Void> {
             jsonStr = EntityUtils.toString(response.getEntity(), "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
         // Parse the reply string into a MapObject

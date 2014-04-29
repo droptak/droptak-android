@@ -40,19 +40,28 @@ import java.util.List;
 public class AdminDialog extends DialogFragment
         implements View.OnClickListener, OnAdminIDUpdateListener {
 
+    private static final String BUNDLE_KEY_MAPID = "map_id";
+
+    public static AdminDialog newInstanceOf(MapID id) {
+        AdminDialog dialog = new AdminDialog();
+        Bundle b = new Bundle();
+        b.putString(BUNDLE_KEY_MAPID, id.toString());
+        dialog.setArguments(b);
+        return dialog;
+    }
+
     private ListView lvAdmins;
     private EditText etAdminEmail;
-    private MapID id;
-
-    public AdminDialog(MapID id) {
-        this.id = id;
-    }
+    private MapID mapID;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         // Create builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        // Get the ID
+        mapID = new MapID(getArguments().getString(BUNDLE_KEY_MAPID));
 
         // Set title
         builder.setTitle("Map Administrators");
@@ -76,7 +85,7 @@ public class AdminDialog extends DialogFragment
 
         // Get the list of admins to fill the listview
         final MapTakDB db = MapTakDB.getDB(getActivity());
-        MapObject map = db.getMap(id);
+        MapObject map = db.getMap(mapID);
 
         // Set the list adapter
         refresh();
@@ -95,7 +104,7 @@ public class AdminDialog extends DialogFragment
                 public void run() {
                     // Get the list of maps
                     MapTakDB db = MapTakDB.getDB(getActivity());
-                    MapObject m = db.getMap(id);
+                    MapObject m = db.getMap(mapID);
 
                     // Create the listener
                     OnAdminRevokedListener listener = new OnAdminRevokedListener() {
@@ -105,7 +114,7 @@ public class AdminDialog extends DialogFragment
                     };
 
                     // Create the adapter
-                    AdminListItemAdapter adapter = new AdminListItemAdapter(getActivity(), id, m.getManagers(), listener);
+                    AdminListItemAdapter adapter = new AdminListItemAdapter(getActivity(), mapID, m.getManagers(), listener);
 
                     // Add it to the list view
                     lvAdmins.setAdapter(adapter);
@@ -126,7 +135,7 @@ public class AdminDialog extends DialogFragment
 
                 // Execute task with this email
                 User u = new User("", "", email);
-                AddAdminTask addAdminTask = new AddAdminTask(getActivity(), u, id, this);
+                AddAdminTask addAdminTask = new AddAdminTask(getActivity(), u, mapID, this);
                 addAdminTask.execute();
 
                 // Clear out the edit text

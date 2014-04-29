@@ -44,6 +44,11 @@ public class MapInfoDialog extends DialogFragment
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -97,7 +102,7 @@ public class MapInfoDialog extends DialogFragment
             case R.id.mapinfo_bu_editadmins:
 
                 // Create an admin dialog and create it
-                AdminDialog d = new AdminDialog(map.getID());
+                AdminDialog d = AdminDialog.newInstanceOf(map.getID());
                 d.show(getFragmentManager(), "admin-edit-dialog");
 
                 break;

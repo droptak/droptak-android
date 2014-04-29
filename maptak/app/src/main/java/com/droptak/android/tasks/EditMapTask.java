@@ -4,6 +4,7 @@ package com.droptak.android.tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import com.droptak.android.activities.MainActivity;
 import com.droptak.android.data.MapID;
@@ -20,6 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class EditMapTask extends AsyncTask<Void, Void, Void> {
 
@@ -51,13 +56,20 @@ public class EditMapTask extends AsyncTask<Void, Void, Void> {
         newName = newName.replace(" ", "%20");
 
         // Construct the URL
-        String url = BASE_URL + map.toString() + "/" +
+        String urlStr = BASE_URL + map.toString() + "/" +
                 "?name=" + newName +
                 "&isPublic=" + newIsPublic;
 
+        // Sanitize the URL
+        urlStr = urlStr.replace(" ", "%20");
+
+        if (!URLUtil.isValidUrl(urlStr)) {
+            return null;
+        }
+
         // Create the HTTP client
         HttpClient client = new DefaultHttpClient();
-        HttpPut put = new HttpPut(url);
+        HttpPut put = new HttpPut(urlStr);
 
         // Execute it
         String jsonStr = null;

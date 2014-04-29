@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.content.Context;
 import android.util.Log;
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -16,6 +17,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.UUID;
 
 import com.droptak.android.activities.MainActivity;
@@ -63,11 +68,19 @@ public class AddAdminTask extends AsyncTask<Void, Void, Void>  {
         }
 
         // Create the URL we will post to
-        String url = BASE_URL + mapID.toString() + "/admin/" + user.getEmail() + "/";
+        String urlStr = BASE_URL + mapID.toString() + "/admin/" + user.getEmail() + "/";
+
+        // Sanitize the URL
+        urlStr = urlStr.replace(" ", "%20");
+
+        // If it isn't valid, end
+        if (!URLUtil.isValidUrl(urlStr)) {
+            return null;
+        }
 
         // Create our asynchronous http client and issue a post request to a given URL
         HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost(url);
+        HttpPost post = new HttpPost(urlStr);
 
         // Make the post and get the response as a JSON string
         String responseString = null;

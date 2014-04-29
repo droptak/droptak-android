@@ -1,6 +1,7 @@
 package com.droptak.android.tasks;
 
 import android.os.AsyncTask;
+import android.webkit.URLUtil;
 
 import com.droptak.android.data.MapObject;
 import com.droptak.android.interfaces.OnMapSearchResultListener;
@@ -15,6 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,17 +41,21 @@ public class SearchMapsTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        // Sanitize query
-        query = query.replaceAll(" ", "%20");
-
         // Construct the url
-        String url = BASE_URL +
+        String urlStr = BASE_URL +
                 "?query_type=mapName" +
                 "&query=" + query;
 
+        // Sanitize the URL
+        urlStr = urlStr.replace(" ", "%20");
+
+        if (!URLUtil.isValidUrl(urlStr)) {
+            return null;
+        }
+
         // Create http client
         HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(url);
+        HttpGet get = new HttpGet(urlStr);
 
         // Execute it
         String responseString = null;
