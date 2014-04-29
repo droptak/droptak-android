@@ -38,10 +38,10 @@ public class EditMapTask extends AsyncTask<Void, Void, Void> {
     /** Changes the information contained in the map corresponding to the MapID
      *  to that information which is in toEditTo. Currently this only includes the map's name
      *  and whether it is public or private. */
-    public EditMapTask(Context c, MapObject toEditTo, OnMapUpdateListener listener) {
+    public EditMapTask(Context c, MapID toEditTo, OnMapUpdateListener listener) {
         this.c = c;
-        this.map = toEditTo.getID();
-        this.newMapInfo = toEditTo;
+        this.map = toEditTo;
+        this.newMapInfo = MapTakDB.getDB(c).getMap(toEditTo);
         this.listener = listener;
     }
 

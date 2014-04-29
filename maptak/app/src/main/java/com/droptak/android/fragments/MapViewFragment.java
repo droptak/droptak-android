@@ -80,7 +80,7 @@ public class MapViewFragment extends Fragment implements View.OnClickListener {
                         LatLng loc = new LatLng(manager.getLat(), manager.getLng());
 
                         // Show the dialog box for creating a new tak
-                        new CreateTakDialog(loc).show(getFragmentManager(), "create_tak_dialog");
+                        CreateTakDialog.newInstanceOf(loc).show(getFragmentManager(), "create_tak_dialog");
                     }
                 });
 

@@ -72,7 +72,7 @@ public class TakMapFragment extends MapFragment {
         getMap().setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             public void onMapLongClick(LatLng latLng) {
                 // Create the add tak fragment
-                new CreateTakDialog(latLng).show(getFragmentManager(), "create-tak-dialog-user-selected-location");
+                CreateTakDialog.newInstanceOf(latLng).show(getFragmentManager(), "create-tak-dialog-user-selected-location");
             }
         });
 

@@ -25,16 +25,29 @@ import com.google.android.gms.maps.model.LatLng;
 public class CreateTakDialog extends DialogFragment
         implements DialogInterface.OnClickListener {
 
+    private final static String BUNDLE_KEY_LAT = "point_lat";
+    private final static String BUNDLE_KEY_LNG = "point_lng";
+
+    public static CreateTakDialog newInstanceOf(LatLng loc) {
+        CreateTakDialog dialog = new CreateTakDialog();
+        Bundle b = new Bundle();
+        b.putDouble(BUNDLE_KEY_LAT, loc.latitude);
+        b.putDouble(BUNDLE_KEY_LNG, loc.longitude);
+        dialog.setArguments(b);
+        return dialog;
+    }
+
     private LatLng loc;
     private UserLocationManager manager;
     private EditText etTakName, etTakDesc, etLat, etLng;
 
-    public CreateTakDialog(LatLng loc) {
-        this.loc = loc;
-    }
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        // Get latitude and longitude
+        double lat = getArguments().getDouble(BUNDLE_KEY_LAT);
+        double lng = getArguments().getDouble(BUNDLE_KEY_LNG);
+        loc = new LatLng(lat, lng);
 
         // Create the builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

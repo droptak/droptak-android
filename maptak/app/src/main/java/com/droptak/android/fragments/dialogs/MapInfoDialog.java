@@ -30,28 +30,28 @@ import com.droptak.android.tasks.EditMapTask;
 public class MapInfoDialog extends DialogFragment
         implements View.OnClickListener, DialogInterface.OnClickListener {
 
-    private MapObject map;
+    private static final String BUNDLE_KEY_MAPID = "map_id";
 
-    /** Views */
+    public static final MapInfoDialog newInstanceOf(MapID id) {
+        MapInfoDialog dialog = new MapInfoDialog();
+        Bundle b = new Bundle();
+        b.putString(BUNDLE_KEY_MAPID, id.toString());
+        dialog.setArguments(b);
+        return dialog;
+    }
+
+    private MapID mapID;
     private EditText etMapName, etMapDesc;
     private TextView tvOwner, tvID;
-    private Dialog mapInfoDialog;
-
-    public MapInfoDialog() {}
-
-    public MapInfoDialog(MapObject mo) {
-        this.map = mo;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        // Get the map from the arguments
+        mapID = new MapID(getArguments().getString(BUNDLE_KEY_MAPID));
+        MapObject map = MapTakDB.getDB(getActivity()).getMap(mapID);
 
         // Set title
         builder.setTitle("Edit Your Map");
@@ -90,8 +90,7 @@ public class MapInfoDialog extends DialogFragment
         // start proccess for deleting a map, creator a dialog to confirm
         deleteButton.setOnClickListener(this);
 
-        mapInfoDialog = builder.create();
-        return mapInfoDialog;
+        return builder.create();
     }
 
     @Override
@@ -102,7 +101,7 @@ public class MapInfoDialog extends DialogFragment
             case R.id.mapinfo_bu_editadmins:
 
                 // Create an admin dialog and create it
-                AdminDialog d = AdminDialog.newInstanceOf(map.getID());
+                AdminDialog d = AdminDialog.newInstanceOf(mapID);
                 d.show(getFragmentManager(), "admin-edit-dialog");
 
                 break;
@@ -110,7 +109,7 @@ public class MapInfoDialog extends DialogFragment
             case R.id.mapinfo_bu_deletemap:
 
                 // Create a delete map confirm dialog
-                new DeleteMapConfirmationDialog(this.getDialog(), map).show(getFragmentManager(), "asdf");
+                //new DeleteMapConfirmationDialog(this.getDialog(), mapID).show(getFragmentManager(), "asdf");
 
                 break;
 
@@ -127,11 +126,10 @@ public class MapInfoDialog extends DialogFragment
 
                 // Get the new name
                 String name = etMapName.getText().toString();
-                map.setName(name);
 
                 // Submit the new name to the server
                 final FragmentManager manager = getFragmentManager();
-                EditMapTask task = new EditMapTask(getActivity(), map, new OnMapUpdateListener() {
+                EditMapTask task = new EditMapTask(getActivity(), mapID, new OnMapUpdateListener() {
                     public void onMapUpdate(MapID id) {
                         // Update the drawer fragment
                         manager.beginTransaction().replace(R.id.left_drawer, new DrawerFragment()).commit();

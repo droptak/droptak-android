@@ -54,7 +54,7 @@ public class MapListItemAdapter extends BaseAdapter {
         buInfo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 drawer.closeDrawers();
-                MapInfoDialog d = new MapInfoDialog(maps.get(i));
+                MapInfoDialog d = MapInfoDialog.newInstanceOf(maps.get(i).getID());
                 d.show(c.getFragmentManager(), "map_info_dialog");
             }
         });
