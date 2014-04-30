@@ -109,7 +109,9 @@ public class MapInfoDialog extends DialogFragment
             case R.id.mapinfo_bu_deletemap:
 
                 // Create a delete map confirm dialog
-                //new DeleteMapConfirmationDialog(this.getDialog(), mapID).show(getFragmentManager(), "asdf");
+                MapTakDB db = MapTakDB.getDB(getActivity());
+                MapObject mo = db.getMap(mapID);
+                new DeleteMapConfirmationDialog(this.getDialog(), mo).show(getFragmentManager(), "asdf");
 
                 break;
 
