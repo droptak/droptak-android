@@ -129,7 +129,7 @@ public class TakMapFragment extends MapFragment {
         // Animate the camera to include the points we added
         Point p = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(p);
-        CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 200);
+        CameraUpdate camUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), p.x, p.y, 300);
 
         if (animateCamera) {
             gmap.animateCamera(camUpdate);
