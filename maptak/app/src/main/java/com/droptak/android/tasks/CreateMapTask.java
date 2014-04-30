@@ -1,10 +1,18 @@
 package com.droptak.android.tasks;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.content.Context;
 import android.util.Log;
 import android.webkit.URLUtil;
+
+import com.droptak.android.activities.MainActivity;
+import com.droptak.android.data.MapID;
+import com.droptak.android.data.MapObject;
+import com.droptak.android.data.MapTakDB;
+import com.droptak.android.data.TakObject;
+import com.droptak.android.data.User;
+import com.droptak.android.interfaces.OnMapIDUpdateListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,19 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.URLEncoder;
 import java.util.UUID;
-
-import com.droptak.android.activities.MainActivity;
-import com.droptak.android.data.MapID;
-import com.droptak.android.data.MapObject;
-import com.droptak.android.data.MapTakDB;
-import com.droptak.android.data.TakObject;
-import com.droptak.android.data.User;
-import com.droptak.android.interfaces.OnMapIDUpdateListener;
 
 /** Task which takes in a map object, adds it to the local database, pushes it to the server,
  *  then updates the local database with all the information is gets back from the server.
@@ -78,15 +75,26 @@ public class CreateMapTask extends AsyncTask<Void, Void, Void>  {
         String isPublic = ""+mapToPush.isPublic();
 
         // Construct the url we are going to post to
-        String urlStr = BASE_URL +
-                "?owner=" + userID +
-                "&name=" + mapName +
-                "&isPublic=" + isPublic;
+        String query = "";
+        try{
+            query = "?owner=" + URLEncoder.encode(userID, "utf-8") +
+                    "&name=" + URLEncoder.encode(mapName, "utf-8") +
+                    "&isPublic=" + URLEncoder.encode(isPublic, "utf-8");
+        }
+        catch(Exception e){
+            query = "?owner=" + userID +
+                    "&name=" + mapName +
+                    "&isPublic=" + isPublic;
+        }
+        String urlStr = BASE_URL + query;
+
 
         // Sanitize the URL
-        urlStr = urlStr.replace(" ", "%20");
+        urlStr = urlStr.replaceAll(" ", "%20");
+        urlStr = urlStr.replaceAll("\n", "");
 
         if (!URLUtil.isValidUrl(urlStr)) {
+            Log.v("CreateMapTask","Invalid url..returning null");
             return null;
         }
 
